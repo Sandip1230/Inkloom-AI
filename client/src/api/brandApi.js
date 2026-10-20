@@ -21,7 +21,7 @@ function toFriendlyError(error) {
     return new Error(error.response.data.error);
   }
   if (error.request) {
-    return new Error('Could not reach the Brandloom server. Check that the backend is running and reachable.');
+    return new Error('Could not reach the Inkloom server. Check that the backend is running and reachable.');
   }
   return error;
 }

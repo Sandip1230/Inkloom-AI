@@ -1,29 +1,34 @@
-# Architecture
+# Inkloom architecture
 
-Brandloom is organized as a Vite/React client and an Express API. The client owns the staged workflow UI and calls the API through `client/src/api/brandApi.js`. The server validates and orchestrates stage requests, calls the AI client, and persists a brand session and its outputs in MongoDB.
+Inkloom's current brand-governance prototype is a Vite/React client. Its review workspace runs deterministic text checks in the browser and stores draft reviews and terminology rules in `localStorage`. Review text is not sent to the API by the current workspace.
 
-## Pipeline
+## Review workflow
 
-1. **Understand** extracts the problem, audience, constraints, and open questions.
-2. **Position** develops the category, differentiator, and value proposition.
-3. **Shape** defines personality, naming directions, voice, and tagline.
-4. **Visualize** proposes typography, color mood, and imagery direction.
-5. **Challenge** identifies generic patterns and suggests alternatives.
-6. **Deliver** assembles the final brand name, launch copy, and an exportable brand kit, applying the Challenge stage's findings.
+1. A creator pastes a draft and selects its content type.
+2. The local review engine checks absolute promotional claims, configured preferred terminology, descriptive link text, long sentences and repeated all-caps wording.
+3. Each finding shows the reason, check that produced it and a suggested next step. Terminology and claim suggestions can be applied one at a time.
+4. A human can save the draft as awaiting approval, request changes, or approve it, with an optional name and note.
+5. The review history and insights pages summarize the items stored in that browser.
 
-Each stage consumes the brief and relevant prior outputs. Every controller rejects a request that is missing its required prior stage (e.g. Position requires an `understand` result in `context`) before calling the AI client at all.
+Terminology rules and review records are persisted under Inkloom-specific local-storage keys. Legacy authentication and theme keys are read where needed to avoid invalidating existing browser sessions and preferences. No role-based permissions or shared team storage are implemented yet.
 
-## AI call + validation flow
+## Current review checks and limits
 
-`server/src/ai/runStage.js` is the shared pipeline every stage controller calls through:
+The analyzer lives in `client/src/lib/governance.js`; persistence helpers live in `client/src/lib/reviewStore.js`. It uses explicit string and pattern checks, not an AI model. Its results are signals for a reviewer, not a verification of truth, legal compliance, or accessibility conformance. Only text is reviewed. Approved facts and source documents, images and assets, collaboration across devices, and centralized governance analytics are not connected.
 
-1. Fill the stage's prompt template (`server/src/ai/prompts`) with the brief/context.
-2. Call the AI client (`server/src/ai/client.js`, Groq — OpenAI-compatible chat completions API) with the shared system prompt.
-3. Extract a JSON object from the raw response (tolerates stray markdown fences).
-4. Validate the parsed object against that stage's schema (`server/src/ai/schemas`).
-5. If parsing or validation fails, retry once with the specific error appended to the prompt.
-6. If it still fails, the controller returns `502` with a generic "unusable response" message; a missing API key returns `500`.
+## Existing API
+
+The Express server retains the earlier staged brand-creation API and authentication routes. Stage requests use `client/src/api/brandApi.js`, are orchestrated by `server/src/ai/runStage.js`, validated against the schemas in `server/src/ai/schemas`, and can persist brand-session results in MongoDB. The current governance workspace does not call those stage endpoints. They should not be interpreted as the governance analyzer or as approved-source verification.
 
 ## Local development
 
-Install dependencies with `npm install` in the root, `client`, and `server` directories. Configure `server/.env` from `.env.example` (needs `AI_API_KEY`, `AI_BASE_URL`, optional `MONGO_URI`), then run `npm run dev` in the root to start both applications. The client uses port `5173`; the API uses port `3001`.
+Install dependencies in the root, `client`, and `server` directories, then start the frontend and backend together from the root:
+
+```sh
+npm install
+npm install --prefix client
+npm install --prefix server
+npm run dev
+```
+
+The client runs on port `5173` and the API on port `3001`. The client-side review prototype can be explored without configuring an AI key or MongoDB. For legacy API routes, configure `server/.env` from `server/.env.example`; the API uses `AI_API_KEY`, `AI_BASE_URL`, and optionally `MONGO_URI`.

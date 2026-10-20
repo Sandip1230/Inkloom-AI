@@ -1,5 +1,7 @@
 # Prompt design
 
+> These stage prompts support the retained legacy brand-creation API. The current Inkloom governance review workspace uses local deterministic checks and does not call these prompts.
+
 Prompts live in `server/src/ai/prompts` as stage-specific templates. Each keeps its reasoning step narrow, carries forward only the accumulated brand context needed by that stage, and requires structured JSON output. Every stage's response schema lives in `server/src/ai/schemas` and is enforced by `runStage.js` before a result is returned or persisted — an invalid response triggers one automatic retry with the specific validation errors appended to the prompt.
 
 ## Contracts

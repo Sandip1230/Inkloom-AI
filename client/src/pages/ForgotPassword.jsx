@@ -106,7 +106,7 @@ export default function ForgotPassword() {
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-2xl font-bold text-white shadow-lg">
             B
           </span>
-          <h2 className="mt-4 text-xl font-bold text-[var(--text)]">Brandloom</h2>
+          <h2 className="mt-4 text-xl font-bold text-[var(--text)]">Inkloom AI</h2>
           <p className="mt-3 text-lg font-bold text-[var(--text)]">{STEP_COPY[step].title}</p>
           <p className="mt-1 text-sm text-[var(--text-soft)]">
             {step === "code" ? `We sent a 6-digit code to ${email}. It expires in 10 minutes.` : STEP_COPY[step].description}

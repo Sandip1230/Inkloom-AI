@@ -1,14 +1,14 @@
 const FEATURES = [
   {
-    title: "Staged AI Pipeline",
-    body: "Six stages, one thread of context",
+    title: "Explainable checks",
+    body: "Understand why a draft was flagged",
     icon: (
       <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />
     ),
   },
   {
-    title: "Consistency Checked",
-    body: "AI critiques its own output",
+    title: "Human approval",
+    body: "People make the final decision",
     icon: (
       <>
         <path d="M9 12l2 2 4-4" />
@@ -17,8 +17,8 @@ const FEATURES = [
     ),
   },
   {
-    title: "Structured & Powerful",
-    body: "More than a generic generator",
+    title: "Brand standards",
+    body: "Keep preferred terminology close",
     icon: (
       <>
         <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" />
@@ -27,8 +27,8 @@ const FEATURES = [
     ),
   },
   {
-    title: "Built for Founders",
-    body: "Turn ideas into launch-ready brands",
+    title: "Built for teams",
+    body: "Review content before publication",
     icon: (
       <>
         <circle cx="9" cy="8" r="3" />
@@ -40,7 +40,7 @@ const FEATURES = [
   },
 ];
 
-const NAV_LINKS = ["Features", "Templates", "Community", "Pricing"];
+const NAV_LINKS = ["Reviews", "Guidelines", "Insights"];
 
 export default function AuthSplitLayout({ badge, heading, highlight, description, children }) {
   return (
@@ -59,9 +59,9 @@ export default function AuthSplitLayout({ badge, heading, highlight, description
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#f472b6] text-sm font-bold">
-              B
+              I
             </span>
-            <span className="text-base font-semibold">Brandloom</span>
+            <span className="text-base font-semibold">Inkloom AI</span>
             <span className="rounded-full border border-white/20 px-2 py-0.5 text-[10px] font-medium text-white/60">
               Beta
             </span>
@@ -74,9 +74,9 @@ export default function AuthSplitLayout({ badge, heading, highlight, description
           </div>
 
           <span className="text-right text-xs italic text-white/40">
-            "From idea
+            "From draft
             <br />
-            to brand, step by step."
+            to approval, with care."
           </span>
         </div>
 
@@ -113,10 +113,10 @@ export default function AuthSplitLayout({ badge, heading, highlight, description
         <div className="relative z-10">
           <div className="flex items-center gap-2 text-xs text-white/50">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            AI pipeline online
+            Brand governance workspace
           </div>
           <div className="mt-3 flex items-center justify-between text-[11px] text-white/30">
-            <span>© 2026 Brandloom. All rights reserved.</span>
+            <span>© 2026 Inkloom AI. All rights reserved.</span>
             <span className="flex gap-3">
               <span>Privacy</span> · <span>Terms</span> · <span>Help</span>
             </span>

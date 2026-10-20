@@ -26,7 +26,7 @@ export default function SignUp() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create account. Try again.");
 
-      localStorage.setItem("brandloom-token", data.token);
+      localStorage.setItem("inkloom-token", data.token);
       navigate("/workflow");
     } catch (submitError) {
       setError(submitError.message);
@@ -37,17 +37,17 @@ export default function SignUp() {
 
   return (
     <AuthSplitLayout
-      badge="Collaborative Brand Engine"
-      heading="Join Brandloom."
-      highlight="Start building."
-      description="Create an account to turn a rough idea into a launch-ready brand system — staged, structured and checked."
+      badge="Brand governance workspace"
+      heading="Join Inkloom AI."
+      highlight="Keep your brand consistent."
+      description="Create an account to help your team review content before publication and record human approval decisions."
     >
       <div className="w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col items-center text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-2xl font-bold text-white shadow-lg">
-            B
+            I
           </span>
-          <h2 className="mt-4 text-xl font-bold text-[var(--text)]">Brandloom</h2>
+          <h2 className="mt-4 text-xl font-bold text-[var(--text)]">Inkloom AI</h2>
           <p className="mt-3 text-lg font-bold text-[var(--text)]">Create Account</p>
           <p className="mt-1 text-sm text-[var(--text-soft)]">Sign up to get started.</p>
         </div>

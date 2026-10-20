@@ -90,7 +90,7 @@ async function forgotPassword(request, response, next) {
 
       await sendEmail({
         to: user.email,
-        subject: 'Your Brandloom password reset code',
+        subject: 'Your Inkloom AI password reset code',
         text: `Your password reset code is ${code}. It expires in 10 minutes. If you didn't request this, you can ignore this email.`,
       });
     }

@@ -25,7 +25,7 @@ export default function Login() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not sign in. Try again.");
 
-      localStorage.setItem("brandloom-token", data.token);
+      localStorage.setItem("inkloom-token", data.token);
       navigate("/workflow");
     } catch (submitError) {
       setError(submitError.message);
@@ -48,20 +48,20 @@ export default function Login() {
 
   return (
     <AuthSplitLayout
-      badge="Collaborative Brand Engine"
+      badge="Brand governance workspace"
       heading="Welcome back."
-      highlight="Keep building."
-      description="Sign in to continue turning your ideas into launch-ready brand systems — staged, structured and checked."
+      highlight="Review with confidence."
+      description="Sign in to review content against your brand standards and keep human decisions in control."
     >
       <div className="w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col items-center text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-2xl font-bold text-white shadow-lg">
-            B
+            I
           </span>
-          <h2 className="mt-4 text-xl font-bold text-[var(--text)]">Brandloom</h2>
+          <h2 className="mt-4 text-xl font-bold text-[var(--text)]">Inkloom AI</h2>
           <p className="mt-3 text-lg font-bold text-[var(--text)]">Welcome Back</p>
           <p className="mt-1 text-sm text-[var(--text-soft)]">
-            Continue your journey. Great brands are built in stages.
+            Continue to your content governance workspace.
           </p>
         </div>
 

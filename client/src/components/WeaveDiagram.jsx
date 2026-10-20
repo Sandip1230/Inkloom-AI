@@ -18,7 +18,7 @@ export default function WeaveDiagram() {
       viewBox="0 0 560 460"
       className="h-auto w-full max-w-xl"
       role="img"
-      aria-label="Six brand-building stages weaving into a single finished brand mark"
+      aria-label="Inkloom content review and approval workflow"
     >
       <g fill="none" strokeWidth="1.5">
         {STAGES.map((stage, i) => {

@@ -1,11 +1,12 @@
 // projectsStore.js — persists brand projects in the browser's localStorage.
 // No backend needed; each project lives only in the browser that created it.
 
-const STORAGE_KEY = "brandloom-projects";
+const STORAGE_KEY = "inkloom-projects";
+const LEGACY_STORAGE_KEY = "brandloom-projects";
 
 function readAll() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};

@@ -23,7 +23,7 @@ async function sendEmail({ to, subject, text, html }) {
       'api-key': apiKey,
     },
     body: JSON.stringify({
-      sender: { email: fromEmail, name: 'Brandloom' },
+      sender: { email: fromEmail, name: 'Inkloom AI' },
       to: [{ email: to }],
       subject,
       textContent: text,

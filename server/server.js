@@ -19,7 +19,7 @@ process.on('uncaughtException', (error) => {
 
 // Start the HTTP server immediately. The AI pipeline stages (/api/stages/*)
 // are stateless and don't touch MongoDB at all - only /api/brand does.
-app.listen(port, () => console.log(`Brandloom API listening on port ${port}`));
+app.listen(port, () => console.log(`Inkloom API listening on port ${port}`));
 
 if (process.env.MONGO_URI) {
   connectDatabase().catch((error) => {

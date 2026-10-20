@@ -7,7 +7,6 @@ import ForgotPassword from "./pages/ForgotPassword.jsx";
 import Workflow from "./pages/Workflow.jsx";
 import Projects from "./pages/Projects.jsx";
 import BrandKits from "./pages/BrandKits.jsx";
-import Templates from "./pages/Templates.jsx";
 import Community from "./pages/Community.jsx";
 import { BrandProvider } from "./context/BrandContext.jsx";
 import { createProjectId } from "./lib/projectsStore.js";
@@ -34,7 +33,7 @@ function AuthCallback() {
 
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get("token");
-    if (token) localStorage.setItem("brandloom-token", token);
+    if (token) localStorage.setItem("inkloom-token", token);
     navigate("/workflow", { replace: true });
   }, [navigate]);
 
@@ -51,7 +50,7 @@ export default function App() {
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/projects" element={<Projects />} />
       <Route path="/brand-kits" element={<BrandKits />} />
-      <Route path="/templates" element={<Templates />} />
+      <Route path="/templates" element={<Navigate to="/brand-kits" replace />} />
       <Route path="/community" element={<Community />} />
       <Route path="/workflow" element={<NewWorkflowRedirect />} />
       <Route path="/workflow/:projectId" element={<WorkflowRoute />} />

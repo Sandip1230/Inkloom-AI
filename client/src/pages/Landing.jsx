@@ -3,14 +3,18 @@ import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext.jsx";
 import "../styles/Landing.css";
 
-const NAV_LINKS = ["Pipeline", "Stages", "Examples", "Pricing", "Community"];
+const NAV_LINKS = [
+  { label: "How it works", href: "#pipeline" },
+  { label: "Guidelines", href: "/brand-kits" },
+  { label: "Insights", href: "/community" },
+];
 
 const FLOW_CARDS = [
   {
     n: "01",
     key: "understand",
-    title: "Understand",
-    body: "Clarify your idea, audience and real problem.",
+    title: "Set your standards",
+    body: "Keep approved language and brand rules close at hand.",
     tone: "blue",
     icon: (
       <path d="M9 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7-1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2ZM2.5 19c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5M16 13.6c2.6.3 4.6 2.1 5 4.7" />
@@ -19,8 +23,8 @@ const FLOW_CARDS = [
   {
     n: "02",
     key: "position",
-    title: "Position",
-    body: "Find your category, edge and value proposition.",
+    title: "Review content",
+    body: "Check claims, terminology, tone and accessibility.",
     tone: "rose",
     icon: (
       <>
@@ -33,8 +37,8 @@ const FLOW_CARDS = [
   {
     n: "03",
     key: "visualize",
-    title: "Visualize",
-    body: "Create a unique visual identity and style.",
+    title: "Collaborate",
+    body: "Explain every finding and capture reviewer notes.",
     tone: "violet",
     icon: (
       <path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.7 1.6-1.5 0-.4-.2-.7-.4-1a1.6 1.6 0 0 1 1.2-2.7h1.7A3.9 3.9 0 0 0 20 11.9C20 6.9 16.4 3 12 3Zm-4.6 8.3a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Zm3-3.6a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Zm4.3.4a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Z" />
@@ -43,8 +47,8 @@ const FLOW_CARDS = [
   {
     n: "04",
     key: "deliver",
-    title: "Deliver",
-    body: "Get a complete brand kit ready to launch.",
+    title: "Approve with confidence",
+    body: "Keep final decisions in the hands of your team.",
     tone: "teal",
     icon: <path d="M4 12.5 10 15l2.5 6L20 4 4 12.5Zm6 2.5-1 4" />,
   },
@@ -52,14 +56,14 @@ const FLOW_CARDS = [
 
 const STATS = [
   {
-    title: "6",
-    subtitle: "AI-Powered Stages",
+    title: "Explainable",
+    subtitle: "Review findings",
     tone: "violet",
     icon: <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />,
   },
   {
-    title: "50+",
-    subtitle: "Brand Assets in One Place",
+    title: "Human-led",
+    subtitle: "Approval workflow",
     tone: "indigo",
     icon: (
       <>
@@ -69,8 +73,8 @@ const STATS = [
     ),
   },
   {
-    title: "For Founders",
-    subtitle: "Creators & Teams",
+    title: "For Teams",
+    subtitle: "Creators & Reviewers",
     tone: "blue",
     icon: (
       <>
@@ -82,8 +86,8 @@ const STATS = [
     ),
   },
   {
-    title: "All-in-One",
-    subtitle: "Brand Kit",
+    title: "Local",
+    subtitle: "Browser-based prototype",
     tone: "amber",
     icon: <path d="M12 2 4 12.5h5.5L9 22l9.5-11.5H13L12 2Z" />,
   },
@@ -123,15 +127,17 @@ export default function Landing() {
         <a href="#top" className="logo">
           <span className="logo-star">✦</span>
           <span>
-            Brand<i>loom</i>
+            Ink<i>loom</i>
           </span>
         </a>
 
         <div className={`nav-links ${menuOpen ? "open" : ""}`}>
-          {NAV_LINKS.map((label) => (
-            <a key={label} href="#pipeline" onClick={() => setMenuOpen(false)}>
-              {label}
-            </a>
+          {NAV_LINKS.map((item) => (
+            item.href.startsWith("#") ? (
+              <a key={item.label} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>
+            ) : (
+              <Link key={item.label} to={item.href} onClick={() => setMenuOpen(false)}>{item.label}</Link>
+            )
           ))}
         </div>
 
@@ -140,8 +146,8 @@ export default function Landing() {
           <a href="#pipeline" className="login-btn">
             See how it works
           </a>
-          <Link to="/login" className="start-btn">
-            Get Started
+          <Link to="/workflow" className="start-btn">
+            Review a draft
             <span>→</span>
           </Link>
           <button
@@ -164,23 +170,24 @@ export default function Landing() {
         <section className="hero-left">
           <div className="ai-badge">
             <span>✦</span>
-            AI-Powered Brand Pipeline
+            Pre-publication Brand Governance
           </div>
 
           <h1>
-            Turn your idea
+            Keep every
             <br />
-            into a <span>complete brand.</span>
+            <span>brand story</span> on-brand.
           </h1>
 
           <p className="hero-description">
-            From a rough thought to a launch-ready brand system. Powered by
-            AI, guided by strategy, designed for builders.
+            Review content before it goes live. Inkloom checks drafts against
+            your approved language, flags unsupported claims, and gives your
+            team clear suggestions—not an automatic rejection.
           </p>
 
           <div className="hero-buttons">
-            <Link to="/login" className="primary-btn">
-              Start your brand
+            <Link to="/workflow" className="primary-btn">
+              Review content
               <span>→</span>
             </Link>
 
@@ -200,9 +207,9 @@ export default function Landing() {
             </div>
 
             <p>
-              Built for founders shaping
+              Built for teams protecting
               <br />
-              their first brand with AI.
+              a consistent brand voice.
             </p>
           </div>
         </section>
@@ -245,9 +252,9 @@ export default function Landing() {
                 <span>✦</span>
               </div>
 
-              <div className="phone-title">Brandloom</div>
+              <div className="phone-title">Inkloom AI</div>
 
-              <div className="phone-subtitle">Ideas to launch-ready brands</div>
+              <div className="phone-subtitle">A clear path from draft to approval</div>
             </div>
           </div>
 
@@ -288,20 +295,20 @@ export default function Landing() {
 
       {/* ================= PIPELINE DETAIL ================= */}
       <section id="pipeline" className="pipeline-section">
-        <h2>Six stages. One thread of context.</h2>
+        <h2>From first draft to human approval.</h2>
         <p>
-          Nothing restarts from zero. Every stage writes structured results
-          that the next one reads before it says a word.
+          One clear review loop keeps your approved standards, content findings
+          and reviewer decisions connected.
         </p>
 
         <div className="stage-grid">
           {[
-            { n: "01", title: "Understand", body: "Extract the real problem, audience, constraints and open questions before anything gets named." },
-            { n: "02", title: "Position", body: "Find the category, the differentiator, and the value proposition worth defending." },
-            { n: "03", title: "Shape", body: "Personality traits, naming directions, voice and tagline — each with a reason." },
-            { n: "04", title: "Visualize", body: "Translate the strategy into typography, color mood and imagery direction." },
-            { n: "05", title: "Challenge", body: "Every output gets checked for clichés, contradictions and weak assumptions — and revised." },
-            { n: "06", title: "Deliver", body: "A consistency-checked, exportable brand kit you can actually launch with." },
+            { n: "01", title: "Add brand rules", body: "Record approved terminology and the standards your reviewers expect content to follow." },
+            { n: "02", title: "Review a draft", body: "Run text checks for unsupported claims, terminology, tone and common accessibility issues." },
+            { n: "03", title: "Understand findings", body: "See why each item was flagged, the rule behind it and a suggested next step." },
+            { n: "04", title: "Revise together", body: "Apply optional wording suggestions, leave context and request changes or approval." },
+            { n: "05", title: "Keep a decision", body: "A reviewer explicitly approves or requests changes; automation never publishes for you." },
+            { n: "06", title: "Learn over time", body: "Use saved reviews to spot recurring wording issues and improve unclear guidelines." },
           ].map((step) => (
             <div key={step.n} className="stage-card">
               <span className="stage-number">{step.n}</span>
@@ -314,7 +321,7 @@ export default function Landing() {
 
       {/* ================= FOOTER ================= */}
       <footer className="site-footer">
-        Brandloom — built for the Inkloom × We Code Coders Hackathon.
+        Inkloom AI — brand governance that keeps human judgment in the loop.
       </footer>
     </div>
   );

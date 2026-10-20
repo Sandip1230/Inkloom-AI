@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Decodes the JWT payload (server/src/routes/auth.routes.js signs
 // { id, name, email }) without needing a library or a /me API call.
 function readUserFromToken() {
-  const token = localStorage.getItem('brandloom-token');
+  const token = localStorage.getItem('inkloom-token') || localStorage.getItem('brandloom-token');
   if (!token) return null;
   try {
     const payload = token.split('.')[1];
@@ -34,6 +34,7 @@ export default function Topbar() {
   }, []);
 
   function handleLogout() {
+    localStorage.removeItem('inkloom-token');
     localStorage.removeItem('brandloom-token');
     setUser(null);
     setMenuOpen(false);
@@ -62,7 +63,7 @@ export default function Topbar() {
         </svg>
         <input
           type="search"
-          placeholder="Search projects, templates…"
+          placeholder="Search reviews, guidelines…"
           className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] py-2 pl-10 pr-14 text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)] focus:outline-none"
         />
         <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-soft)]">

@@ -19,7 +19,7 @@ function useGoogleFonts(fontNames) {
     const valid = fontNames.filter((name) => name && FONT_WHITELIST.includes(name));
     if (valid.length === 0) return;
 
-    const linkId = "brandloom-dynamic-fonts";
+    const linkId = "inkloom-dynamic-fonts";
     const families = valid
       .map((name) => `family=${encodeURIComponent(name).replace(/%20/g, "+")}:wght@400;600;700`)
       .join("&");
@@ -50,7 +50,7 @@ export function GeneratedMark({ mark, palette }) {
   const shape = mark?.shape || "circle";
   const style = mark?.style || "geometric";
   const letter = (mark?.monogramLetter || "").slice(0, 1).toUpperCase();
-  const gradientId = "brandloom-mark-gradient";
+  const gradientId = "inkloom-mark-gradient";
 
   function renderShape() {
     switch (shape) {

@@ -29,7 +29,7 @@ function createAIClient() {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': process.env.CLIENT_ORIGIN || 'http://localhost:5173',
-          'X-Title': 'Brandloom',
+          'X-Title': 'Inkloom AI',
         },
         body: JSON.stringify({
           model,

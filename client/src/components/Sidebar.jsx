@@ -4,10 +4,9 @@ import ThemeToggle from "./ThemeToggle.jsx";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: "grid", to: "/workflow" },
-  { label: "Projects", icon: "folder", to: "/projects" },
-  { label: "Brand Kits", icon: "sparkle", to: "/brand-kits" },
-  { label: "Templates", icon: "layout", to: "/templates" },
-  { label: "Community", icon: "users", to: "/community" },
+  { label: "Review history", icon: "folder", to: "/projects" },
+  { label: "Guidelines", icon: "sparkle", to: "/brand-kits" },
+  { label: "Insights", icon: "layout", to: "/community" },
 ];
 
 function NavIcon({ name }) {
@@ -67,7 +66,7 @@ function NavIcon({ name }) {
 // Decodes the JWT payload (server/src/routes/auth.routes.js signs
 // { id, name, email }) without needing a library or a /me API call.
 function readUserFromToken() {
-  const token = localStorage.getItem("brandloom-token");
+  const token = localStorage.getItem("inkloom-token") || localStorage.getItem("brandloom-token");
   if (!token) return null;
   try {
     const payload = token.split(".")[1];
@@ -102,6 +101,7 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
   }, [location.pathname]);
 
   function handleLogout() {
+    localStorage.removeItem("inkloom-token");
     localStorage.removeItem("brandloom-token");
     setUser(null);
     setMenuOpen(false);
@@ -122,9 +122,9 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
     >
       <div className="flex items-center gap-2 px-2">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-bold text-white">
-          B
+          I
         </span>
-        <span className="text-lg font-semibold text-white">Brandloom</span>
+        <span className="text-lg font-semibold text-white">Inkloom AI</span>
 
         {/* Mobile-only close button for the drawer */}
         <button
@@ -145,7 +145,7 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
         style={{ backgroundImage: "var(--btn-gradient)" }}
         className="mt-5 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white shadow-[0_6px_18px_-6px_rgba(124,58,237,0.6)] transition-opacity hover:opacity-90"
       >
-        + New Project
+        + New Review
       </Link>
 
       <nav className="mt-5 flex flex-col gap-1">
@@ -180,17 +180,17 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
           👑
         </span>
         <p className="mt-3 text-sm font-semibold leading-snug text-white">
-          Turn ideas into powerful brands.
+          Keep every message on-brand.
         </p>
         <p className="mt-1.5 text-xs leading-relaxed text-[var(--sidebar-text-soft)]">
-          AI-powered branding for founders, creators and communities.
+          Explainable content checks with people in control of approval.
         </p>
         <Link
-          to="/templates"
+          to="/brand-kits"
           onClick={onClose}
           className="mt-3 flex items-center justify-center gap-1.5 rounded-lg border border-amber-400/50 px-3 py-2 text-xs font-medium text-white transition-colors hover:border-amber-300"
         >
-          Explore Templates
+          Manage Guidelines
           <span aria-hidden="true">→</span>
         </Link>
       </div>
