@@ -1,0 +1,169 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #eceafb;
+  --surface: #ffffff;
+  --surface-2: #f5f2fc;
+  --border: #e6e1f7;
+  --text: #14121f;
+  --text-soft: #6b6880;
+  --sidebar-bg: #1a1440;
+  --sidebar-text: #ece9f9;
+  --sidebar-text-soft: #9b93c4;
+  --sidebar-border: #2e2760;
+  --accent-from: #7c3aed;
+  --accent-to: #ec4899;
+  --accent-solid: #7c3aed;
+  --btn-gradient: linear-gradient(120deg, #6d5bfa 0%, #9333ea 100%);
+}
+
+.dark {
+  --bg: #0a0714;
+  --surface: #15112b;
+  --surface-2: #1c1836;
+  --border: #322a5c;
+  --text: #f5f3fc;
+  --text-soft: #a99fc7;
+  --sidebar-bg: #150f38;
+  --sidebar-text: #ece9f9;
+  --sidebar-text-soft: #9b93c4;
+  --sidebar-border: #2e2760;
+  --accent-from: #8b5cf6;
+  --accent-to: #f472b6;
+  --accent-solid: #a78bfa;
+  --btn-gradient: linear-gradient(120deg, #6d5bfa 0%, #7c3aed 100%);
+}
+
+@layer base {
+  html, body, #root {
+    min-height: 100%;
+    margin: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  ::selection {
+    background-color: var(--accent-solid);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-solid);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== Decorative background: light mode = soft pastel blobs,
+   dark mode = electric-blue wavy streaks ===== */
+.page-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.page-bg::before,
+.page-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+}
+
+.page-bg::before {
+  width: 46vw;
+  height: 46vw;
+  left: -8vw;
+  bottom: -14vw;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-from) 22%, transparent), transparent 70%);
+}
+
+.page-bg::after {
+  width: 40vw;
+  height: 40vw;
+  right: 10vw;
+  top: -10vw;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-to) 18%, transparent), transparent 70%);
+}
+
+.dark .page-bg::before {
+  background: radial-gradient(circle, rgba(47, 95, 255, 0.28), transparent 70%);
+}
+
+.dark .page-bg::after {
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.24), transparent 70%);
+}
+
+/* extra thin glowing wavy streaks, dark mode only */
+.dark .page-bg .streak {
+  position: absolute;
+  width: 70vw;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, rgba(80, 130, 255, 0.55), transparent);
+  filter: blur(1.5px);
+}
+
+.app-glow {
+  background-image:
+    radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--accent-to) 16%, transparent), transparent 45%),
+    radial-gradient(circle at 60% 15%, color-mix(in srgb, var(--accent-from) 12%, transparent), transparent 40%);
+  background-repeat: no-repeat;
+}
+
+.dark .app-glow {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-from) 20%, transparent), 0 30px 90px -40px rgba(139, 92, 246, 0.45);
+}
+
+.font-handwritten {
+  font-family: "Caveat", cursive;
+}
+
+.glow-ring {
+  position: absolute;
+  inset: -18px;
+  border-radius: 9999px;
+  border: 1.5px solid color-mix(in srgb, var(--accent-from) 55%, transparent);
+  box-shadow: 0 0 30px 4px color-mix(in srgb, var(--accent-from) 35%, transparent);
+  z-index: -1;
+}
