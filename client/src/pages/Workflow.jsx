@@ -169,10 +169,10 @@ export default function Workflow() {
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <DashboardMetric label="Saved reviews" value={savedReviews.length} tone="violet" />
-            <DashboardMetric label="Awaiting attention" value={outstandingReviews} tone="amber" />
-            <DashboardMetric label="Approved by a person" value={approvedReviews} tone="green" />
-            <DashboardMetric label="Findings to review" value={savedFindingCount} tone="blue" />
+            <DashboardMetric label="Saved reviews" value={savedReviews.length} tone="red" />
+            <DashboardMetric label="Awaiting attention" value={outstandingReviews} tone="orange" />
+            <DashboardMetric label="Approved by a person" value={approvedReviews} tone="charcoal" />
+            <DashboardMetric label="Findings to review" value={savedFindingCount} tone="clay" />
           </div>
 
           <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(260px,0.75fr)]">

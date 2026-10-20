@@ -4,7 +4,7 @@ const REVIEW_LENSES = [
     title: "Brand voice",
     description: "Terminology and tone",
     categories: ["Terminology", "Tone"],
-    accent: "violet",
+    accent: "red",
   },
   {
     id: "Claims",

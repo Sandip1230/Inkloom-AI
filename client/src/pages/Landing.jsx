@@ -14,13 +14,13 @@ const STATS = [
   {
     title: "Explainable",
     subtitle: "Review findings",
-    tone: "violet",
+    tone: "red",
     icon: <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />,
   },
   {
     title: "Human-led",
     subtitle: "Approval workflow",
-    tone: "indigo",
+    tone: "orange",
     icon: (
       <>
         <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" />
@@ -31,7 +31,7 @@ const STATS = [
   {
     title: "For Teams",
     subtitle: "Creators & Reviewers",
-    tone: "blue",
+    tone: "charcoal",
     icon: (
       <>
         <circle cx="9" cy="8" r="3" />

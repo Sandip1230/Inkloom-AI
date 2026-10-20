@@ -17,10 +17,10 @@
   --sidebar-text: #f4f5f7;
   --sidebar-text-soft: #9298a6;
   --sidebar-border: #2b2e36;
-  --accent-from: #8c6cf0;
-  --accent-to: #a56ded;
-  --accent-solid: #7957db;
-  --btn-gradient: linear-gradient(120deg, #7761e8 0%, #9765dc 100%);
+  --accent-from: #e34a3b;
+  --accent-to: #d56a24;
+  --accent-solid: #c83b2d;
+  --btn-gradient: linear-gradient(120deg, #dc4337 0%, #c95a21 100%);
 }
 
 .dark {
@@ -34,10 +34,10 @@
   --sidebar-text: #f3f4f6;
   --sidebar-text-soft: #8f96a3;
   --sidebar-border: #24272e;
-  --accent-from: #9a7df5;
-  --accent-to: #b27ce9;
-  --accent-solid: #aa91f4;
-  --btn-gradient: linear-gradient(120deg, #775fe1 0%, #9e6cdb 100%);
+  --accent-from: #ff765b;
+  --accent-to: #e9853d;
+  --accent-solid: #ff8765;
+  --btn-gradient: linear-gradient(120deg, #ed5548 0%, #d87332 100%);
 }
 
 @layer base {
@@ -127,11 +127,11 @@
 }
 
 .dark .page-bg::before {
-  background: radial-gradient(circle, rgba(47, 95, 255, 0.28), transparent 70%);
+  background: radial-gradient(circle, rgba(226, 68, 48, 0.22), transparent 70%);
 }
 
 .dark .page-bg::after {
-  background: radial-gradient(circle, rgba(147, 51, 234, 0.24), transparent 70%);
+  background: radial-gradient(circle, rgba(222, 112, 42, 0.2), transparent 70%);
 }
 
 /* extra thin glowing wavy streaks, dark mode only */
@@ -140,7 +140,7 @@
   width: 70vw;
   height: 2px;
   border-radius: 9999px;
-  background: linear-gradient(90deg, transparent, rgba(80, 130, 255, 0.55), transparent);
+  background: linear-gradient(90deg, transparent, rgba(238, 91, 58, 0.46), transparent);
   filter: blur(1.5px);
 }
 

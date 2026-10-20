@@ -31,24 +31,24 @@
   height: 34px;
   flex: 0 0 4px;
   border-radius: 8px;
-  background: #8d72e8;
+  background: #d94335;
 }
 
-.dashboard-metric--amber .dashboard-metric__mark { background: #dfa84f; }
-.dashboard-metric--green .dashboard-metric__mark { background: #48a886; }
-.dashboard-metric--blue .dashboard-metric__mark { background: #668fe8; }
+.dashboard-metric--orange .dashboard-metric__mark { background: #d96b2b; }
+.dashboard-metric--charcoal .dashboard-metric__mark { background: #6f737c; }
+.dashboard-metric--clay .dashboard-metric__mark { background: #a94b37; }
 
 .dashboard-metric__spark {
   margin-left: auto;
-  color: #c4b7f2;
+  color: #eab1a4;
   font-size: 30px;
   line-height: 1;
   transform: rotate(-12deg);
 }
 
-.dashboard-metric--amber .dashboard-metric__spark { color: #e9d2a8; }
-.dashboard-metric--green .dashboard-metric__spark { color: #a6d5c4; }
-.dashboard-metric--blue .dashboard-metric__spark { color: #b2c6f3; }
+.dashboard-metric--orange .dashboard-metric__spark { color: #edc09f; }
+.dashboard-metric--charcoal .dashboard-metric__spark { color: #b5b6bb; }
+.dashboard-metric--clay .dashboard-metric__spark { color: #d6a499; }
 
 .dark .dashboard-metric__spark { opacity: .78; }
 
@@ -64,16 +64,26 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #9c7de9;
+  background: #dc5039;
 }
 
 .review-activity-chart {
+  position: relative;
   display: grid;
-  height: 132px;
+  height: 142px;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: end;
-  gap: 10px;
-  padding: 12px 5px 0;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 9px 4px;
+  border-radius: 10px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 27px,
+    color-mix(in srgb, var(--border) 58%, transparent) 28px,
+    transparent 29px
+  );
 }
 
 .review-activity-chart__day {
@@ -83,7 +93,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: end;
-  gap: 5px;
+  gap: 6px;
 }
 
 .review-activity-chart__value {
@@ -95,21 +105,28 @@
 
 .review-activity-chart__track {
   display: flex;
-  width: min(100%, 24px);
-  height: 82px;
+  width: min(100%, 25px);
+  height: 88px;
   align-items: end;
   overflow: hidden;
-  border-radius: 6px 6px 3px 3px;
-  background: var(--surface-2);
+  padding: 2px 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-2) 82%, var(--surface));
 }
 
 .review-activity-chart__track > span {
   display: block;
   width: 100%;
-  min-height: 2px;
-  border-radius: 6px 6px 2px 2px;
-  background: linear-gradient(180deg, #b099f5, #795fd3);
-  transition: height .25s ease;
+  min-height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f2a24d 0%, #e26037 48%, #c83b31 100%);
+  box-shadow: 0 0 12px rgba(220, 75, 48, 0.25);
+  transition: height .3s cubic-bezier(.2, .75, .25, 1);
+}
+
+.dark .review-activity-chart__track > span {
+  box-shadow: 0 0 16px rgba(243, 99, 58, 0.32);
 }
 
 .review-activity-chart__label {
@@ -192,8 +209,8 @@
 .review-branch:hover { transform: translateY(-1px); }
 .review-branch:focus-visible { outline: 2px solid var(--accent-solid); outline-offset: 2px; }
 .review-branch.is-active { border-color: var(--accent-solid); background: color-mix(in srgb, var(--accent-solid) 7%, var(--surface)); }
-.review-branch--amber.is-active { border-color: #d29b43; background: color-mix(in srgb, #d29b43 7%, var(--surface)); }
-.review-branch--teal.is-active { border-color: #429d83; background: color-mix(in srgb, #429d83 7%, var(--surface)); }
+.review-branch--amber.is-active { border-color: #d96b2b; background: color-mix(in srgb, #d96b2b 7%, var(--surface)); }
+.review-branch--teal.is-active { border-color: #a94b37; background: color-mix(in srgb, #a94b37 7%, var(--surface)); }
 
 .review-branch__topline {
   display: flex;
@@ -230,12 +247,14 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #9071df;
+  background: #d94335;
   transition: width .2s ease;
 }
 
-.review-branch--amber .review-branch__bar > span { background: #d5a14e; }
-.review-branch--teal .review-branch__bar > span { background: #4b9e84; }
+.review-branch--red.is-active { border-color: #d94335; background: color-mix(in srgb, #d94335 7%, var(--surface)); }
+.review-branch--red .review-branch__bar > span { background: #d94335; }
+.review-branch--amber .review-branch__bar > span { background: #d96b2b; }
+.review-branch--teal .review-branch__bar > span { background: #a94b37; }
 
 .review-branches__note {
   margin: 9px 0 0;
@@ -247,7 +266,7 @@
   .review-branches__grid { grid-template-columns: 1fr; }
   .review-branch { min-height: 72px; }
   .review-branch__title { margin-top: 6px; }
-  .review-activity-chart { gap: 6px; }
+  .review-activity-chart { gap: 5px; padding-inline: 4px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

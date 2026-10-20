@@ -1537,3 +1537,320 @@
         font-size: 10.5px;
     }
 }
+
+.page {
+    background:
+        radial-gradient(ellipse at 82% 26%, rgba(198, 73, 43, .16), transparent 32%),
+        radial-gradient(ellipse at 18% 6%, rgba(220, 112, 42, .11), transparent 34%),
+        #111214;
+}
+
+.page::before {
+    border-color: rgba(255, 255, 255, .09);
+    box-shadow: none;
+}
+
+.page .logo i,
+.page .start-btn,
+.page .primary-btn,
+.page .review-preview__footer button {
+    background: linear-gradient(110deg, #e14b3e, #c65b22);
+}
+
+.page .logo-star,
+.page .ai-badge span,
+.page .stage-number {
+    color: #ed7552;
+}
+
+.page .logo-star {
+    text-shadow: 0 0 14px rgba(229, 76, 49, .48);
+}
+
+.page .start-btn,
+.page .primary-btn {
+    box-shadow: 0 8px 24px rgba(207, 66, 42, .24);
+}
+
+.page .primary-btn:hover {
+    box-shadow: 0 10px 30px rgba(207, 66, 42, .36);
+}
+
+.page .ai-badge {
+    border-color: rgba(230, 107, 67, .25);
+    background: rgba(198, 75, 44, .08);
+    color: #d2b6aa;
+}
+
+.page h1 span,
+.page .review-preview-note span {
+    background: linear-gradient(100deg, #f18c55, #df493c 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.page .blue-glow,
+.page .purple-glow {
+    background: #d95732;
+    opacity: .2;
+}
+
+.page .ribbon {
+    border-color: rgba(223, 87, 51, .48);
+    box-shadow: 0 0 16px rgba(212, 77, 43, .2);
+}
+
+.page .annotate,
+.page .annotate-tr,
+.page .annotate-br {
+    color: #ed9a68;
+}
+
+.page .review-preview__brand > span {
+    background: linear-gradient(145deg, #ee7650, #c83f32);
+}
+
+.page .review-preview__rail .is-selected {
+    background: rgba(220, 82, 52, .16);
+    color: #f08b65;
+}
+
+.page .review-preview__top-actions i {
+    background: #39302d;
+    color: #efb49c;
+}
+
+.page .inkloom-particle-title__dust {
+    background:
+        radial-gradient(circle at 7% 40%, #ff9c65 0 1px, transparent 1.8px),
+        radial-gradient(circle at 16% 82%, #ed5b45 0 1px, transparent 2px),
+        radial-gradient(circle at 35% 8%, #ffc17a 0 1px, transparent 2px),
+        radial-gradient(circle at 63% 93%, #e1773e 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 18%, #ffad6a 0 1px, transparent 2px),
+        radial-gradient(circle at 96% 66%, #e85b3d 0 1px, transparent 2px);
+    filter: drop-shadow(0 0 8px rgba(240, 112, 67, .45));
+}
+
+.page .stat-card.tone-red .stat-icon {
+    background: linear-gradient(145deg, #ef6951, #c83b32);
+}
+
+.page .stat-card.tone-orange .stat-icon {
+    background: linear-gradient(145deg, #ef9a4e, #d3662d);
+}
+
+.page .stat-card.tone-charcoal .stat-icon {
+    background: linear-gradient(145deg, #62656c, #383b42);
+}
+
+.page .stat-card.tone-amber .stat-icon {
+    background: linear-gradient(145deg, #e48a3c, #bd5724);
+}
+
+.page .stage-card:hover {
+    border-color: rgba(229, 82, 54, .42);
+}
+
+.page .stage-card::before {
+    background: linear-gradient(90deg, #e14b3e, #d77832);
+}
+
+/* Keep the real workspace preview styled at every viewport size. */
+.page .logo i {
+    background: linear-gradient(100deg, #f18c55, #df493c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.page .hero {
+    max-width: 1500px;
+    min-height: 620px;
+    margin: 0 auto;
+    align-items: center;
+    gap: 4%;
+}
+
+.page .hero-left {
+    width: 44%;
+}
+
+.page .hero-right {
+    width: 52%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    padding: 24px 0;
+}
+
+.page .review-preview {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .11);
+    border-radius: 18px;
+    background: #191b21;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, .38), 0 0 70px rgba(210, 81, 47, .12);
+    transform: perspective(1400px) rotateY(-3deg) rotateX(1deg);
+}
+
+.page .review-preview__topbar {
+    display: flex;
+    min-height: 55px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.page .review-preview__brand,
+.page .review-preview__top-actions {
+    display: flex;
+    align-items: center;
+}
+
+.page .review-preview__brand { gap: 7px; }
+.page .review-preview__brand > span {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(145deg, #ee7650, #c83f32);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+}
+.page .review-preview__brand b { color: #e8e8ee; font-size: 12px; }
+.page .review-preview__brand small { margin-left: 6px; color: #858995; font-size: 8px; letter-spacing: .1em; }
+.page .review-preview__top-actions { gap: 10px; color: #9ca1ad; font-size: 9px; }
+.page .review-preview__top-actions i {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 50%;
+    background: #39302d;
+    color: #efb49c;
+    font-size: 8px;
+    font-style: normal;
+}
+
+.page .review-preview__body { display: flex; min-height: 340px; }
+.page .review-preview__rail {
+    display: flex;
+    width: 48px;
+    flex: 0 0 48px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 0;
+    border-right: 1px solid rgba(255, 255, 255, .07);
+    color: #858995;
+    font-size: 14px;
+}
+.page .review-preview__rail span { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 8px; }
+.page .review-preview__rail .is-selected { background: rgba(220, 82, 52, .16); color: #f0a080; }
+.page .review-preview__main { min-width: 0; flex: 1; padding: 19px; }
+.page .review-preview__heading { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.page .review-preview__heading small { color: #a18d83; font-size: 8px; letter-spacing: .12em; }
+.page .review-preview__heading h2 { margin: 5px 0 0; color: #ececf2; font-size: 16px; font-weight: 600; }
+.page .review-preview__draft { flex-shrink: 0; padding: 5px 8px; border-radius: 999px; background: rgba(236, 155, 83, .11); color: #e9b58a; font-size: 7px; letter-spacing: .08em; }
+.page .review-preview__document {
+    margin-top: 17px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 11px;
+    background: #202229;
+}
+.page .review-preview__document-head { display: flex; justify-content: space-between; gap: 8px; color: #9296a0; font-size: 8px; }
+.page .review-preview__document > p { margin: 13px 0 17px; color: #c9cad2; font-size: 11px; line-height: 1.8; }
+.page .review-preview__document mark { padding: 1px 3px; border-radius: 3px; background: rgba(236, 185, 83, .2); color: #f0cd8d; }
+.page .review-preview__document mark.claim { background: rgba(232, 95, 75, .2); color: #f0a098; }
+.page .review-preview__findings { display: grid; gap: 7px; }
+.page .review-preview__finding {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px;
+    border: 1px solid rgba(255, 255, 255, .065);
+    border-radius: 8px;
+    background: rgba(15, 16, 20, .45);
+}
+.page .review-preview__finding-icon {
+    display: grid;
+    width: 23px;
+    height: 23px;
+    flex: 0 0 23px;
+    place-items: center;
+    border-radius: 7px;
+    background: rgba(231, 141, 76, .12);
+    color: #eac27f;
+    font-size: 12px;
+}
+.page .review-preview__finding > div { display: grid; min-width: 0; gap: 2px; }
+.page .review-preview__finding b { color: #d9d9e1; font-size: 9px; font-weight: 600; }
+.page .review-preview__finding small { overflow: hidden; color: #989ca6; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.page .review-preview__severity { margin-left: auto; color: #d8a477; font-size: 7px; letter-spacing: .08em; }
+.page .review-preview__footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
+.page .review-preview__footer > span { display: flex; align-items: center; gap: 6px; color: #a1a4ad; font-size: 8px; }
+.page .review-preview__footer > span i { width: 6px; height: 6px; border-radius: 50%; background: #65bd94; box-shadow: 0 0 9px #65bd9466; }
+.page .review-preview__footer button { flex-shrink: 0; padding: 7px 10px; border: 0; border-radius: 7px; background: linear-gradient(110deg, #e14b3e, #c65b22); color: white; font-size: 8px; }
+.page .review-preview__footer button b { margin-left: 4px; }
+.page .review-preview-note {
+    position: absolute;
+    z-index: 3;
+    right: -5px;
+    bottom: 0;
+    padding: 9px 13px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 10px;
+    background: #24211f;
+    color: #e0d5d0;
+    font-size: 9px;
+    box-shadow: 0 8px 22px #0004;
+}
+
+.page .review-preview-note span {
+    background: none;
+    color: #ed8057;
+    -webkit-text-fill-color: currentColor;
+}
+
+@media (max-width: 1000px) {
+    .page .hero { gap: 3%; }
+    .page .hero-left { width: 45%; }
+    .page .hero-right { width: 52%; }
+    .page .review-preview__main { padding: 13px; }
+    .page .review-preview__footer > span { font-size: 7px; }
+}
+
+@media (max-width: 750px) {
+    .page .hero { min-height: auto; flex-direction: column; flex-wrap: nowrap; gap: 28px; padding-top: 35px; }
+    .page .hero-left,
+    .page .hero-right { width: 100%; }
+    .page .hero-left { text-align: left; }
+    .page .ai-badge { margin-left: 0; margin-right: 0; }
+    .page .hero-description { max-width: 52ch; }
+    .page .hero-right { min-height: 0; height: auto; margin-top: 0; overflow: visible; }
+    .page .review-preview { transform: none; }
+    .page .review-preview__body { min-height: 300px; }
+    .page .review-preview-note { right: 8px; bottom: -14px; }
+}
+
+@media (max-width: 560px) {
+    .page .hero { padding: 26px 18px 44px; }
+    .page .review-preview__topbar { min-height: 46px; padding: 0 10px; }
+    .page .review-preview__top-actions > span { display: none; }
+    .page .review-preview__rail { width: 37px; flex-basis: 37px; }
+    .page .review-preview__main { padding: 11px 9px; }
+    .page .review-preview__heading h2 { font-size: 13px; }
+    .page .review-preview__document { padding: 10px; }
+    .page .review-preview__document > p { font-size: 9px; }
+    .page .review-preview__finding { gap: 6px; padding: 7px 6px; }
+    .page .review-preview__finding small { max-width: 150px; }
+    .page .review-preview__severity { font-size: 6px; }
+    .page .review-preview__footer > span { font-size: 7px; }
+    .page .review-preview__footer button { padding: 7px; font-size: 7px; }
+}
