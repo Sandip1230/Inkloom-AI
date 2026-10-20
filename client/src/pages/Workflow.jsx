@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
+import BranchingReviewSummary from "../components/BranchingReviewSummary.jsx";
+import ParticleTitle from "../components/ParticleTitle.jsx";
 import { applySuggestion, reviewContent } from "../lib/governance.js";
-import { createReviewId, getGuidelines, saveReview } from "../lib/reviewStore.js";
+import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/reviewStore.js";
 
 const CONTENT_TYPES = ["Web page", "Email", "Social post", "Advertisement", "Other"];
 
@@ -24,6 +26,7 @@ export default function Workflow() {
   const [comment, setComment] = useState("");
   const [reviewed, setReviewed] = useState(false);
   const [reviewError, setReviewError] = useState("");
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     try {
@@ -39,6 +42,38 @@ export default function Workflow() {
     () => new Set(findings.map((finding) => finding.category)).size,
     [findings],
   );
+  const savedReviews = useMemo(
+    () => listReviews(),
+    [reviewed, status, findings],
+  );
+  const activity = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() - (6 - index));
+      const count = savedReviews.filter(
+        (review) => new Date(review.updatedAt).toDateString() === date.toDateString(),
+      ).length;
+      return {
+        label: new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(date),
+        count,
+      };
+    });
+  }, [savedReviews]);
+  const outstandingReviews = savedReviews.filter(
+    (review) => review.status === "Draft" || review.status === "Awaiting approval",
+  ).length;
+  const approvedReviews = savedReviews.filter((review) => review.status === "Approved").length;
+  const savedFindingCount = savedReviews.reduce((total, review) => total + (review.findings?.length || 0), 0);
+  const visibleFindings = activeCategory
+    ? findings.filter((finding) => (
+      activeCategory === "Brand voice"
+        ? ["Terminology", "Tone"].includes(finding.category)
+        : activeCategory === "Claims"
+          ? finding.category === "Promotional claim"
+          : finding.category === "Accessibility"
+    ))
+    : findings;
 
   function handleReview(event) {
     event.preventDefault();
@@ -48,6 +83,7 @@ export default function Workflow() {
     setReviewId(id);
     setStatus("Draft");
     setReviewed(true);
+    setActiveCategory(null);
     try {
       saveReview({
         id,
@@ -113,29 +149,80 @@ export default function Workflow() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-6xl px-4 py-7 sm:px-6 sm:py-9">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">
-              Inkloom AI · Brand governance
-            </p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--text)] sm:text-3xl">
-              Review before you publish.
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-soft)]">
-              Check draft copy against your terminology rules, promotional claims, tone and accessibility.
-              Findings are explainable suggestions—not automatic approvals.
-            </p>
+      <div className="inkloom-dashboard-scroll h-full overflow-y-auto">
+        <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">
+                Inkloom AI <span className="mx-1 text-[var(--text-soft)]">/</span> Workspace overview
+              </p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)] sm:text-4xl">
+                <ParticleTitle>Every draft, in good hands.</ParticleTitle>
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-soft)]">
+                Review the details. Keep your brand consistent. Leave the final call to people.
+              </p>
+            </div>
+            <Link to="/projects" className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 text-sm font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-solid)]">
+              All reviews <span aria-hidden="true">↗</span>
+            </Link>
           </div>
-          <Link
-            to="/projects"
-            className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 text-sm font-medium text-[var(--text)] hover:border-[var(--accent-solid)]"
-          >
-            Review history
-          </Link>
-        </div>
 
-        <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(270px,0.8fr)]">
+          <div className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <DashboardMetric label="Saved reviews" value={savedReviews.length} tone="violet" />
+            <DashboardMetric label="Awaiting attention" value={outstandingReviews} tone="amber" />
+            <DashboardMetric label="Approved by a person" value={approvedReviews} tone="green" />
+            <DashboardMetric label="Findings to review" value={savedFindingCount} tone="blue" />
+          </div>
+
+          <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(260px,0.75fr)]">
+            <div className="dashboard-panel px-4 py-4 sm:px-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold text-[var(--text)]">Review activity</h2>
+                  <p className="mt-1 text-xs text-[var(--text-soft)]">Saved review updates · Last 7 days</p>
+                </div>
+                <span className="dashboard-chart-key"><span /> reviews / day</span>
+              </div>
+              <div className="review-activity-chart" role="img" aria-label={`Review updates over seven days: ${activity.map((day) => `${day.label} ${day.count}`).join(", ")}`}>
+                {activity.map((day, index) => (
+                  <div key={`${day.label}-${index}`} className="review-activity-chart__day">
+                    <span className="review-activity-chart__value">{day.count || ""}</span>
+                    <span className="review-activity-chart__track">
+                      <span style={{ height: `${day.count ? Math.max(12, Math.round((day.count / Math.max(1, ...activity.map((item) => item.count))) * 100)) : 3}%` }} />
+                    </span>
+                    <span className="review-activity-chart__label">{day.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="dashboard-panel dashboard-next-step px-4 py-4 sm:px-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold text-[var(--text)]">Keep your review moving</h2>
+                  <p className="mt-1 text-xs text-[var(--text-soft)]">A clear next step for this workspace</p>
+                </div>
+                <span className="dashboard-next-step__icon" aria-hidden="true">✦</span>
+              </div>
+              <p className="mt-4 text-sm leading-5 text-[var(--text)]">Run a draft through your approved terminology and content checks.</p>
+              <a href="#new-review" className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-[var(--accent-solid)] hover:underline">
+                Start a new review <span aria-hidden="true">→</span>
+              </a>
+              <p className="mt-4 border-t border-[var(--border)] pt-3 text-[11px] leading-4 text-[var(--text-soft)]">
+                Checks are local prototype signals, not a factual or legal clearance.
+              </p>
+            </div>
+          </section>
+
+          <div id="new-review" className="mt-8 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">Review workspace</p>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--text)]">Start a content review</h2>
+            </div>
+            {savedReviews.length > 0 && <p className="text-xs text-[var(--text-soft)]">{outstandingReviews} item{outstandingReviews === 1 ? "" : "s"} need attention</p>}
+          </div>
+
+          <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(270px,0.8fr)]">
           <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm sm:p-6">
             <form onSubmit={handleReview}>
               <div className="flex flex-wrap items-end justify-between gap-3">
@@ -195,8 +282,15 @@ export default function Workflow() {
                 </div>
 
                 {findings.length > 0 ? (
-                  <ul className="mt-4 space-y-3">
-                    {findings.map((finding) => (
+                  <>
+                    <BranchingReviewSummary
+                      findings={findings}
+                      activeCategory={activeCategory}
+                      onSelect={setActiveCategory}
+                    />
+                    {activeCategory && <p className="mt-4 text-xs text-[var(--text-soft)]">Showing {visibleFindings.length} findings in {activeCategory}. <button type="button" onClick={() => setActiveCategory(null)} className="font-semibold text-[var(--accent-solid)] hover:underline">Show all</button></p>}
+                    <ul className="mt-4 space-y-3">
+                      {visibleFindings.map((finding) => (
                       <li key={finding.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex flex-wrap items-center gap-2">
@@ -219,6 +313,7 @@ export default function Workflow() {
                       </li>
                     ))}
                   </ul>
+                  </>
                 ) : (
                   <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-[var(--text)]">
                     No configured checks were triggered. This is not a guarantee that the content is accurate or compliant.
@@ -250,7 +345,7 @@ export default function Workflow() {
             )}
           </section>
 
-          <aside className="space-y-4">
+            <aside className="space-y-4">
             <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -280,9 +375,23 @@ export default function Workflow() {
                 Current prototype reviews text with local rules. Image, document and external-source verification are not yet enabled.
               </p>
             </section>
-          </aside>
+            </aside>
+          </div>
         </div>
       </div>
     </AppShell>
+  );
+}
+
+function DashboardMetric({ label, value, tone }) {
+  return (
+    <div className={`dashboard-metric dashboard-metric--${tone}`}>
+      <span className="dashboard-metric__mark" aria-hidden="true" />
+      <div className="min-w-0">
+        <p className="truncate text-[11px] font-medium text-[var(--text-soft)]">{label}</p>
+        <p className="mt-1 text-2xl font-semibold tracking-tight text-[var(--text)]">{value}</p>
+      </div>
+      <span className="dashboard-metric__spark" aria-hidden="true">⌁</span>
+    </div>
   );
 }

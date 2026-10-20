@@ -45,8 +45,8 @@ export default function Topbar() {
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="flex items-center gap-4 px-6 pt-6 sm:px-10">
-      <div className="relative flex-1 max-w-md">
+    <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-[var(--border)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md sm:px-7">
+      <div className="relative max-w-xl flex-1">
         <svg
           width="16"
           height="16"
@@ -64,7 +64,7 @@ export default function Topbar() {
         <input
           type="search"
           placeholder="Search reviews, guidelines…"
-          className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] py-2 pl-10 pr-14 text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)] focus:outline-none"
+          className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] py-2 pl-10 pr-14 text-xs text-[var(--text)] placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)] focus:outline-none"
         />
         <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-soft)]">
           Ctrl K

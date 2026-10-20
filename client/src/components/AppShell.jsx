@@ -1,12 +1,13 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar.jsx";
 import Topbar from "./Topbar.jsx";
+import "../styles/Dashboard.css";
 
 export default function AppShell({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="relative min-h-screen bg-[var(--bg)] p-3 text-[var(--text)] sm:p-4">
+    <div className="relative min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <div className="page-bg">
         <span className="streak" style={{ top: "22%", left: "-5%", transform: "rotate(-8deg)" }} />
         <span className="streak" style={{ top: "34%", left: "-2%", transform: "rotate(-4deg)" }} />
@@ -35,11 +36,11 @@ export default function AppShell({ children }) {
         />
       )}
 
-      <div className="relative z-10 flex min-h-[calc(100vh-1.5rem)] gap-4 sm:min-h-[calc(100vh-2rem)]">
+      <div className="relative z-10 flex min-h-screen">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="app-glow relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]/70 shadow-sm backdrop-blur-sm">
+        <div className="app-glow relative flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden border-l border-[var(--border)]">
           <Topbar />
-          <main className="min-h-0 flex-1 overflow-hidden">{children}</main>
+          <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
     </div>

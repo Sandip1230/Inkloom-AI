@@ -7,37 +7,37 @@
 @tailwind utilities;
 
 :root {
-  --bg: #eceafb;
+  --bg: #eef0f4;
   --surface: #ffffff;
-  --surface-2: #f5f2fc;
-  --border: #e6e1f7;
-  --text: #14121f;
-  --text-soft: #6b6880;
-  --sidebar-bg: #1a1440;
-  --sidebar-text: #ece9f9;
-  --sidebar-text-soft: #9b93c4;
-  --sidebar-border: #2e2760;
-  --accent-from: #7c3aed;
-  --accent-to: #ec4899;
-  --accent-solid: #7c3aed;
-  --btn-gradient: linear-gradient(120deg, #6d5bfa 0%, #9333ea 100%);
+  --surface-2: #f5f6f8;
+  --border: #e1e4ea;
+  --text: #1c2029;
+  --text-soft: #747b89;
+  --sidebar-bg: #17191f;
+  --sidebar-text: #f4f5f7;
+  --sidebar-text-soft: #9298a6;
+  --sidebar-border: #2b2e36;
+  --accent-from: #8c6cf0;
+  --accent-to: #a56ded;
+  --accent-solid: #7957db;
+  --btn-gradient: linear-gradient(120deg, #7761e8 0%, #9765dc 100%);
 }
 
 .dark {
-  --bg: #0a0714;
-  --surface: #15112b;
-  --surface-2: #1c1836;
-  --border: #322a5c;
-  --text: #f5f3fc;
-  --text-soft: #a99fc7;
-  --sidebar-bg: #150f38;
-  --sidebar-text: #ece9f9;
-  --sidebar-text-soft: #9b93c4;
-  --sidebar-border: #2e2760;
-  --accent-from: #8b5cf6;
-  --accent-to: #f472b6;
-  --accent-solid: #a78bfa;
-  --btn-gradient: linear-gradient(120deg, #6d5bfa 0%, #7c3aed 100%);
+  --bg: #111318;
+  --surface: #191c22;
+  --surface-2: #20232b;
+  --border: #2d313a;
+  --text: #f3f4f6;
+  --text-soft: #9ba1ad;
+  --sidebar-bg: #0d0f13;
+  --sidebar-text: #f3f4f6;
+  --sidebar-text-soft: #8f96a3;
+  --sidebar-border: #24272e;
+  --accent-from: #9a7df5;
+  --accent-to: #b27ce9;
+  --accent-solid: #aa91f4;
+  --btn-gradient: linear-gradient(120deg, #775fe1 0%, #9e6cdb 100%);
 }
 
 @layer base {
@@ -145,14 +145,11 @@
 }
 
 .app-glow {
-  background-image:
-    radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--accent-to) 16%, transparent), transparent 45%),
-    radial-gradient(circle at 60% 15%, color-mix(in srgb, var(--accent-from) 12%, transparent), transparent 40%);
-  background-repeat: no-repeat;
+  background: var(--surface);
 }
 
 .dark .app-glow {
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-from) 20%, transparent), 0 30px 90px -40px rgba(139, 92, 246, 0.45);
+  box-shadow: 0 18px 70px -42px rgba(0, 0, 0, 0.75);
 }
 
 .font-handwritten {

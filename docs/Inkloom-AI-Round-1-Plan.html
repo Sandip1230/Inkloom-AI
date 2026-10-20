@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inkloom AI | Round 1 Product Plan</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; color: #20243a; font-family: "Segoe UI", Arial, sans-serif; }
+    body { background: #e9eaf1; font-size: 9.2pt; line-height: 1.38; }
+    .page {
+      width: 210mm; height: 297mm; position: relative; overflow: hidden;
+      padding: 16mm 17mm 19mm; margin: 0 auto 8mm; background: #fff;
+      page-break-after: always; break-after: page;
+    }
+    .page:last-child { page-break-after: auto; break-after: auto; }
+    .cover { color: #fff; background: linear-gradient(145deg, #11152d 0%, #28204d 58%, #552e71 100%); }
+    .cover:before { content: ""; position: absolute; width: 175mm; height: 175mm; right: -75mm; top: 20mm; border: 1px solid #ffffff2b; border-radius: 50%; box-shadow: 0 0 0 20mm #ffffff08, 0 0 0 40mm #ffffff06; }
+    .cover:after { content: ""; position: absolute; width: 75mm; height: 75mm; right: 20mm; top: 65mm; border: 1px solid #d5a7ff8c; border-radius: 50%; }
+    .cover-content { position: relative; z-index: 1; max-width: 145mm; padding-top: 16mm; }
+    .brand { display: inline-flex; align-items: center; gap: 9px; font-size: 15pt; font-weight: 700; letter-spacing: .02em; }
+    .brand-mark { display: inline-grid; place-items: center; width: 10mm; height: 10mm; border-radius: 3mm; color: white; background: linear-gradient(135deg,#8260ff,#ed78bd); font-size: 17pt; }
+    .eyebrow { margin: 28mm 0 5mm; color: #b9a8ff; font-size: 9pt; text-transform: uppercase; letter-spacing: .19em; font-weight: 700; }
+    h1 { margin: 0; max-width: 145mm; font-size: 37pt; line-height: 1.08; letter-spacing: -.04em; }
+    .cover .subtitle { margin: 9mm 0 0; max-width: 125mm; color: #ddd9f4; font-size: 16pt; line-height: 1.4; }
+    .cover .cover-note { margin-top: 28mm; max-width: 110mm; padding: 6mm 7mm; border-left: 2px solid #b9a8ff; color: #f2efff; background: #ffffff0c; font-size: 11pt; }
+    .cover-meta { position: absolute; z-index: 1; left: 17mm; right: 17mm; bottom: 25mm; display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; color: #d6d2ed; font-size: 9pt; }
+    .cover-meta b { display: block; margin-bottom: 1.5mm; color: #a99ae2; font-size: 7.5pt; text-transform: uppercase; letter-spacing: .12em; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4mm; border-bottom: 1px solid #e7e8f0; color: #6c668e; font-size: 8pt; }
+    .header strong { color: #43356f; letter-spacing: .04em; }
+    .section-label { margin: 8mm 0 2mm; color: #7653cc; font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; }
+    h2 { margin: 0 0 4mm; color: #1d2038; font-size: 24pt; line-height: 1.12; letter-spacing: -.035em; }
+    h3 { margin: 4mm 0 1.5mm; color: #312a52; font-size: 11pt; line-height: 1.2; }
+    p { margin: 0 0 3mm; }
+    ul, ol { margin: 1.5mm 0 3mm; padding-left: 5mm; }
+    li { margin: 0 0 1.4mm; padding-left: .5mm; }
+    .lead { max-width: 170mm; color: #575b70; font-size: 11pt; line-height: 1.46; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin: 4mm 0; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin: 4mm 0; }
+    .card { padding: 4mm; border: 1px solid #e5e3ef; border-radius: 3mm; background: #faf9fd; }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .card h3 { margin-top: 0; }
+    .callout { margin: 4mm 0; padding: 4mm 5mm; border-left: 3px solid #8c64e8; border-radius: 0 2mm 2mm 0; background: #f3efff; }
+    .callout.warning { border-color: #d69235; background: #fff8e9; }
+    .callout.green { border-color: #359879; background: #ecf8f4; }
+    .small { color: #666a7e; font-size: 8pt; }
+    .tiny { color: #6d7182; font-size: 7.2pt; line-height: 1.32; }
+    .tag { display: inline-block; padding: 1mm 2.2mm; border-radius: 10mm; background: #eee9fa; color: #58408b; font-size: 7.3pt; font-weight: 700; }
+    .table { width: 100%; margin: 3mm 0 4mm; border-collapse: collapse; font-size: 8pt; line-height: 1.3; }
+    .table th { padding: 2.4mm; text-align: left; color: #fff; background: #34295a; font-size: 7.5pt; }
+    .table td { padding: 2.2mm 2.4mm; vertical-align: top; border-bottom: 1px solid #e6e6ee; }
+    .table tr:nth-child(even) td { background: #faf9fd; }
+    .step { display: grid; grid-template-columns: 9mm 1fr; gap: 3mm; margin: 2.5mm 0; }
+    .step-no { display: grid; place-items: center; width: 8mm; height: 8mm; border-radius: 50%; color: #fff; background: #7653cc; font-size: 8pt; font-weight: 700; }
+    .step p { margin-bottom: 0; }
+    .bar { height: 2mm; margin-top: 1mm; border-radius: 9mm; background: linear-gradient(90deg,#7f5be7,#d78bc6); }
+    .footer { position: absolute; bottom: 9mm; left: 17mm; right: 17mm; display: flex; justify-content: space-between; padding-top: 2mm; border-top: 1px solid #e7e8f0; color: #85889a; font-size: 7.4pt; }
+    .cover .footer { border-color: #ffffff33; color: #d5d1e8; }
+    .ref { overflow-wrap: anywhere; }
+    @media screen { .page { box-shadow: 0 2mm 8mm #2222; } }
+    @media print { body { background: white; } .page { margin: 0; box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <section class="page cover">
+    <div class="cover-content">
+      <div class="brand"><span class="brand-mark">I</span> Inkloom AI</div>
+      <div class="eyebrow">Round 1 submission · The Plan</div>
+      <h1>Brand governance for every draft.</h1>
+      <p class="subtitle">A practical plan for helping teams keep published content consistent, credible, accessible and human-approved.</p>
+      <div class="cover-note"><b>Core promise</b><br>Find the issue. Explain the reason. Suggest a better path. Let a person decide.</div>
+    </div>
+    <div class="cover-meta">
+      <div><b>Prepared for</b>Inkloom AI project review</div>
+      <div><b>Submission date</b>20 October 2026</div>
+      <div><b>Team</b>[Add participant names]</div>
+      <div><b>Document</b>Product plan · Version 1.0</div>
+    </div>
+    <div class="footer"><span>INKLOOM AI · ROUND 1</span><span>01 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>ROUND 1 · THE PLAN</span></div>
+    <div class="section-label">01 · Executive summary</div>
+    <h2>Trust is built in every message.</h2>
+    <p class="lead">Inkloom is a proposed brand-governance workspace that helps organizations review content before it is published. It brings brand rules, content checks, plain-language explanations and human approval into one review loop.</p>
+    <h3>The problem</h3>
+    <p>Content production is distributed across employees, agencies, channels and AI writing tools. The people creating a post, email, product page or campaign may not know the newest approved terminology, which claims have evidence, or who must approve a risky message. A static brand guide can be hard to apply consistently at the moment a draft is being written. The result can be confusing language, unsupported promises, outdated facts, inaccessible copy or off-brand creative reaching an audience before anyone catches it.</p>
+    <h3>Our proposed response</h3>
+    <p>Inkloom places a pre-publication review between drafting and publishing. A creator submits content and its context. The system compares it to approved guidelines and source material, flags specific passages, explains the relevant rule and offers an optional revision. The reviewer can request changes, leave a note or approve the content. Automation informs the decision; it does not make the final decision or publish.</p>
+    <div class="grid2">
+      <div class="card"><h3>Who benefits</h3><p>Creators get actionable feedback early. Brand stewards spend less time repeating basic corrections. Legal and communications reviewers can focus on higher-risk claims. Leaders gain a clearer picture of recurring guideline gaps.</p></div>
+      <div class="card"><h3>Where we are today</h3><p>The current prototype demonstrates browser-based text checks, editable preferred terms, explained findings, reviewer notes, human decisions, local review history and simple trend summaries. It is a foundation—not yet the full platform described in this plan.</p></div>
+    </div>
+    <div class="callout warning"><b>Submission integrity.</b> No interviews, surveys or organizational pilot results have been supplied for this plan. Secondary sources below support the problem rationale; primary user research is explicitly planned, not claimed as completed.</div>
+    <p class="small"><b>Round 1 goal:</b> validate the most valuable review workflow, define a responsible technical path and establish measurable criteria for the next build stage.</p>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>02 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>PROBLEM & EVIDENCE</span></div>
+    <div class="section-label">02 · Problem definition and evidence</div>
+    <h2>Guidelines do not review a draft by themselves.</h2>
+    <p class="lead">The governance gap is the distance between a brand rule being documented and that rule being followed in a specific piece of content.</p>
+    <div class="grid3">
+      <div class="card"><h3>Distributed creation</h3><p>More contributors and channels create more handoffs. Drafting speed can outpace review capacity.</p></div>
+      <div class="card"><h3>Scattered authority</h3><p>Rules, claims, approved facts and assets may live in different documents, drives or people’s memory.</p></div>
+      <div class="card"><h3>Late correction</h3><p>Manual review often detects issues near publication, when revisions are expensive or deadlines are tight.</p></div>
+    </div>
+    <h3>What the evidence supports</h3>
+    <ol>
+      <li><b>Distributed brand work is a recognized operational challenge.</b> Marq’s brand-consistency guidance describes the challenge of enabling many creators and functions to produce content without diluting a brand. This is useful industry context from a brand-management vendor, not independent causal research or a measurement of Inkloom’s target users [1].</li>
+      <li><b>Objective advertising claims need substantiation.</b> The U.S. Federal Trade Commission’s advertising-substantiation policy states that advertisers should have a reasonable basis for objective claims before dissemination. This makes claim review a real governance concern, although legal rules vary by jurisdiction and claim type [2].</li>
+      <li><b>Accessibility is defined through testable content criteria.</b> W3C’s Web Content Accessibility Guidelines (WCAG) 2.2 specify success criteria for accessible web content. Descriptive link purpose and understandable text are relevant considerations; Inkloom’s current text heuristics are not a WCAG conformance audit [3].</li>
+    </ol>
+    <div class="callout"><b>Our working problem hypothesis:</b> teams need a quicker, more traceable way to apply approved brand rules during content creation—without replacing subject-matter or legal judgment.</div>
+    <h3>Evidence still needed</h3>
+    <p>The public sources establish that brand consistency, claim substantiation and accessibility are recognized concerns. They do not prove how often these problems occur in a particular organization, how much time they cost, or whether Inkloom is the preferred solution. Those questions are the first research tasks in Round 1.</p>
+    <p class="tiny">Sources are listed in full on page 12. No market-size, ROI, error-rate or user-survey figure is asserted in this plan.</p>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>03 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>RESEARCH & USERS</span></div>
+    <div class="section-label">03 · Research plan and target users</div>
+    <h2>Start with the people in the review loop.</h2>
+    <p class="lead">The first target setting is a growing organization where multiple people create customer-facing content but brand and compliance review capacity is limited.</p>
+    <h3>Priority user roles</h3>
+    <table class="table">
+      <thead><tr><th>Role</th><th>Need / job to be done</th><th>What a useful outcome looks like</th></tr></thead>
+      <tbody>
+        <tr><td>Creator: employee, marketer, agency or AI-assisted writer</td><td>Know what needs attention before handoff; revise without losing the message’s purpose.</td><td>Clear, relevant feedback while the draft is still easy to change.</td></tr>
+        <tr><td>Brand steward / marketing manager</td><td>Apply voice and terminology standards across channels; reduce repeat corrections.</td><td>Fewer avoidable revisions and visible patterns that reveal unclear rules.</td></tr>
+        <tr><td>Authorized reviewer: legal, compliance or communications</td><td>Inspect risk-bearing claims, evidence and decision history.</td><td>Traceable decisions and escalation of uncertainty—not false assurance.</td></tr>
+        <tr><td>Workspace administrator</td><td>Manage membership, roles, source versions and retention.</td><td>Least-privilege access, accountable edits and a dependable rule library.</td></tr>
+      </tbody>
+    </table>
+    <h3>Primary research to conduct</h3>
+    <p>Before Round 2, conduct 8–12 semi-structured interviews across at least three roles, if recruitment permits. This is an exploratory sample, not a statistically representative survey. Ask participants to walk through a recent real review (using redacted content), where the latest guidance came from, what caused rework, which issues required escalation and how approval was recorded. Avoid asking leading questions about whether they “want AI.”</p>
+    <div class="grid2">
+      <div class="card"><h3>Observe</h3><p>With permission, map one draft from creation through final approval. Record handoffs, tools used, waiting points, repeated edits and exceptions.</p></div>
+      <div class="card"><h3>Test the prototype</h3><p>Ask 5–8 representative users to review a sample draft. Observe whether they understand findings, trust the evidence reference and can make or record a decision.</p></div>
+    </div>
+    <h3>Research outputs</h3>
+    <p>Deliver an anonymized workflow map, a ranked set of user problems, tested terminology, accessibility observations, a prioritized feature list and a concise “what changed based on feedback” log. Obtain consent, minimize collected data and do not upload confidential production drafts to an unapproved service.</p>
+    <div class="callout warning"><b>Current status:</b> these interviews and usability sessions are planned research; none are represented as completed or as user endorsements.</div>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>04 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>SOLUTION & VALUE</span></div>
+    <div class="section-label">04 · Proposed solution and value proposition</div>
+    <h2>Make the right action clearer than the warning.</h2>
+    <p class="lead">Inkloom is a review assistant, not a content gatekeeper. Its central design principle is to make checks understandable, evidence-linked and contestable.</p>
+    <h3>Product promise</h3>
+    <div class="callout green"><b>For teams creating content at scale, Inkloom brings approved brand guidance into the draft-review moment—surfacing potential inconsistencies with explanations and optional fixes, while keeping approval and publication decisions with authorized people.</b></div>
+    <h3>How value is created</h3>
+    <div class="grid2">
+      <div class="card"><h3>For creators</h3><p>Earlier feedback reduces uncertainty. A highlighted phrase plus a plain-language reason is more actionable than “off-brand.” Optional suggestions preserve the creator’s intent.</p></div>
+      <div class="card"><h3>For reviewers</h3><p>Structured findings can help focus attention on meaningful concerns instead of repeatedly correcting known terminology issues. Review notes make decisions easier to understand later.</p></div>
+      <div class="card"><h3>For brand teams</h3><p>Repeated findings show where training or guidance may be needed. A governed source library can reduce reliance on stale copies and informal memory.</p></div>
+      <div class="card"><h3>For the organization</h3><p>A documented, human-controlled process can improve consistency and accountability. Benefits must be tested; this plan does not claim measured savings or reduced risk yet.</p></div>
+    </div>
+    <h3>Product principles</h3>
+    <ul>
+      <li><b>Evidence before certainty:</b> distinguish organization-approved facts from generated suggestions and external references.</li>
+      <li><b>Explain before edit:</b> state what was flagged and why; never silently rewrite the creator’s content.</li>
+      <li><b>Human authority:</b> AI may assist, but only authorized people approve or reject publication.</li>
+      <li><b>Proportionate friction:</b> route uncertain or high-impact issues for review; do not block low-risk work on weak signals.</li>
+      <li><b>Privacy by design:</b> minimize draft data, control access and make storage and service use visible.</li>
+    </ul>
+    <p class="small"><b>North-star outcome:</b> a reviewer can make a timely, well-informed decision with an understandable record of the content, guidance and rationale involved.</p>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>05 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>END-TO-END WORKFLOW</span></div>
+    <div class="section-label">05 · Proposed product workflow</div>
+    <h2>From brief to accountable decision.</h2>
+    <div class="step"><span class="step-no">1</span><p><b>Set up a governed workspace.</b> An administrator configures roles and imports the current brand guide, approved terminology, dated fact sheets, claim evidence and visual-asset rules. Every source has an owner, effective date and version.</p></div>
+    <div class="step"><span class="step-no">2</span><p><b>Submit content with context.</b> A creator selects a format/channel, audience, campaign and intended publication date; then pastes or uploads a draft. They can mark sensitive information and attach a source or desired message.</p></div>
+    <div class="step"><span class="step-no">3</span><p><b>Run checks against approved sources.</b> Deterministic checks handle exact terminology and format rules. Retrieval-based AI may compare context with approved source excerpts. Each finding records its category, excerpt, severity, explanation, source version and uncertainty.</p></div>
+    <div class="step"><span class="step-no">4</span><p><b>Revise with creator control.</b> Inkloom proposes alternatives that preserve intent. The creator applies, edits or dismisses each suggestion and can add context. Original and revised versions remain distinguishable.</p></div>
+    <div class="step"><span class="step-no">5</span><p><b>Route to the right reviewer.</b> Rules based on content type and risk direct the draft to a brand, legal, accessibility or compliance reviewer. Reviewers comment, request changes, escalate uncertainty or approve.</p></div>
+    <div class="step"><span class="step-no">6</span><p><b>Record outcome and learn.</b> The system records who decided, when, what changed and which guideline applied. Aggregated trends help owners update unclear rules—without turning raw individual activity into punitive employee scoring.</p></div>
+    <h3>Illustrative scenario (not user research)</h3>
+    <p>A marketer submits an email containing “guaranteed savings” and the phrase “click here.” Inkloom flags the comparative promise because its approved evidence library contains no matching substantiation, and suggests descriptive link wording. The marketer can revise or attach evidence. A designated reviewer makes the final decision and records a brief rationale. If the fact source is missing or stale, the system marks the issue uncertain and routes it for human verification.</p>
+    <div class="callout"><b>Workflow guardrail:</b> “No findings” means only that configured checks did not find a match. It is never displayed as a guarantee that a draft is accurate, compliant or ready to publish.</div>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>06 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>FEATURE SCOPE</span></div>
+    <div class="section-label">06 · Planned capabilities and scope</div>
+    <h2>Build from a useful, honest MVP.</h2>
+    <table class="table">
+      <thead><tr><th>Capability</th><th>Current prototype</th><th>Planned product</th></tr></thead>
+      <tbody>
+        <tr><td>Text content review</td><td>Implemented: pasted text and deterministic pattern checks.</td><td>Expand with source-grounded fact, tone and channel checks.</td></tr>
+        <tr><td>Guidelines & terminology</td><td>Implemented: browser-local preferred-term substitutions.</td><td>Shared, versioned rule library with owners, sources and dates.</td></tr>
+        <tr><td>Explainable findings</td><td>Implemented: issue category, explanation, rule label and suggestion.</td><td>Link each finding to approved source excerpt, version and confidence.</td></tr>
+        <tr><td>Human review</td><td>Implemented: notes and local approve/request-change/awaiting-approval states.</td><td>Role-based routing, comments, notifications and access-controlled decisions.</td></tr>
+        <tr><td>History & insights</td><td>Implemented: local review records and category counts.</td><td>Team-level trends, retention controls and guideline-clarity feedback.</td></tr>
+        <tr><td>Documents, images, assets</td><td>Not implemented.</td><td>Incremental ingestion and visual/accessibility checks with human verification.</td></tr>
+        <tr><td>Publishing integrations</td><td>Not implemented.</td><td>Optional CMS/design integrations after security and user validation.</td></tr>
+      </tbody>
+    </table>
+    <h3>Priority for the first build increment</h3>
+    <p>Keep the initial scope focused on text drafts and a small, curated set of approved sources. Add workspace-level rules, source versioning, a real review state model, permission checks and audit history before claiming team collaboration. Measure false positives and missed issues in a labeled test set before adding broad AI-based checks.</p>
+    <h3>Out of scope for a responsible MVP</h3>
+    <ul>
+      <li>Automatic publishing, silent editing or automated final approval.</li>
+      <li>Claims that a draft is legally compliant, fact-checked or WCAG conformant.</li>
+      <li>Unreviewed training on customer drafts or public sharing of confidential guidance.</li>
+      <li>Fully automated visual brand policing without asset rights, context and human review.</li>
+    </ul>
+    <p class="small">Current functionality was verified against this repository’s README, architecture guide and frontend. See page 12 for the distinction between implemented and planned features.</p>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>07 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>TECHNOLOGY & ARCHITECTURE</span></div>
+    <div class="section-label">07 · Technology, integrations and data</div>
+    <h2>Start local. Add shared services deliberately.</h2>
+    <table class="table">
+      <thead><tr><th>Layer</th><th>Current implementation</th><th>Planned extension</th></tr></thead>
+      <tbody>
+        <tr><td>Web client</td><td>React 18, Vite 6, React Router, Tailwind CSS.</td><td>Accessible review editor, upload status, role-aware UI.</td></tr>
+        <tr><td>Review engine</td><td>Browser-side JavaScript rules in <code>client/src/lib/governance.js</code>.</td><td>Versioned rule engine plus optional source-grounded model service.</td></tr>
+        <tr><td>Prototype storage</td><td>Browser localStorage for terms, drafts, decisions and versions.</td><td>Authenticated API, tenant isolation, encrypted database and retention jobs.</td></tr>
+        <tr><td>Server/API</td><td>Express 4, Node.js; legacy staged brand-generation routes remain.</td><td>Purpose-built governance endpoints with authorization and audit events.</td></tr>
+        <tr><td>Existing infrastructure</td><td>Mongoose/MongoDB and authentication dependencies exist for legacy routes.</td><td>Reuse only after data model, access controls and security review.</td></tr>
+      </tbody>
+    </table>
+    <h3>Planned source and integration model</h3>
+    <p>Start with administrator-uploaded brand documents and manually approved facts and terminology. Extract text into attributable source chunks; retain owner, version, effective date, confidentiality label and review date. Later integrations may include Google Drive or SharePoint for controlled source sync, Slack/Teams for reviewer notifications, and a CMS for draft handoff. Each connector requires explicit scopes, tenant controls, revocation and a documented data-processing review.</p>
+    <h3>Proposed check flow</h3>
+    <p>Normalize and classify a draft → apply deterministic rules → retrieve only authorized, relevant source passages → generate candidate findings → attach source citations and uncertainty → validate output format → present to a reviewer. If a source is missing, contradictory or expired, return “needs human verification,” not an invented answer.</p>
+    <div class="callout warning"><b>External AI transparency:</b> the governance workspace currently sends no draft to an AI provider. The repository contains a legacy AI client for unrelated brand-generation routes. A future AI review service must disclose provider, model, region, retention and training policy before activation.</div>
+    <p class="small"><b>Data minimization:</b> collect only the draft and metadata needed to review it; avoid sending unrelated personal data; log review decisions separately from unnecessary content copies.</p>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>08 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>AI & EXPLAINABILITY</span></div>
+    <div class="section-label">08 · AI approach and reliability</div>
+    <h2>Use automation as evidence, not authority.</h2>
+    <p class="lead">Inkloom should combine deterministic rules for crisp requirements with carefully constrained AI for contextual language—not ask a model to invent organizational facts or act as a compliance decision-maker.</p>
+    <h3>Method by problem type</h3>
+    <ul>
+      <li><b>Exact requirements:</b> code-based checks for terminology, required disclaimers, prohibited phrases and character/channel constraints.</li>
+      <li><b>Contextual suggestions:</b> an AI model may assess tone, likely unsupported claims or message alignment only when given the relevant, approved guideline/source text.</li>
+      <li><b>Evidence-grounded facts:</b> retrieve a dated approved source, show the supporting excerpt and flag mismatch or lack of evidence. Retrieval is not proof that the source itself is correct or current.</li>
+      <li><b>Visual and accessibility checks:</b> later use deterministic measurements where appropriate, with assistive-technology and human review; image interpretation alone is insufficient.</li>
+    </ul>
+    <h3>Required explanation for each finding</h3>
+    <div class="grid2">
+      <div class="card"><h3>Show</h3><p>Exact text or asset, issue category, severity rationale, applicable rule, source excerpt/version, suggested action and uncertainty.</p></div>
+      <div class="card"><h3>Allow</h3><p>Accept suggestion, edit it, dismiss it with a reason, attach evidence, request clarification or escalate to an authorized reviewer.</p></div>
+    </div>
+    <h3>Reliability plan</h3>
+    <p>Create a consented, de-identified evaluation set covering channels, writing styles, edge cases, stale facts, conflicting rules and non-English content if supported. Have qualified reviewers label true issues, false alarms and missed issues. Report precision and recall by category, severity and user group; track calibration and reviewer override rates. Use release thresholds defined with users and risk owners, not a single blended “brand score.” Regression-test every rule and prompt change.</p>
+    <div class="callout"><b>Safe fallback:</b> when there is no applicable source, output is malformed, or sources disagree, do not produce a success-shaped verdict. Explain the gap and route it to a human.</div>
+    <p class="small"><b>Current prototype:</b> deterministic heuristics only. There is no LLM-based governance review, source retrieval, factual verification or reliability benchmark in the current review workspace.</p>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>09 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>RESPONSIBLE DESIGN</span></div>
+    <div class="section-label">09 · Privacy, security, accessibility and human control</div>
+    <h2>Protect the material people trust us with.</h2>
+    <div class="grid2">
+      <div class="card"><h3>Privacy & confidentiality</h3><p>Private-by-default workspaces; data minimization; clear purpose and consent; configurable retention/deletion; no customer-draft training by default; redact sensitive content before external processing; explain service providers and data locations.</p></div>
+      <div class="card"><h3>Security & access</h3><p>Tenant isolation; least-privilege creator/reviewer/admin roles; strong authentication; secure transport and encryption at rest; secret management; rate limits; audit events; backups; dependency and incident-response procedures.</p></div>
+      <div class="card"><h3>Accessibility & inclusion</h3><p>Keyboard-operable workflows, semantic headings and labels, visible focus, accessible status announcements, sufficient contrast, plain-language findings, screen-reader testing and representative user testing. Target WCAG 2.2 AA as a design goal, not a current certification.</p></div>
+      <div class="card"><h3>Human oversight</h3><p>AI findings are advisory; authorized humans decide. High-impact claims require evidence and review. Users can challenge errors, add context and request source correction. No automated publication or punitive individual scoring.</p></div>
+    </div>
+    <h3>Failure and misuse scenarios</h3>
+    <ul>
+      <li><b>False negative:</b> a harmful or unsupported statement passes. Mitigate with disclaimers, risk-based review, test sets and explicit “not verified” status.</li>
+      <li><b>False positive:</b> the system disrupts an acceptable creative choice. Provide explanations, dismissal, appeal and rule-owner feedback.</li>
+      <li><b>Stale or poisoned source:</b> an outdated fact misleads the reviewer. Require provenance, owner, dates, change logs and expiry/escalation.</li>
+      <li><b>Confidentiality leak:</b> drafts or guidelines reach an unapproved provider or user. Minimize processing, restrict access, audit data flows and support deletion.</li>
+      <li><b>Automation bias:</b> a high score is treated as clearance. Avoid blanket pass scores and train users that checks are incomplete.</li>
+    </ul>
+    <div class="callout warning"><b>Present-day limitation:</b> the prototype uses localStorage, which is not a secure team repository; drafts remain on the browser until cleared. It has no governance-role authorization. Do not enter confidential production material or rely on it for enterprise review.</div>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>10 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>DELIVERY PLAN</span></div>
+    <div class="section-label">10 · Development plan and team allocation</div>
+    <h2>Validate first. Expand with evidence.</h2>
+    <table class="table">
+      <thead><tr><th>Phase</th><th>Activities</th><th>Exit evidence</th></tr></thead>
+      <tbody>
+        <tr><td>1. Discover<br>Week 1</td><td>Recruit creators and reviewers; interview; map current review journeys; audit sample guidelines and content types.</td><td>Research synthesis, validated top pain points, privacy constraints and test scenarios.</td></tr>
+        <tr><td>2. Define<br>Week 2</td><td>Choose a narrow pilot workflow; define source governance, severity and human approval rules; update UX prototypes from findings.</td><td>Approved MVP scope, data-flow diagram, acceptance criteria and risk log.</td></tr>
+        <tr><td>3. Build<br>Weeks 3–4</td><td>Implement shared guideline/source model, authenticated review API, review state/history, basic text checks and accessible reviewer UI.</td><td>Demonstrable end-to-end workflow with unit tests and access-control checks.</td></tr>
+        <tr><td>4. Evaluate<br>Week 5</td><td>Run task-based usability sessions and labeled test set; measure false alarms, missed issues, task completion and comprehension.</td><td>Test report, prioritized fixes, limitations and go/no-go for broader pilot.</td></tr>
+        <tr><td>5. Harden & present<br>Week 6</td><td>Fix critical issues; review security, accessibility, retention and provider disclosures; prepare demo and final report.</td><td>Release candidate, reproducible demo, contribution record and roadmap.</td></tr>
+      </tbody>
+    </table>
+    <h3>Suggested role allocation — assign actual names before submission</h3>
+    <table class="table">
+      <thead><tr><th>Team role</th><th>Ownership</th><th>Participant</th></tr></thead>
+      <tbody>
+        <tr><td>Product / research lead</td><td>Recruitment, interviews, scope, impact measures</td><td>[Name]</td></tr>
+        <tr><td>Frontend / accessibility</td><td>Review editor, findings, user testing, accessibility</td><td>[Name]</td></tr>
+        <tr><td>Backend / security</td><td>API, identity, tenancy, audit, retention</td><td>[Name]</td></tr>
+        <tr><td>AI / data / QA</td><td>Source grounding, evaluation dataset, tests, quality metrics</td><td>[Name]</td></tr>
+      </tbody>
+    </table>
+    <p class="small">A person may own multiple roles in a small team. Replace placeholders with each participant’s name and actual contribution; do not claim work that has not been done.</p>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>11 / 12</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header"><strong>INKLOOM AI</strong><span>IMPACT, ROADMAP & SOURCES</span></div>
+    <div class="section-label">11 · Impact, evaluation and next steps</div>
+    <h2>Prove usefulness before promising scale.</h2>
+    <h3>How we will measure value</h3>
+    <table class="table">
+      <thead><tr><th>Measure</th><th>Definition / collection method</th><th>Guardrail</th></tr></thead>
+      <tbody>
+        <tr><td>Review time</td><td>Elapsed time from draft submission to decision; compare baseline and pilot workflow.</td><td>Do not optimize speed at the expense of quality.</td></tr>
+        <tr><td>Actionability</td><td>Share of findings users can explain and correctly act on in usability tasks.</td><td>Disaggregate by role and accessibility needs.</td></tr>
+        <tr><td>Detection quality</td><td>Precision/recall against a human-labeled sample by finding category.</td><td>Show false positives and false negatives, not only accuracy.</td></tr>
+        <tr><td>Rework</td><td>Count repeated correction themes and avoidable review handoffs.</td><td>Use aggregate signals, not employee rankings.</td></tr>
+        <tr><td>Guideline clarity</td><td>Rules causing repeated questions, disputes or dismissals; owner review of patterns.</td><td>Do not infer individual performance from rule confusion.</td></tr>
+      </tbody>
+    </table>
+    <h3>Immediate decisions and roadmap</h3>
+    <p><b>Now:</b> complete primary research, confirm a pilot team and select a small set of approved text guidelines. <b>Next:</b> move from browser-only records to secure team storage with roles, provenance and version history. <b>Then:</b> evaluate source-grounded claim and fact checks. <b>Later:</b> consider document, image, asset and CMS integrations only after demand, security and evaluation quality are demonstrated.</p>
+    <h3>Risks and known limitations</h3>
+    <p>Users may mistake suggestions for verified facts; the prototype can miss issues or over-flag; source material can be stale; and local storage is not suitable for shared confidential work. Integrations and AI introduce privacy, security, cost and latency risks. The MVP must disclose these constraints and maintain a human decision path.</p>
+    <h3>References</h3>
+    <p class="tiny ref">[1] Marq, “Brand consistency” (industry guidance). https://www.marq.com/blog/brand-consistency/ . Vendor-authored context; not treated as independent outcome research.</p>
+    <p class="tiny ref">[2] U.S. Federal Trade Commission, “FTC Policy Statement Regarding Advertising Substantiation” (1984). https://www.ftc.gov/legal-library/browse/statement-policy-regarding-advertising-substantiation . Consult applicable local law and counsel for specific claims.</p>
+    <p class="tiny ref">[3] W3C, “Web Content Accessibility Guidelines (WCAG) 2.2,” W3C Recommendation, 5 October 2023. https://www.w3.org/TR/WCAG22/ .</p>
+    <p class="tiny ref">[4] Inkloom AI repository, README and docs/architecture.md, reviewed 20 October 2026. Describes the current prototype and its limitations.</p>
+    <div class="callout green"><b>Expected impact:</b> give teams a practical, explainable checkpoint before publication—so more potential inconsistencies are noticed early, reviewers can focus their attention, and people remain accountable for the final decision. This is the intended impact to test, not a measured result.</div>
+    <div class="footer"><span>INKLOOM AI · PRODUCT PLAN</span><span>12 / 12</span></div>
+  </section>
+</body>
+</html>

@@ -1,57 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext.jsx";
+import ParticleTitle from "../components/ParticleTitle.jsx";
 import "../styles/Landing.css";
 
 const NAV_LINKS = [
   { label: "How it works", href: "#pipeline" },
   { label: "Guidelines", href: "/brand-kits" },
   { label: "Insights", href: "/community" },
-];
-
-const FLOW_CARDS = [
-  {
-    n: "01",
-    key: "understand",
-    title: "Set your standards",
-    body: "Keep approved language and brand rules close at hand.",
-    tone: "blue",
-    icon: (
-      <path d="M9 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7-1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2ZM2.5 19c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5M16 13.6c2.6.3 4.6 2.1 5 4.7" />
-    ),
-  },
-  {
-    n: "02",
-    key: "position",
-    title: "Review content",
-    body: "Check claims, terminology, tone and accessibility.",
-    tone: "rose",
-    icon: (
-      <>
-        <circle cx="11" cy="11" r="8" />
-        <circle cx="11" cy="11" r="3.4" />
-        <path d="m19 19 2.5 2.5" />
-      </>
-    ),
-  },
-  {
-    n: "03",
-    key: "visualize",
-    title: "Collaborate",
-    body: "Explain every finding and capture reviewer notes.",
-    tone: "violet",
-    icon: (
-      <path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.7 1.6-1.5 0-.4-.2-.7-.4-1a1.6 1.6 0 0 1 1.2-2.7h1.7A3.9 3.9 0 0 0 20 11.9C20 6.9 16.4 3 12 3Zm-4.6 8.3a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Zm3-3.6a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Zm4.3.4a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Z" />
-    ),
-  },
-  {
-    n: "04",
-    key: "deliver",
-    title: "Approve with confidence",
-    body: "Keep final decisions in the hands of your team.",
-    tone: "teal",
-    icon: <path d="M4 12.5 10 15l2.5 6L20 4 4 12.5Zm6 2.5-1 4" />,
-  },
 ];
 
 const STATS = [
@@ -144,7 +100,7 @@ export default function Landing() {
         <div className="nav-buttons">
           <ThemeButton />
           <a href="#pipeline" className="login-btn">
-            See how it works
+            Explore Inkloom
           </a>
           <Link to="/workflow" className="start-btn">
             Review a draft
@@ -174,20 +130,22 @@ export default function Landing() {
           </div>
 
           <h1>
-            Keep every
-            <br />
-            <span>brand story</span> on-brand.
+            <ParticleTitle>
+              Make every
+              <br />
+              <span>message</span> matter.
+            </ParticleTitle>
           </h1>
 
           <p className="hero-description">
-            Review content before it goes live. Inkloom checks drafts against
-            your approved language, flags unsupported claims, and gives your
-            team clear suggestions—not an automatic rejection.
+            One calm place to review brand voice, claims and accessibility
+            before content goes live. Clear reasons, thoughtful suggestions,
+            people in control.
           </p>
 
           <div className="hero-buttons">
             <Link to="/workflow" className="primary-btn">
-              Review content
+              Start a review
               <span>→</span>
             </Link>
 
@@ -215,64 +173,42 @@ export default function Landing() {
         </section>
 
         {/* RIGHT SIDE */}
-        <section className="hero-right">
-          {/* Glow */}
-          <div className="blue-glow"></div>
-          <div className="purple-glow"></div>
-
-          {/* Decorative ribbon */}
-          <div className="ribbon ribbon-one"></div>
-          <div className="ribbon ribbon-two"></div>
-
-          {/* Handwritten annotations */}
-          <span className="annotate annotate-tl">
-            Your idea
-            <br />
-            Our AI
-            <br />
-            A complete brand
-          </span>
-          <span className="annotate annotate-tr">
-            From
-            <br />
-            Idea
-          </span>
-          <span className="annotate annotate-br">
-            To
-            <br />
-            Launch
-            <br />
-            Ready Brand
-          </span>
-
-          {/* PHONE */}
-          <div className="phone">
-            <div className="phone-screen">
-              <div className="phone-logo">
-                <span>✦</span>
+        <section className="hero-right" aria-label="Preview of the Inkloom review workspace">
+          <div className="review-preview">
+            <div className="review-preview__topbar">
+              <div className="review-preview__brand"><span>i</span><b>inkloom</b><small>WORKSPACE</small></div>
+              <div className="review-preview__top-actions"><span>● Your workspace</span><i>JD</i></div>
+            </div>
+            <div className="review-preview__body">
+              <aside className="review-preview__rail" aria-hidden="true">
+                <span className="is-selected">▦</span><span>⌕</span><span>◇</span><span>◷</span><span>⚙</span>
+              </aside>
+              <div className="review-preview__main">
+                <div className="review-preview__heading">
+                  <div><small>CONTENT REVIEW / SOCIAL</small><h2>Spring launch post</h2></div>
+                  <span className="review-preview__draft">IN REVIEW</span>
+                </div>
+                <div className="review-preview__document">
+                  <div className="review-preview__document-head"><span>Draft copy</span><span>Edited just now</span></div>
+                  <p>Meet the <mark>best</mark> way to organize your team. We <mark className="claim">guarantee</mark> you’ll get more done.</p>
+                  <div className="review-preview__findings">
+                    <div className="review-preview__finding">
+                      <span className="review-preview__finding-icon">!</span>
+                      <div><b>Promotional claim</b><small>“Best” needs an approved source.</small></div>
+                      <span className="review-preview__severity">CHECK</span>
+                    </div>
+                    <div className="review-preview__finding">
+                      <span className="review-preview__finding-icon">↗</span>
+                      <div><b>Absolute language</b><small>Consider a more supportable promise.</small></div>
+                      <span className="review-preview__severity">CHECK</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="review-preview__footer"><span><i /> Human review stays in control</span><button type="button" tabIndex={-1}>Review findings <b>→</b></button></div>
               </div>
-
-              <div className="phone-title">Inkloom AI</div>
-
-              <div className="phone-subtitle">A clear path from draft to approval</div>
             </div>
           </div>
-
-          {/* FLOATING CARDS */}
-          {FLOW_CARDS.map((card) => (
-            <div key={card.key} className={`workflow-card ${card.key}-card tone-${card.tone}`}>
-              <div className="card-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  {card.icon}
-                </svg>
-              </div>
-              <div className="card-copy">
-                <span>{card.title}</span>
-                <p>{card.body}</p>
-              </div>
-              <span className="card-number">{card.n}</span>
-            </div>
-          ))}
+          <div className="review-preview-note"><span>✦</span> Clear findings. Better decisions.</div>
         </section>
       </main>
 

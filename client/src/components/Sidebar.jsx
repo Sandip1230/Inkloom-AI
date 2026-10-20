@@ -115,9 +115,9 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
   return (
     <aside
       className={
-        "fixed inset-y-0 left-0 z-40 flex h-full w-72 max-w-[85vw] shrink-0 flex-col overflow-y-auto rounded-2xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-4 py-4 text-[var(--sidebar-text)] shadow-2xl transition-transform duration-300 ease-in-out " +
+        "fixed inset-y-0 left-0 z-40 flex h-full w-72 max-w-[85vw] shrink-0 flex-col overflow-y-auto rounded-r-2xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-4 py-4 text-[var(--sidebar-text)] shadow-2xl transition-transform duration-300 ease-in-out md:rounded-none md:border-y-0 md:border-l-0 " +
         (open ? "translate-x-0" : "-translate-x-[110%]") +
-        " md:static md:z-auto md:h-full md:w-64 md:max-w-none md:translate-x-0 md:shadow-sm"
+        " md:sticky md:top-0 md:z-auto md:h-screen md:w-60 md:max-w-none md:translate-x-0 md:shadow-sm"
       }
     >
       <div className="flex items-center gap-2 px-2">
@@ -160,9 +160,9 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
               to={item.to}
               onClick={onClose}
               className={
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors " +
+                "relative flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors " +
                 (isActive
-                  ? "bg-white/10 text-white"
+                  ? "bg-white/10 text-white before:absolute before:left-0 before:top-1/2 before:h-7 before:w-0.5 before:-translate-y-1/2 before:rounded-r before:bg-[var(--accent-solid)]"
                   : "text-[var(--sidebar-text-soft)] hover:bg-white/5 hover:text-white")
               }
             >
