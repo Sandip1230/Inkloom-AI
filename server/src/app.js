@@ -11,9 +11,15 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// @ts-ignore - helmet typings warning only, works at runtime
 app.use(helmet());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }));
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json({ limit: '1mb' }));
 app.use(passport.initialize());
 
