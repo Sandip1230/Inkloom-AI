@@ -176,25 +176,6 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
 
       <div className="flex-1" />
 
-      <div className="rounded-2xl border border-[var(--sidebar-border)] bg-white/5 p-4">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm">
-          👑
-        </span>
-        <p className="mt-3 text-sm font-semibold leading-snug text-white">
-          Keep every message on-brand.
-        </p>
-        <p className="mt-1.5 text-xs leading-relaxed text-[var(--sidebar-text-soft)]">
-          Explainable content checks with people in control of approval.
-        </p>
-        <Link
-          to="/brand-kits"
-          onClick={onClose}
-          className="mt-3 flex items-center justify-center gap-1.5 rounded-lg border border-amber-400/50 px-3 py-2 text-xs font-medium text-white transition-colors hover:border-amber-300"
-        >
-          Manage Guidelines
-          <span aria-hidden="true">→</span>
-        </Link>
-      </div>
 
       <div ref={menuRef} className="relative mt-3 shrink-0 border-t border-[var(--sidebar-border)] pt-3">
         <div className="flex items-center justify-between">
