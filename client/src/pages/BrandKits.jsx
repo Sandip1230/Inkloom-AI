@@ -20,12 +20,14 @@ export default function BrandKits() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">Governance workspace</p>
-        <h1 className="mt-2 text-2xl font-semibold text-[var(--text)]">Brand guidelines</h1>
-        <p className="mt-1 text-sm leading-6 text-[var(--text-soft)]">
-          Start with approved terminology. Inkloom applies these substitutions during text review and keeps the rule set in this browser.
-        </p>
+      <div className="stagger mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">Governance workspace</p>
+          <h1 className="mt-2 text-2xl font-semibold text-[var(--text)]">Brand guidelines</h1>
+          <p className="mt-1 text-sm leading-6 text-[var(--text-soft)]">
+            Start with approved terminology. Inkloom applies these substitutions during text review and keeps the rule set in this browser.
+          </p>
+        </div>
 
         <form onSubmit={handleSave} className="mt-7 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
           <label htmlFor="preferred-terms" className="text-sm font-semibold text-[var(--text)]">Preferred terminology</label>
@@ -42,7 +44,7 @@ export default function BrandKits() {
             className="mt-4 w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm leading-6 text-[var(--text)] placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)] focus:outline-none"
           />
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p role={error ? "alert" : "status"} className={"text-xs " + (error ? "text-rose-600" : "text-[var(--text-soft)]")}>
+            <p key={error ? "error" : saved ? "saved" : "idle"} role={error ? "alert" : "status"} className={"fade-in text-xs " + (error ? "text-rose-600" : "text-[var(--text-soft)]")}>
               {error || (saved ? "Guidelines saved in this browser." : "Only the preferred-term rules are currently checked automatically.")}
             </p>
             <button type="submit" className="rounded-lg bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)] px-5 py-2.5 text-sm font-medium text-white hover:opacity-90">

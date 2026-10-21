@@ -33,7 +33,7 @@ export default function StagePanel({ stageKey, children }) {
   }
 
   return (
-    <section>
+    <section key={stageKey} className="page-enter">
       <div className="flex items-start justify-between">
         <div>
           <span className="text-xs font-medium uppercase tracking-wide text-[var(--text-soft)]">
@@ -54,18 +54,18 @@ export default function StagePanel({ stageKey, children }) {
         )}
       </div>
 
-      <div className="mt-6">
+      <div key={output ? "done" : "empty"} className="stagger mt-6">
         {output ? (
           children(output)
         ) : (
-          <div className="rounded-xl border border-dashed border-[var(--border)] px-6 py-10 text-center">
+          <div className="scale-in rounded-xl border border-dashed border-[var(--border)] px-6 py-10 text-center">
             <p className="text-sm text-[var(--text-soft)]">Run this stage to see the result.</p>
           </div>
         )}
       </div>
 
       {error && (
-        <p role="alert" className="mt-4 text-sm text-rose-500">
+        <p role="alert" className="scale-in mt-4 text-sm text-rose-500">
           {error}
         </p>
       )}

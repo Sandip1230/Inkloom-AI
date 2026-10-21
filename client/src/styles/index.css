@@ -177,3 +177,371 @@
   box-shadow: 0 0 30px 4px color-mix(in srgb, var(--accent-from) 35%, transparent);
   z-index: -1;
 }
+
+/* ================= MOTION & TRANSITIONS ================= */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -22px, 0); }
+}
+@keyframes drift {
+  0%, 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 0.5; }
+  50%      { transform: translateX(40px) rotate(var(--r, 0deg)); opacity: 1; }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+@keyframes pulse-soft {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-solid) 45%, transparent); }
+  50%      { box-shadow: 0 0 0 8px transparent; }
+}
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ---------- Reusable helper classes ---------- */
+.page-enter { animation: fade-up 0.5s var(--ease-out) backwards; }
+.fade-in    { animation: fade-in 0.4s ease backwards; }
+.scale-in   { animation: scale-in 0.35s var(--ease-out) backwards; }
+.pop-in     { animation: slide-down 0.2s var(--ease-out) backwards; transform-origin: top; }
+
+/* Children ek ek kore stagger hoye ashbe */
+.stagger > * { animation: fade-up 0.55s var(--ease-out) backwards; }
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger > *:nth-child(3) { animation-delay: 0.16s; }
+.stagger > *:nth-child(4) { animation-delay: 0.22s; }
+.stagger > *:nth-child(5) { animation-delay: 0.28s; }
+.stagger > *:nth-child(6) { animation-delay: 0.34s; }
+.stagger > *:nth-child(7) { animation-delay: 0.40s; }
+.stagger > *:nth-child(n+8) { animation-delay: 0.46s; }
+
+/* ---------- Background: blob float + streak drift ---------- */
+.page-bg::before { animation: float-slow 14s ease-in-out infinite; }
+.page-bg::after  { animation: float-slow 18s ease-in-out infinite reverse; }
+.dark .page-bg .streak { animation: drift 9s ease-in-out infinite; }
+.dark .page-bg .streak:nth-child(2) { animation-delay: -4s; }
+
+/* ---------- Buttons: smooth hover + press ---------- */
+button, a {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-duration: 0.2s;
+  transition-timing-function: var(--ease-out);
+}
+button:not(:disabled):active { transform: scale(0.96); }
+
+/* gradient button gulo te lift + glow */
+.bg-gradient-to-r:is(button, a) {
+  box-shadow: 0 6px 18px -8px var(--accent-solid);
+}
+.bg-gradient-to-r:is(button, a):not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -10px var(--accent-solid);
+}
+
+/* ---------- Cards: hover lift ---------- */
+.dashboard-metric,
+.dashboard-panel,
+article.rounded-2xl {
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), border-color 0.3s ease;
+}
+.dashboard-metric:hover,
+.dashboard-panel:hover,
+article.rounded-2xl:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent-solid) 45%, var(--border));
+  box-shadow: 0 16px 34px -18px color-mix(in srgb, var(--accent-solid) 55%, transparent);
+}
+.dashboard-metric__spark { transition: transform 0.4s var(--ease-spring); }
+.dashboard-metric:hover .dashboard-metric__spark { transform: rotate(8deg) scale(1.25); }
+
+/* ---------- Inputs: focus glow ---------- */
+input, textarea, select {
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+}
+input:focus, textarea:focus, select:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 18%, transparent);
+}
+
+/* ---------- Sidebar ---------- */
+aside { transition: transform 0.4s var(--ease-out); }
+aside nav a { transition: background-color 0.2s ease, color 0.2s ease, transform 0.25s var(--ease-out); }
+aside nav a:hover { transform: translateX(4px); }
+aside nav a svg { transition: transform 0.3s var(--ease-spring); }
+aside nav a:hover svg { transform: scale(1.18) rotate(-6deg); }
+
+/* ---------- Progress stepper ---------- */
+nav[aria-label="Brand pipeline progress"] li > span[aria-hidden="true"] {
+  transform-origin: left;
+  animation: grow-x 0.6s var(--ease-out) both;
+}
+nav[aria-label="Brand pipeline progress"] button[aria-current="step"] > span:first-child {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+nav[aria-label="Brand pipeline progress"] button:not(:disabled):hover > span:first-child {
+  transform: scale(1.12);
+}
+
+/* ---------- Loading skeleton (kothao dorkar hole class dis) ---------- */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 10px;
+}
+
+/* ---------- Details/accordion ---------- */
+details[open] > *:not(summary) { animation: fade-in 0.3s ease backwards; }
+
+/* ---------- Theme switch smooth ---------- */
+body, .app-glow {
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+/* ================= DASHBOARD SHOWCASE ANIMATIONS ================= */
+
+/* ---------- 1. Chart bar gulo niche theke uthe ashbe ---------- */
+@keyframes bar-rise {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+.review-activity-chart__track > span {
+  transform-origin: bottom;
+  animation: bar-rise 0.9s var(--ease-out) backwards;
+}
+.review-activity-chart__day:nth-child(1) .review-activity-chart__track > span { animation-delay: 0.15s; }
+.review-activity-chart__day:nth-child(2) .review-activity-chart__track > span { animation-delay: 0.22s; }
+.review-activity-chart__day:nth-child(3) .review-activity-chart__track > span { animation-delay: 0.29s; }
+.review-activity-chart__day:nth-child(4) .review-activity-chart__track > span { animation-delay: 0.36s; }
+.review-activity-chart__day:nth-child(5) .review-activity-chart__track > span { animation-delay: 0.43s; }
+.review-activity-chart__day:nth-child(6) .review-activity-chart__track > span { animation-delay: 0.50s; }
+.review-activity-chart__day:nth-child(7) .review-activity-chart__track > span { animation-delay: 0.57s; }
+.review-activity-chart__value { animation: fade-in 0.6s ease 0.9s backwards; }
+.review-activity-chart__day { transition: transform 0.25s var(--ease-out); }
+.review-activity-chart__day:hover { transform: translateY(-4px); }
+.review-activity-chart__day:hover .review-activity-chart__track > span { filter: brightness(1.2) saturate(1.2); }
+
+/* Branch progress bar gulo left theke grow korbe */
+.review-branch__bar > span {
+  transform-origin: left;
+  animation: grow-x 0.9s var(--ease-out) backwards;
+}
+
+/* ---------- 2. Mouse spotlight glow (card er upor mouse nilei glow follow kore) ---------- */
+.dashboard-panel { position: relative; overflow: hidden; }
+.dashboard-metric::after,
+.dashboard-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    240px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent-solid) 18%, transparent),
+    transparent 65%
+  );
+  transition: opacity 0.3s ease;
+}
+.dashboard-metric:hover::after,
+.dashboard-panel:hover::after { opacity: 1; }
+
+/* ---------- 3. "Keep your review moving" card: ghurte thaka glowing border ---------- */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin-angle { to { --angle: 360deg; } }
+.dashboard-next-step::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--angle), transparent 0 55%, var(--accent-from), var(--accent-to), transparent);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-angle 4s linear infinite;
+}
+
+/* ✦ icon bhaste bhaste glow kore */
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-solid) 40%, transparent); }
+  50%      { transform: translateY(-3px) rotate(12deg); box-shadow: 0 0 18px 2px color-mix(in srgb, var(--accent-solid) 40%, transparent); }
+}
+.dashboard-next-step__icon { animation: icon-float 3.2s ease-in-out infinite; }
+
+/* ---------- 4. Metric card er left mark ---------- */
+@keyframes mark-grow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+@keyframes mark-glow {
+  0%, 100% { box-shadow: 0 0 0 transparent; }
+  50%      { box-shadow: 0 0 12px 1px currentColor; }
+}
+.dashboard-metric__mark {
+  color: var(--accent-solid);
+  animation: mark-grow 0.7s var(--ease-spring) 0.2s backwards, mark-glow 2.8s ease-in-out 1s infinite;
+}
+.dashboard-metric--orange .dashboard-metric__mark { color: #d96b2b; }
+.dashboard-metric--charcoal .dashboard-metric__mark { color: #6f737c; }
+.dashboard-metric--clay .dashboard-metric__mark { color: #a94b37; }
+
+/* ---------- 5. Gradient button: hover e shine sweep ---------- */
+button.bg-gradient-to-r,
+a.bg-gradient-to-r { position: relative; overflow: hidden; }
+button.bg-gradient-to-r::after,
+a.bg-gradient-to-r::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+button.bg-gradient-to-r:not(:disabled):hover::after,
+a.bg-gradient-to-r:hover::after { animation: shine-sweep 0.8s ease; }
+@keyframes shine-sweep { to { left: 130%; } }
+
+/* ---------- 6. "Live" dot ---------- */
+@keyframes live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+  100% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+}
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: #22c55e;
+  animation: live-pulse 1.8s ease-out infinite;
+}
+/* ================= AURORA ================= */
+:root {
+  --aurora-1: #a575e6;
+  --aurora-2: #7650c9;
+  --aurora-3: #d9b8ff;
+  --aurora-4: #6f9bff;
+  --aurora-5: #f0a6ff;
+}
+.dark {
+  --aurora-1: #ff9a52;
+  --aurora-2: #e86e32;
+  --aurora-3: #ffd08a;
+  --aurora-4: #ff6f91;
+  --aurora-5: #ffb347;
+}
+
+@keyframes aurora-drift-a {
+  0%   { transform: translate3d(-12%, 0, 0) scale(1); }
+  100% { transform: translate3d(12%, 6%, 0) scale(1.12); }
+}
+@keyframes aurora-drift-b {
+  0%   { transform: translate3d(10%, 4%, 0) scale(1.1); }
+  100% { transform: translate3d(-14%, -4%, 0) scale(1); }
+}
+@keyframes aurora-text {
+  to { background-position: 200% center; }
+}
+
+/* Upore thaka aurora glow (content er pichone thake) */
+.aurora {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 480px;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.4;
+  -webkit-mask-image: radial-gradient(ellipse 90% 100% at 70% 0%, #000 8%, transparent 72%);
+  mask-image: radial-gradient(ellipse 90% 100% at 70% 0%, #000 8%, transparent 72%);
+}
+.dark .aurora { opacity: 0.5; }
+
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  left: -50%;
+  width: 200%;
+  filter: blur(42px);
+  will-change: transform;
+}
+.aurora::before {
+  background-image: repeating-linear-gradient(
+    100deg,
+    var(--aurora-1) 0%,
+    var(--aurora-2) 8%,
+    var(--aurora-3) 16%,
+    var(--aurora-4) 24%,
+    var(--aurora-1) 32%
+  );
+  animation: aurora-drift-a 16s ease-in-out infinite alternate;
+}
+.aurora::after {
+  background-image: repeating-linear-gradient(
+    80deg,
+    transparent 0%,
+    var(--aurora-3) 10%,
+    transparent 20%,
+    var(--aurora-5) 30%,
+    transparent 40%
+  );
+  opacity: 0.8;
+  animation: aurora-drift-b 22s ease-in-out infinite alternate;
+}
+.dark .aurora::after { mix-blend-mode: screen; }
+
+/* Aurora gradient text */
+.aurora-text {
+  background: linear-gradient(
+    90deg,
+    var(--aurora-2),
+    var(--aurora-4),
+    var(--aurora-5),
+    var(--aurora-1),
+    var(--aurora-2)
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: aurora-text 6s linear infinite;
+}

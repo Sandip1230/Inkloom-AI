@@ -15,6 +15,15 @@ function statusStyle(status) {
   return "bg-[var(--surface-2)] text-[var(--text-soft)]";
 }
 
+// Card er upor mouse nile glow mouse er pashe pashe follow korbe
+function handleSpotlight(event) {
+  const card = event.target.closest(".dashboard-metric, .dashboard-panel");
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+  card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+}
+
 export default function Workflow() {
   const [guidelines, setGuidelines] = useState(() => getGuidelines());
   const [content, setContent] = useState("");
@@ -150,11 +159,12 @@ export default function Workflow() {
   return (
     <AppShell>
       <div className="inkloom-dashboard-scroll h-full overflow-y-auto">
-        <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        <div onMouseMove={handleSpotlight} className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
+          <div className="stagger flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">
-                Inkloom AI <span className="mx-1 text-[var(--text-soft)]">/</span> Workspace overview
+                <span className="live-dot" aria-hidden="true" />
+                Inkloom AI <span className="mx-1 text-[var(--text-soft)]">/</span> <span className="aurora-text">Workspace overview</span>
               </p>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)] sm:text-4xl">
                 <ParticleTitle>Every draft, in good hands.</ParticleTitle>
@@ -168,14 +178,14 @@ export default function Workflow() {
             </Link>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
+          <div className="stagger mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
             <DashboardMetric label="Saved reviews" value={savedReviews.length} tone="red" />
             <DashboardMetric label="Awaiting attention" value={outstandingReviews} tone="orange" />
             <DashboardMetric label="Approved by a person" value={approvedReviews} tone="charcoal" />
             <DashboardMetric label="Findings to review" value={savedFindingCount} tone="clay" />
           </div>
 
-          <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(260px,0.75fr)]">
+          <section className="stagger mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(260px,0.75fr)]">
             <div className="dashboard-panel px-4 py-4 sm:px-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -222,7 +232,7 @@ export default function Workflow() {
             {savedReviews.length > 0 && <p className="text-xs text-[var(--text-soft)]">{outstandingReviews} item{outstandingReviews === 1 ? "" : "s"} need attention</p>}
           </div>
 
-          <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(270px,0.8fr)]">
+          <div className="stagger mt-4 grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(270px,0.8fr)]">
           <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm sm:p-6">
             <form onSubmit={handleReview}>
               <div className="flex flex-wrap items-end justify-between gap-3">
@@ -267,8 +277,8 @@ export default function Workflow() {
             </form>
 
             {reviewed && (
-              <div aria-live="polite" className="mt-6 border-t border-[var(--border)] pt-5">
-                {reviewError && <p role="alert" className="mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
+              <div aria-live="polite" className="fade-in mt-6 border-t border-[var(--border)] pt-5">
+                {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold text-[var(--text)]">
@@ -278,7 +288,7 @@ export default function Workflow() {
                       {issueCount ? `Across ${categoryCount} ${categoryCount === 1 ? "category" : "categories"}. Review each finding before deciding.` : "Automated checks found no matches. A human reviewer should still verify the draft."}
                     </p>
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-medium ${statusStyle(status)}`}>{status}</span>
+                  <span key={status} className={`scale-in rounded-full px-3 py-1 text-xs font-medium ${statusStyle(status)}`}>{status}</span>
                 </div>
 
                 {findings.length > 0 ? (
@@ -288,8 +298,8 @@ export default function Workflow() {
                       activeCategory={activeCategory}
                       onSelect={setActiveCategory}
                     />
-                    {activeCategory && <p className="mt-4 text-xs text-[var(--text-soft)]">Showing {visibleFindings.length} findings in {activeCategory}. <button type="button" onClick={() => setActiveCategory(null)} className="font-semibold text-[var(--accent-solid)] hover:underline">Show all</button></p>}
-                    <ul className="mt-4 space-y-3">
+                    {activeCategory && <p className="fade-in mt-4 text-xs text-[var(--text-soft)]">Showing {visibleFindings.length} findings in {activeCategory}. <button type="button" onClick={() => setActiveCategory(null)} className="font-semibold text-[var(--accent-solid)] hover:underline">Show all</button></p>}
+                    <ul className="stagger mt-4 space-y-3">
                       {visibleFindings.map((finding) => (
                       <li key={finding.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4">
                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -315,7 +325,7 @@ export default function Workflow() {
                   </ul>
                   </>
                 ) : (
-                  <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-[var(--text)]">
+                  <div className="scale-in mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-[var(--text)]">
                     No configured checks were triggered. This is not a guarantee that the content is accurate or compliant.
                   </div>
                 )}
@@ -345,7 +355,7 @@ export default function Workflow() {
             )}
           </section>
 
-            <aside className="space-y-4">
+            <aside className="stagger space-y-4">
             <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -383,13 +393,45 @@ export default function Workflow() {
   );
 }
 
+// Number 0 theke target porjonto gune uthbe
+function CountUp({ value }) {
+  const target = Number(value) || 0;
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      setDisplay(target);
+      return undefined;
+    }
+
+    const duration = 1000;
+    const startTime = performance.now();
+    let frame;
+
+    function tick(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(target * eased));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    }
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [target]);
+
+  return <>{display}</>;
+}
+
 function DashboardMetric({ label, value, tone }) {
   return (
     <div className={`dashboard-metric dashboard-metric--${tone}`}>
       <span className="dashboard-metric__mark" aria-hidden="true" />
       <div className="min-w-0">
         <p className="truncate text-[11px] font-medium text-[var(--text-soft)]">{label}</p>
-        <p className="mt-1 text-2xl font-semibold tracking-tight text-[var(--text)]">{value}</p>
+        <p className="mt-1 text-2xl font-semibold tracking-tight text-[var(--text)]">
+          <CountUp value={value} />
+        </p>
       </div>
       <span className="dashboard-metric__spark" aria-hidden="true">⌁</span>
     </div>

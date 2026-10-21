@@ -20,7 +20,7 @@ export default function Projects() {
   return (
     <AppShell>
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="fade-in flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-[var(--text)]">Review history</h1>
             <p className="mt-1 text-sm text-[var(--text-soft)]">Saved drafts, findings and human decisions from this browser.</p>
@@ -31,12 +31,12 @@ export default function Projects() {
         </div>
 
         {reviews.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-[var(--border)] px-6 py-16 text-center">
+          <div className="scale-in mt-8 rounded-2xl border border-dashed border-[var(--border)] px-6 py-16 text-center">
             <p className="text-sm text-[var(--text-soft)]">No reviews saved yet. Start with a draft to build your review history.</p>
             <Link to="/workflow" className="mt-4 inline-block text-sm font-medium text-[var(--accent-solid)]">Review content →</Link>
           </div>
         ) : (
-          <div className="mt-8 space-y-3">
+          <div className="stagger mt-8 space-y-3">
             {reviews.map((review) => (
               <article key={review.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">

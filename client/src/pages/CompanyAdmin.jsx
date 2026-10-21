@@ -263,7 +263,7 @@ export default function CompanyAdmin() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className="stagger mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">Company administration</p>
