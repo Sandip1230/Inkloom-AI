@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { label: "Review history", icon: "folder", to: "/projects" },
   { label: "Guidelines", icon: "sparkle", to: "/brand-kits" },
   { label: "Insights", icon: "layout", to: "/community" },
+  { label: "Company Admin", icon: "users", to: "/company-admin" },
 ];
 
 function NavIcon({ name }) {

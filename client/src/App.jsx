@@ -8,6 +8,7 @@ import Workflow from "./pages/Workflow.jsx";
 import Projects from "./pages/Projects.jsx";
 import BrandKits from "./pages/BrandKits.jsx";
 import Community from "./pages/Community.jsx";
+import CompanyAdmin from "./pages/CompanyAdmin.jsx";
 import { BrandProvider } from "./context/BrandContext.jsx";
 import { createProjectId } from "./lib/projectsStore.js";
 
@@ -52,6 +53,7 @@ export default function App() {
       <Route path="/brand-kits" element={<BrandKits />} />
       <Route path="/templates" element={<Navigate to="/brand-kits" replace />} />
       <Route path="/community" element={<Community />} />
+      <Route path="/company-admin" element={<CompanyAdmin />} />
       <Route path="/workflow" element={<NewWorkflowRedirect />} />
       <Route path="/workflow/:projectId" element={<WorkflowRoute />} />
       {/* Unknown paths used to render nothing - now they just go home */}

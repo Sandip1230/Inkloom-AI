@@ -1,6 +1,7 @@
 require('dotenv').config();
 const app = require('./src/app');
 const connectDatabase = require('./src/config/db');
+const { startAuditRetentionCleanup } = require('./src/admin/auditRetention');
 
 const port = process.env.PORT || 3001;
 
@@ -22,9 +23,11 @@ process.on('uncaughtException', (error) => {
 app.listen(port, () => console.log(`Inkloom API listening on port ${port}`));
 
 if (process.env.MONGO_URI) {
-  connectDatabase().catch((error) => {
-    console.error('MongoDB connection failed - stage routes still work, /api/brand will not:', error.message);
-  });
+  connectDatabase()
+    .then(startAuditRetentionCleanup)
+    .catch((error) => {
+      console.error('MongoDB connection failed - stage and admin routes still start, database features are unavailable:', error.message);
+    });
 } else {
-  console.warn('MONGO_URI not set - /api/brand session persistence is disabled, stage routes still work.');
+  console.warn('MONGO_URI not set - database-backed brand and workspace admin features are unavailable.');
 }

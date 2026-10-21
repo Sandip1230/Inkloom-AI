@@ -25,6 +25,18 @@ const authLimiter = rateLimit({
   message: { error: 'Too many attempts. Wait a few minutes and try again.' },
 });
 
+function requireOAuthProvider(provider) {
+  return (_request, response, next) => {
+    const prefix = provider.toUpperCase();
+    if (!process.env[`${prefix}_CLIENT_ID`]
+      || !process.env[`${prefix}_CLIENT_SECRET`]
+      || !process.env[`${prefix}_CALLBACK_URL`]) {
+      return response.status(503).json({ error: `${provider} sign-in is not configured.` });
+    }
+    return next();
+  };
+}
+
 // --- Email/password ---
 router.post('/signup', authLimiter, authController.signup);
 router.post('/login', authLimiter, authController.login);
@@ -33,17 +45,19 @@ router.post('/verify-reset-code', authLimiter, authController.verifyResetCode);
 router.post('/reset-password', authLimiter, authController.resetPassword);
 
 // --- Google ---
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+router.get('/google', requireOAuthProvider('Google'), passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
 router.get(
   '/google/callback',
+  requireOAuthProvider('Google'),
   passport.authenticate('google', { session: false, failureRedirect: `${CLIENT_ORIGIN}/login` }),
   issueTokenAndRedirect
 );
 
 // --- GitHub ---
-router.get('/github', passport.authenticate('github', { scope: ['user:email'], session: false }));
+router.get('/github', requireOAuthProvider('GitHub'), passport.authenticate('github', { scope: ['user:email'], session: false }));
 router.get(
   '/github/callback',
+  requireOAuthProvider('GitHub'),
   passport.authenticate('github', { session: false, failureRedirect: `${CLIENT_ORIGIN}/login` }),
   issueTokenAndRedirect
 );
