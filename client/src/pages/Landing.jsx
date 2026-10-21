@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext.jsx";
 import ParticleTitle from "../components/ParticleTitle.jsx";
+import { LiquidMetalButton } from "../components/ui/liquid-metal-button";
 import "../styles/Landing.css";
 
 const NAV_LINKS = [
@@ -75,6 +76,7 @@ function ThemeButton() {
 
 export default function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="page">
@@ -144,10 +146,10 @@ export default function Landing() {
           </p>
 
           <div className="hero-buttons">
-            <Link to="/login" className="primary-btn">
-              Start a review
-              <span>→</span>
-            </Link>
+            <LiquidMetalButton
+              label="Start a review"
+              onClick={() => navigate("/login")}
+            />
 
             <a href="#pipeline" className="demo-btn">
               <span className="play">▶</span>
