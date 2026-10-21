@@ -1854,3 +1854,238 @@
     .page .review-preview__footer > span { font-size: 7px; }
     .page .review-preview__footer button { padding: 7px; font-size: 7px; }
 }
+
+html:not(.dark) .page {
+    background:
+        radial-gradient(ellipse at 82% 26%, rgba(130, 91, 190, 0.09), transparent 32%),
+        radial-gradient(ellipse at 18% 6%, rgba(120, 91, 178, 0.07), transparent 34%),
+        #ffffff;
+    color: #27232f;
+}
+
+html:not(.dark) .page::before {
+    border-color: rgba(105, 65, 189, 0.14);
+    box-shadow: 0 0 15px rgba(105, 65, 189, 0.035), inset 0 0 20px rgba(105, 65, 189, 0.025);
+}
+
+html:not(.dark) .page .logo {
+    color: #292331;
+}
+
+html:not(.dark) .page .logo i {
+    background: linear-gradient(100deg, #7048bf, #9c72da);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+html:not(.dark) .page .logo-star,
+html:not(.dark) .page .ai-badge span,
+html:not(.dark) .page .stage-number {
+    color: #7952c5;
+    text-shadow: none;
+}
+
+html:not(.dark) .page .nav-links a {
+    color: #6f6879;
+}
+
+html:not(.dark) .page .nav-links a:hover {
+    color: #6440ad;
+}
+
+html:not(.dark) .page .login-btn,
+html:not(.dark) .page .theme-btn,
+html:not(.dark) .page .nav-toggle {
+    border-color: #e5dced;
+    background: #fff;
+    color: #51465f;
+}
+
+html:not(.dark) .page .start-btn,
+html:not(.dark) .page .primary-btn,
+html:not(.dark) .page .review-preview__footer button {
+    background: linear-gradient(110deg, #6840b7, #9865d2);
+    box-shadow: 0 8px 22px rgba(105, 65, 189, 0.19);
+}
+
+html:not(.dark) .page .ai-badge {
+    border-color: #e3d9ef;
+    background: #f8f4fc;
+    color: #705d88;
+    box-shadow: 0 0 15px rgba(105, 65, 189, 0.04);
+}
+
+html:not(.dark) .page h1 {
+    color: #27232f;
+}
+
+html:not(.dark) .page h1 span,
+html:not(.dark) .page .review-preview-note span {
+    background: linear-gradient(100deg, #7550c0, #a174dd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+html:not(.dark) .page .hero-description,
+html:not(.dark) .page .social-proof p {
+    color: #716b79;
+}
+
+html:not(.dark) .page .demo-btn {
+    border-color: #e1d8eb;
+    background: #fff;
+    color: #51465f;
+}
+
+html:not(.dark) .page .play {
+    border-color: #baa7d3;
+}
+
+html:not(.dark) .page .avatar {
+    border-color: #fff;
+}
+
+html:not(.dark) .page .stat-card,
+html:not(.dark) .page .stage-card {
+    border-color: #e8e2ef;
+    background: linear-gradient(150deg, #fff, #faf8fd);
+    box-shadow: 0 8px 25px rgba(49, 34, 77, 0.045);
+}
+
+html:not(.dark) .page .stat-title,
+html:not(.dark) .page .pipeline-section h2,
+html:not(.dark) .page .stage-card h3 {
+    color: #30263e;
+}
+
+html:not(.dark) .page .stat-subtitle,
+html:not(.dark) .page .pipeline-section > p,
+html:not(.dark) .page .stage-card p {
+    color: #777080;
+}
+
+html:not(.dark) .page .stage-card:hover {
+    border-color: rgba(105, 65, 189, 0.38);
+}
+
+html:not(.dark) .page .stage-card::before {
+    background: linear-gradient(90deg, #6840b7, #a575e6);
+}
+
+html:not(.dark) .page .site-footer {
+    border-color: #e8e2ef;
+    color: #797282;
+}
+
+html:not(.dark) .page .review-preview {
+    border-color: #e6e0ed;
+    background: #fff;
+    box-shadow: 0 25px 70px rgba(41, 30, 57, 0.14), 0 0 50px rgba(105, 65, 189, 0.07);
+}
+
+html:not(.dark) .page .review-preview__topbar,
+html:not(.dark) .page .review-preview__rail,
+html:not(.dark) .page .review-preview__document,
+html:not(.dark) .page .review-preview__finding {
+    border-color: #ece7f1;
+}
+
+html:not(.dark) .page .review-preview__brand b,
+html:not(.dark) .page .review-preview__heading h2,
+html:not(.dark) .page .review-preview__finding b {
+    color: #342b40;
+}
+
+html:not(.dark) .page .review-preview__brand small,
+html:not(.dark) .page .review-preview__top-actions,
+html:not(.dark) .page .review-preview__rail,
+html:not(.dark) .page .review-preview__document-head,
+html:not(.dark) .page .review-preview__finding small,
+html:not(.dark) .page .review-preview__footer > span {
+    color: #81798a;
+}
+
+html:not(.dark) .page .review-preview__top-actions i {
+    background: #f2edf8;
+    color: #7048b4;
+}
+
+html:not(.dark) .page .review-preview__rail .is-selected {
+    background: #f0eafa;
+    color: #7048b4;
+}
+
+html:not(.dark) .page .review-preview__document {
+    background: #fbf9fd;
+}
+
+html:not(.dark) .page .review-preview__document > p {
+    color: #514a58;
+}
+
+html:not(.dark) .page .review-preview__finding {
+    background: #f8f6fb;
+}
+
+html:not(.dark) .page .review-preview-note {
+    border-color: #e6e0ed;
+    background: #fff;
+    color: #50465b;
+}
+
+html.dark .page {
+    background:
+        radial-gradient(ellipse at 82% 26%, rgba(205, 103, 44, 0.12), transparent 32%),
+        radial-gradient(ellipse at 18% 6%, rgba(105, 91, 77, 0.1), transparent 34%),
+        #111214;
+    color: #f1f0ee;
+}
+
+html.dark .page::before {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+html.dark .page .logo-star,
+html.dark .page .ai-badge span,
+html.dark .page .stage-number {
+    color: #ff9a52;
+    text-shadow: 0 0 12px rgba(241, 138, 67, 0.24);
+}
+
+html.dark .page .logo i,
+html.dark .page .start-btn,
+html.dark .page .primary-btn,
+html.dark .page .review-preview__footer button {
+    background: linear-gradient(110deg, #f29549, #df632c);
+}
+
+html.dark .page .logo i {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+html.dark .page .start-btn,
+html.dark .page .primary-btn {
+    box-shadow: 0 8px 22px rgba(223, 99, 44, 0.2);
+}
+
+html.dark .page h1 span,
+html.dark .page .review-preview-note span {
+    background: linear-gradient(100deg, #ffb16c, #f07a3b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+html.dark .page .ai-badge {
+    border-color: rgba(241, 138, 67, 0.25);
+    background: rgba(241, 138, 67, 0.07);
+    color: #e6bb96;
+}
+
+html.dark .page .stage-card::before {
+    background: linear-gradient(90deg, #f29549, #df632c);
+}

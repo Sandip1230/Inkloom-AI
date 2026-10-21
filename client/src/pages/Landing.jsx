@@ -102,7 +102,7 @@ export default function Landing() {
           <a href="#pipeline" className="login-btn">
             Explore Inkloom
           </a>
-          <Link to="/workflow" className="start-btn">
+          <Link to="/login" className="start-btn">
             Review a draft
             <span>→</span>
           </Link>
@@ -144,7 +144,7 @@ export default function Landing() {
           </p>
 
           <div className="hero-buttons">
-            <Link to="/workflow" className="primary-btn">
+            <Link to="/login" className="primary-btn">
               Start a review
               <span>→</span>
             </Link>

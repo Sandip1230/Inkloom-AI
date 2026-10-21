@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ThemeToggle from "../components/ThemeToggle.jsx";
 import "../styles/Login.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
@@ -57,7 +58,10 @@ export default function Login() {
             <span>Inkloom <span className="login-brand-light">AI</span></span>
             <span className="login-beta">BETA</span>
           </Link>
-          <p className="login-header-note">A little more clarity in every message.</p>
+          <div className="login-header-actions">
+            <p className="login-header-note">A little more clarity in every message.</p>
+            <ThemeToggle />
+          </div>
         </header>
 
         <div className="login-stage">

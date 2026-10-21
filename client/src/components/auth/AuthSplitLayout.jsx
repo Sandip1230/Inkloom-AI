@@ -46,34 +46,28 @@ export default function AuthSplitLayout({ badge, heading, highlight, description
   return (
     <div className="flex min-h-screen w-full bg-[var(--bg)]">
       {/* LEFT — marketing panel */}
-      <div className="relative hidden w-1/2 flex-col overflow-hidden bg-[#0a0714] p-8 text-white lg:flex">
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 20%, rgba(139,92,246,0.25), transparent 45%), radial-gradient(circle at 90% 10%, rgba(236,72,153,0.15), transparent 50%)",
-          }}
-        />
+      <div className="relative hidden w-1/2 flex-col overflow-hidden bg-[var(--auth-panel-bg)] p-8 text-[var(--auth-panel-text)] lg:flex">
+        <div className="auth-panel-glow pointer-events-none absolute inset-0" />
 
         {/* nav */}
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#f472b6] text-sm font-bold">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-bold text-white">
               I
             </span>
             <span className="text-base font-semibold">Inkloom AI</span>
-            <span className="rounded-full border border-white/20 px-2 py-0.5 text-[10px] font-medium text-white/60">
+            <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-medium text-[var(--auth-panel-muted)]">
               Beta
             </span>
           </div>
 
-          <div className="hidden items-center gap-6 text-sm text-white/60 xl:flex">
+          <div className="hidden items-center gap-6 text-sm text-[var(--auth-panel-muted)] xl:flex">
             {NAV_LINKS.map((label) => (
               <span key={label}>{label}</span>
             ))}
           </div>
 
-          <span className="text-right text-xs italic text-white/40">
+          <span className="text-right text-xs italic text-[var(--auth-panel-muted)]">
             "From draft
             <br />
             to approval, with care."
@@ -82,27 +76,27 @@ export default function AuthSplitLayout({ badge, heading, highlight, description
 
         {/* content */}
         <div className="relative z-10 my-auto max-w-md">
-          <span className="inline-block rounded-full border border-[#8b5cf6]/40 bg-[#8b5cf6]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#c4b5fd]">
+          <span className="inline-block rounded-full border border-[var(--accent-solid)]/30 bg-[var(--accent-solid)]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--accent-solid)]">
             {badge}
           </span>
 
           <h1 className="mt-4 text-4xl font-bold leading-tight">
-            {heading} <span className="bg-gradient-to-r from-[#8b5cf6] to-[#f472b6] bg-clip-text text-transparent">{highlight}</span>
+            {heading} <span className="bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)] bg-clip-text text-transparent">{highlight}</span>
           </h1>
 
-          <p className="mt-3 text-sm text-white/60">{description}</p>
+          <p className="mt-3 text-sm text-[var(--auth-panel-muted)]">{description}</p>
 
           <div className="mt-8 space-y-4">
             {FEATURES.map((feature) => (
               <div key={feature.title} className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#8b5cf6]/30 bg-[#8b5cf6]/10 text-[#c4b5fd]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--accent-solid)]/30 bg-[var(--accent-solid)]/10 text-[var(--accent-solid)]">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     {feature.icon}
                   </svg>
                 </span>
                 <span>
                   <span className="block text-sm font-semibold">{feature.title}</span>
-                  <span className="block text-xs text-white/50">{feature.body}</span>
+                  <span className="block text-xs text-[var(--auth-panel-muted)]">{feature.body}</span>
                 </span>
               </div>
             ))}
@@ -111,13 +105,13 @@ export default function AuthSplitLayout({ badge, heading, highlight, description
 
         {/* footer */}
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-xs text-white/50">
+          <div className="flex items-center gap-2 text-xs text-[var(--auth-panel-muted)]">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
             Brand governance workspace
           </div>
-          <div className="mt-3 flex items-center justify-between text-[11px] text-white/30">
+          <div className="mt-3 flex items-center justify-between text-[11px] text-[var(--auth-panel-muted)]">
             <span>© 2026 Inkloom AI. All rights reserved.</span>
-            <span className="flex gap-3">
+            <span className="flex gap-3 text-[var(--auth-panel-muted)]">
               <span>Privacy</span> · <span>Terms</span> · <span>Help</span>
             </span>
           </div>

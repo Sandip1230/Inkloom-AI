@@ -31,7 +31,7 @@
   height: 34px;
   flex: 0 0 4px;
   border-radius: 8px;
-  background: #d94335;
+  background: var(--accent-solid);
 }
 
 .dashboard-metric--orange .dashboard-metric__mark { background: #d96b2b; }
@@ -64,7 +64,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #dc5039;
+  background: var(--accent-solid);
 }
 
 .review-activity-chart {
@@ -120,13 +120,13 @@
   width: 100%;
   min-height: 3px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #f2a24d 0%, #e26037 48%, #c83b31 100%);
-  box-shadow: 0 0 12px rgba(220, 75, 48, 0.25);
+  background: linear-gradient(180deg, var(--accent-to) 0%, var(--accent-from) 100%);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent-solid) 25%, transparent);
   transition: height .3s cubic-bezier(.2, .75, .25, 1);
 }
 
 .dark .review-activity-chart__track > span {
-  box-shadow: 0 0 16px rgba(243, 99, 58, 0.32);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--accent-solid) 32%, transparent);
 }
 
 .review-activity-chart__label {

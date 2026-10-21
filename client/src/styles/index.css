@@ -7,37 +7,51 @@
 @tailwind utilities;
 
 :root {
-  --bg: #eef0f4;
+  --bg: #f1f1f3;
   --surface: #ffffff;
-  --surface-2: #f5f6f8;
-  --border: #e1e4ea;
-  --text: #1c2029;
-  --text-soft: #747b89;
-  --sidebar-bg: #17191f;
+  --surface-2: #f4f2f7;
+  --border: #dedbe4;
+  --text: #24202b;
+  --text-soft: #777080;
+  --sidebar-bg: #292334;
   --sidebar-text: #f4f5f7;
-  --sidebar-text-soft: #9298a6;
-  --sidebar-border: #2b2e36;
-  --accent-from: #e34a3b;
-  --accent-to: #d56a24;
-  --accent-solid: #c83b2d;
-  --btn-gradient: linear-gradient(120deg, #dc4337 0%, #c95a21 100%);
+  --sidebar-text-soft: #b7adca;
+  --sidebar-border: #3c304e;
+  --accent-from: #7650c9;
+  --accent-to: #a575e6;
+  --accent-solid: #6941bd;
+  --btn-gradient: linear-gradient(120deg, #6840b7 0%, #9865d2 100%);
+  --auth-panel-bg: #f4effb;
+  --auth-panel-text: #2d2140;
+  --auth-panel-muted: #746984;
+  --auth-panel-accent: #7147bd;
+  --auth-panel-glow: radial-gradient(circle at 15% 20%, rgba(143, 100, 204, 0.16), transparent 45%), radial-gradient(circle at 90% 10%, rgba(186, 142, 225, 0.18), transparent 50%);
 }
 
 .dark {
-  --bg: #111318;
-  --surface: #191c22;
-  --surface-2: #20232b;
-  --border: #2d313a;
-  --text: #f3f4f6;
-  --text-soft: #9ba1ad;
-  --sidebar-bg: #0d0f13;
+  --bg: #111214;
+  --surface: #191a1d;
+  --surface-2: #222428;
+  --border: #33353b;
+  --text: #f1f0ee;
+  --text-soft: #a5a3a1;
+  --sidebar-bg: #0c0d0f;
   --sidebar-text: #f3f4f6;
-  --sidebar-text-soft: #8f96a3;
-  --sidebar-border: #24272e;
-  --accent-from: #ff765b;
-  --accent-to: #e9853d;
-  --accent-solid: #ff8765;
-  --btn-gradient: linear-gradient(120deg, #ed5548 0%, #d87332 100%);
+  --sidebar-text-soft: #a4a2a0;
+  --sidebar-border: #292a2d;
+  --accent-from: #ff9a52;
+  --accent-to: #e86e32;
+  --accent-solid: #f18a43;
+  --btn-gradient: linear-gradient(120deg, #f29549 0%, #df632c 100%);
+  --auth-panel-bg: #171719;
+  --auth-panel-text: #f1f0ee;
+  --auth-panel-muted: #aaa7a5;
+  --auth-panel-accent: #ff9a52;
+  --auth-panel-glow: radial-gradient(circle at 15% 20%, rgba(237, 131, 54, 0.16), transparent 45%), radial-gradient(circle at 90% 10%, rgba(177, 82, 36, 0.17), transparent 50%);
+}
+
+.auth-panel-glow {
+  background: var(--auth-panel-glow);
 }
 
 @layer base {
@@ -92,8 +106,7 @@
   display: none;
 }
 
-/* ===== Decorative background: light mode = soft pastel blobs,
-   dark mode = electric-blue wavy streaks ===== */
+/* ===== Decorative background follows the active purple or orange accent. ===== */
 .page-bg {
   position: absolute;
   inset: 0;
@@ -127,11 +140,11 @@
 }
 
 .dark .page-bg::before {
-  background: radial-gradient(circle, rgba(226, 68, 48, 0.22), transparent 70%);
+  background: radial-gradient(circle, rgba(241, 138, 67, 0.2), transparent 70%);
 }
 
 .dark .page-bg::after {
-  background: radial-gradient(circle, rgba(222, 112, 42, 0.2), transparent 70%);
+  background: radial-gradient(circle, rgba(223, 99, 44, 0.17), transparent 70%);
 }
 
 /* extra thin glowing wavy streaks, dark mode only */
@@ -140,7 +153,7 @@
   width: 70vw;
   height: 2px;
   border-radius: 9999px;
-  background: linear-gradient(90deg, transparent, rgba(238, 91, 58, 0.46), transparent);
+  background: linear-gradient(90deg, transparent, rgba(241, 138, 67, 0.4), transparent);
   filter: blur(1.5px);
 }
 
