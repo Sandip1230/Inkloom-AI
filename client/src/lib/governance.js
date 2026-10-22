@@ -12,6 +12,14 @@ function addFinding(findings, finding) {
   if (!findings.some((existing) => existing.id === finding.id)) findings.push(finding);
 }
 
+function findingAt(finding, start, excerpt) {
+  return {
+    ...finding,
+    start,
+    end: start + excerpt.length,
+  };
+}
+
 export function reviewContent(content, rules = {}) {
   const findings = [];
   const text = content.trim();
@@ -26,6 +34,7 @@ export function reviewContent(content, rules = {}) {
     })?.[1];
     const proposedTerm = replacement;
     addFinding(findings, {
+      ...findingAt({}, match.index, phrase),
       id: `claim-${match.index}`,
       category: "Promotional claim",
       severity: "Needs evidence",
@@ -49,6 +58,7 @@ export function reviewContent(content, rules = {}) {
     const pattern = new RegExp(`\\b${escaped}\\b`, "gi");
     for (const match of text.matchAll(pattern)) {
       addFinding(findings, {
+        ...findingAt({}, match.index, match[0]),
         id: `term-${from.trim().toLowerCase()}-${match.index}`,
         category: "Terminology",
         severity: "Guideline mismatch",
@@ -64,6 +74,7 @@ export function reviewContent(content, rules = {}) {
   const inaccessibleLinkText = /\b(click here|read more|learn more)\b/gi;
   for (const match of text.matchAll(inaccessibleLinkText)) {
     addFinding(findings, {
+      ...findingAt({}, match.index, match[0]),
       id: `accessibility-${match.index}`,
       category: "Accessibility",
       severity: "Review",
@@ -105,6 +116,117 @@ export function reviewContent(content, rules = {}) {
 
 export function applySuggestion(content, finding) {
   if (!finding.excerpt || !finding.replacement) return content;
+  if (
+    Number.isInteger(finding.start)
+    && Number.isInteger(finding.end)
+    && content.slice(finding.start, finding.end).toLowerCase() === finding.excerpt.toLowerCase()
+  ) {
+    return `${content.slice(0, finding.start)}${finding.replacement}${content.slice(finding.end)}`;
+  }
   const escaped = finding.excerpt.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return content.replace(new RegExp(escaped, "i"), finding.replacement);
+}
+
+function capitalizeFirst(text) {
+  return text.replace(/^(\s*)(\p{L})/u, (_, whitespace, letter) => `${whitespace}${letter.toLocaleUpperCase()}`);
+}
+
+function splitLongSentences(content) {
+  const edits = [];
+  const sentences = [...content.matchAll(/[^.!?]+[.!?]+|[^.!?]+$/g)];
+
+  for (const match of sentences) {
+    const sentence = match[0];
+    if (sentence.trim().split(/\s+/).length <= 35 || !sentence.includes(";")) continue;
+
+    const parts = sentence.trim().split(/\s*;\s*/);
+    if (parts.length < 2 || parts.some((part) => part.split(/\s+/).length > 35)) continue;
+
+    const leadingWhitespace = sentence.match(/^\s*/)?.[0] || "";
+    const ending = parts[parts.length - 1].match(/[.!?]+$/)?.[0] || ".";
+    parts[parts.length - 1] = parts[parts.length - 1].replace(/[.!?]+$/, "");
+    const replacement = parts
+      .map((part, index) => `${index === 0 ? part : capitalizeFirst(part)}${index === parts.length - 1 ? ending : "."}`)
+      .join(" ");
+    edits.push({
+      start: match.index,
+      end: match.index + sentence.length,
+      replacement: `${leadingWhitespace}${replacement}`,
+    });
+  }
+
+  return edits.reduceRight(
+    (result, edit) => `${result.slice(0, edit.start)}${edit.replacement}${result.slice(edit.end)}`,
+    content,
+  );
+}
+
+function replaceCommonFiller(content) {
+  const phrases = [
+    [/\bin order to\b/gi, "to"],
+    [/\bat this point in time\b/gi, "now"],
+    [/\bdue to the fact that\b/gi, "because"],
+    [/\ba large number of\b/gi, "many"],
+    [/\bin the event that\b/gi, "if"],
+    [/\bhas the ability to\b/gi, "can"],
+  ];
+
+  return phrases.reduce((result, [pattern, replacement]) => result.replace(pattern, (match) => (
+    /^[A-Z]/.test(match) ? capitalizeFirst(replacement) : replacement
+  )), content);
+}
+
+function applyFindingReplacements(content, findings, categories) {
+  const edits = findings
+    .filter((finding) => categories.includes(finding.category) && finding.replacement && Number.isInteger(finding.start))
+    .map((finding) => ({
+      start: finding.start,
+      end: finding.end,
+      replacement: finding.replacement,
+    }))
+    .sort((first, second) => second.start - first.start);
+
+  return edits.reduce(
+    (result, edit) => `${result.slice(0, edit.start)}${edit.replacement}${result.slice(edit.end)}`,
+    content,
+  );
+}
+
+export function createBrandSafeRemixes(content, findings, rules = {}) {
+  const candidates = [
+    {
+      id: "on-brand",
+      title: "More on-brand",
+      description: "Apply configured preferred terms and cautious wording for flagged claims.",
+      content: applyFindingReplacements(content, findings, ["Terminology", "Promotional claim"]),
+    },
+    {
+      id: "accessible",
+      title: "More accessible",
+      description: "Split long semicolon-separated sentences into shorter statements.",
+      content: splitLongSentences(content),
+    },
+    {
+      id: "concise",
+      title: "More concise",
+      description: "Replace a few common wordy phrases without changing their intended meaning.",
+      content: replaceCommonFiller(content),
+    },
+  ];
+
+  return candidates
+    .filter((candidate) => candidate.content !== content)
+    .map((candidate) => {
+      const remainingFindings = reviewContent(candidate.content, rules);
+      const categories = [...new Set(findings.map((finding) => finding.category))];
+      const clearedCategories = categories.filter((category) => (
+        !remainingFindings.some((finding) => finding.category === category)
+      ));
+
+      return {
+        ...candidate,
+        remainingFindings,
+        clearedCategories,
+      };
+    });
 }

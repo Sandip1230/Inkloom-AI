@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import BranchingReviewSummary from "../components/BranchingReviewSummary.jsx";
 import ParticleTitle from "../components/ParticleTitle.jsx";
-import { applySuggestion, reviewContent } from "../lib/governance.js";
+import { applySuggestion, createBrandSafeRemixes, reviewContent } from "../lib/governance.js";
 import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/reviewStore.js";
 
 const CONTENT_TYPES = ["Web page", "Email", "Social post", "Advertisement", "Other"];
@@ -119,6 +119,7 @@ export default function Workflow() {
   const [reviewed, setReviewed] = useState(false);
   const [reviewError, setReviewError] = useState("");
   const [activeCategory, setActiveCategory] = useState(null);
+  const [selectedRemixId, setSelectedRemixId] = useState(null);
   const [activeTemplate, setActiveTemplate] = useState(null);
   const [inputMode, setInputMode] = useState("write");
   const [period, setPeriod] = useState("week");
@@ -140,6 +141,11 @@ export default function Workflow() {
     () => new Set(findings.map((finding) => finding.category)).size,
     [findings],
   );
+  const remixes = useMemo(
+    () => reviewed ? createBrandSafeRemixes(content, findings, guidelines) : [],
+    [content, findings, guidelines, reviewed],
+  );
+  const selectedRemix = remixes.find((remix) => remix.id === selectedRemixId);
   const savedReviews = useMemo(
     () => listReviews(),
     [reviewed, status, findings],
@@ -201,6 +207,7 @@ export default function Workflow() {
     setStatus("Draft");
     setReviewed(true);
     setActiveCategory(null);
+    setSelectedRemixId(null);
     try {
       saveReview({
         id,
@@ -244,6 +251,7 @@ export default function Workflow() {
     setContent(updatedContent);
     const updatedFindings = reviewContent(updatedContent, guidelines);
     setFindings(updatedFindings);
+    setSelectedRemixId(null);
     setStatus("Draft");
     if (reviewId) {
       try {
@@ -260,6 +268,33 @@ export default function Workflow() {
         setReviewError("");
       } catch (error) {
         setReviewError(`Could not save the updated draft: ${error.message}`);
+      }
+    }
+  }
+
+  function acceptRemix(remix) {
+    if (!remix || remix.content === content) return;
+    setContent(remix.content);
+    setFindings(remix.remainingFindings);
+    setSelectedRemixId(null);
+    setActiveCategory(null);
+    setStatus("Draft");
+    setReviewed(true);
+    if (reviewId) {
+      try {
+        saveReview({
+          id: reviewId,
+          content: remix.content,
+          contentType,
+          findings: remix.remainingFindings,
+          status: "Draft",
+          reviewer,
+          comment,
+          guidelineSnapshot: guidelines,
+        });
+        setReviewError("");
+      } catch (error) {
+        setReviewError(`Could not save the remixed draft: ${error.message}`);
       }
     }
   }
@@ -551,6 +586,63 @@ export default function Workflow() {
                         </div>
                         <span key={status} className={`scale-in rounded-full px-3 py-1 text-xs font-medium ${statusStyle(status)}`}>{status}</span>
                       </div>
+
+                      <section className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]/40 p-4" aria-labelledby="remix-title">
+                        <h3 id="remix-title" className="text-sm font-semibold text-[var(--text)]">Brand-safe remix</h3>
+                        <p className="mt-1 text-xs leading-5 text-[var(--text-soft)]">
+                          Explore local, rule-based edits. Preview and re-check each version before applying it.
+                        </p>
+                        {remixes.length ? (
+                          <>
+                            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                              {remixes.map((remix) => (
+                                <article key={remix.id} className="rounded-lg border border-[var(--border)] bg-[var(--bg)] p-3">
+                                  <h4 className="text-xs font-semibold text-[var(--text)]">{remix.title}</h4>
+                                  <p className="mt-1 min-h-10 text-[11px] leading-4 text-[var(--text-soft)]">{remix.description}</p>
+                                  <p className="mt-2 text-[10px] text-[var(--text-soft)]">
+                                    {remix.clearedCategories.length
+                                      ? `No longer flagged: ${remix.clearedCategories.join(", ")}`
+                                      : `${remix.remainingFindings.length} finding${remix.remainingFindings.length === 1 ? "" : "s"} remain`}
+                                  </p>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedRemixId(remix.id)}
+                                    aria-pressed={selectedRemixId === remix.id}
+                                    className="mt-2 text-xs font-semibold text-[var(--accent-solid)] hover:underline"
+                                  >
+                                    {selectedRemixId === remix.id ? "Previewing" : "Preview remix"}
+                                  </button>
+                                </article>
+                              ))}
+                            </div>
+                            {selectedRemix && (
+                              <div className="mt-3 rounded-lg border border-[var(--border)] bg-[var(--bg)] p-3">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                  <h4 className="text-xs font-semibold text-[var(--text)]">{selectedRemix.title} preview</h4>
+                                  <button
+                                    type="button"
+                                    onClick={() => acceptRemix(selectedRemix)}
+                                    className="rounded-lg bg-[var(--accent-solid)] px-3 py-2 text-xs font-semibold text-white hover:opacity-90"
+                                  >
+                                    Apply remix
+                                  </button>
+                                </div>
+                                <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-[var(--surface-2)] p-3 font-sans text-xs leading-5 text-[var(--text)]">{selectedRemix.content}</pre>
+                                <p className="mt-2 text-[10px] leading-4 text-[var(--text-soft)]">
+                                  Re-check results: {selectedRemix.remainingFindings.length
+                                    ? `${selectedRemix.remainingFindings.length} finding${selectedRemix.remainingFindings.length === 1 ? "" : "s"} remain (${[...new Set(selectedRemix.remainingFindings.map((finding) => finding.category))].join(", ")}).`
+                                    : "No configured checks were triggered."}
+                                  {" "}Pattern checks are limited; review the wording yourself.
+                                </p>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <p className="mt-3 text-xs text-[var(--text-soft)]">
+                            No safe automatic remix is available for this draft. Add missing context or edit the text manually.
+                          </p>
+                        )}
+                      </section>
 
                       {findings.length > 0 ? (
                         <>

@@ -88,8 +88,9 @@ The client is the main Inkloom governance experience. Starting the server is use
 2. Select **Review a draft** and choose a content type.
 3. Paste draft text and choose **Review content**.
 4. Read each finding’s excerpt, explanation, source rule, and suggested next step.
-5. Optionally apply an available wording suggestion, add a reviewer name or note, and record a human decision.
-6. Visit **Review history** or **Insights** to review items saved in this browser.
+5. Preview a **Brand-safe remix**, compare its updated local-check results, and apply it only if the wording is right. These deterministic edits are limited to configured terms, selected claim wording, common filler phrases, and long sentences with safe semicolon splits.
+6. Add a reviewer name or note and record a human decision.
+7. Visit **Review history** or **Insights** to review items saved in this browser.
 
 Changes to terminology and review decisions are stored in the browser’s `localStorage`. They are not shared with other users or devices.
 
@@ -101,7 +102,7 @@ Changes to terminology and review decisions are stored in the browser’s `local
 | Terminology | User-defined preferred-term substitutions |
 | Writing checks | Unsupported absolute/comparative wording, configured terminology, generic link labels, long sentences, and repeated all-caps wording |
 | Findings | Excerpt, explanation, check/source label, and suggested next step |
-| Suggestions | Optional wording replacements for supported findings |
+| Suggestions and remixes | Optional deterministic wording replacements and previews, rechecked against local rules before applying |
 | Human review | Draft, awaiting approval, changes requested, and approved decisions; optional reviewer and note |
 | History and insights | Summaries derived from browser-local review records |
 
