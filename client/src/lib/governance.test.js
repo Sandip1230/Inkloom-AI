@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { applySuggestion, createBrandSafeRemixes, reviewContent } from "./governance.js";
+import {
+  applySuggestion,
+  createBrandSafeRemixes,
+  createBrandTwinDebate,
+  reviewContent,
+} from "./governance.js";
 
 test("flags unsupported promotional claims and suggests cautious wording", () => {
   const findings = reviewContent("Our product is the best and guarantees results.");
@@ -37,6 +42,25 @@ test("creates accessible and concise remixes only for supported deterministic ed
   const concise = createBrandSafeRemixes(wordy, reviewContent(wordy)).find((candidate) => candidate.id === "concise");
   assert.equal(concise.content, "To help, we act now.");
   assert.equal(createBrandSafeRemixes("Click here.", reviewContent("Click here.")).length, 0);
+});
+
+test("creates a Brand Twin debate grounded in configured findings and review limits", () => {
+  const findings = reviewContent("This is the best service. Click here.");
+  const debate = createBrandTwinDebate(findings);
+
+  assert.match(debate.guardian, /No configured terminology or tone mismatches/);
+  assert.match(debate.skeptic, /“best”/);
+  assert.match(debate.skeptic, /cannot verify truth/);
+  assert.match(debate.skeptic, /“Click here”/);
+  assert.match(debate.verdict, /human consideration/);
+});
+
+test("does not treat a clean Brand Twin debate as a brand approval", () => {
+  const debate = createBrandTwinDebate([]);
+
+  assert.match(debate.guardian, /not proof of brand fit/);
+  assert.match(debate.skeptic, /does not verify factual accuracy/);
+  assert.match(debate.verdict, /human still decides/);
 });
 
 test("identifies accessibility and tone signals", () => {

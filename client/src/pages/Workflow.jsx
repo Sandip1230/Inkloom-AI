@@ -3,11 +3,17 @@ import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import BranchingReviewSummary from "../components/BranchingReviewSummary.jsx";
 import ParticleTitle from "../components/ParticleTitle.jsx";
-import { applySuggestion, createBrandSafeRemixes, reviewContent } from "../lib/governance.js";
+import {
+  applySuggestion,
+  createBrandSafeRemixes,
+  createBrandTwinDebate,
+  reviewContent,
+} from "../lib/governance.js";
 import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/reviewStore.js";
 
 const CONTENT_TYPES = ["Web page", "Email", "Social post", "Advertisement", "Other"];
 const MAX_CHARS = 12000;
+const JUDGE_DEMO_CONTENT = "Our planning tool guarantees success and offers the best solution for teams. Click here to learn more.";
 
 // Tabs shown at the top of the "Start a content review" card.
 const INPUT_TABS = [
@@ -117,6 +123,8 @@ export default function Workflow() {
   const [reviewer, setReviewer] = useState("");
   const [comment, setComment] = useState("");
   const [reviewed, setReviewed] = useState(false);
+  const [judgeMode, setJudgeMode] = useState(false);
+  const [judgeStage, setJudgeStage] = useState(0);
   const [reviewError, setReviewError] = useState("");
   const [activeCategory, setActiveCategory] = useState(null);
   const [selectedRemixId, setSelectedRemixId] = useState(null);
@@ -146,6 +154,10 @@ export default function Workflow() {
     [content, findings, guidelines, reviewed],
   );
   const selectedRemix = remixes.find((remix) => remix.id === selectedRemixId);
+  const brandTwinDebate = useMemo(
+    () => reviewed ? createBrandTwinDebate(findings) : null,
+    [findings, reviewed],
+  );
   const savedReviews = useMemo(
     () => listReviews(),
     [reviewed, status, findings],
@@ -206,6 +218,8 @@ export default function Workflow() {
     setReviewId(id);
     setStatus("Draft");
     setReviewed(true);
+    setJudgeMode(false);
+    setJudgeStage(0);
     setActiveCategory(null);
     setSelectedRemixId(null);
     try {
@@ -225,20 +239,49 @@ export default function Workflow() {
     }
   }
 
+  function startJudgeDemo() {
+    if (!judgeMode && content.trim() && content !== JUDGE_DEMO_CONTENT) {
+      const replace = window.confirm("Replace the text currently in the review box with the Judge Mode sample?");
+      if (!replace) return;
+    }
+
+    const demoFindings = reviewContent(JUDGE_DEMO_CONTENT, guidelines);
+    setContent(JUDGE_DEMO_CONTENT);
+    setContentType("Social post");
+    setActiveTemplate(null);
+    setInputMode("write");
+    setFileNotice("");
+    setReviewId(null);
+    setFindings(demoFindings);
+    setStatus("Draft");
+    setReviewer("");
+    setComment("");
+    setReviewed(true);
+    setJudgeMode(true);
+    setJudgeStage(1);
+    setActiveCategory(null);
+    setSelectedRemixId(null);
+    setReviewError("");
+    document.getElementById("new-review")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function updateDecision(nextStatus) {
-    if (!reviewId) return;
+    if (!reviewId && !judgeMode) return;
     try {
-      saveReview({
-        id: reviewId,
-        content,
-        contentType,
-        findings,
-        status: nextStatus,
-        reviewer,
-        comment,
-        guidelineSnapshot: guidelines,
-      });
+      if (reviewId) {
+        saveReview({
+          id: reviewId,
+          content,
+          contentType,
+          findings,
+          status: nextStatus,
+          reviewer,
+          comment,
+          guidelineSnapshot: guidelines,
+        });
+      }
       setStatus(nextStatus);
+      if (judgeMode) setJudgeStage(4);
       setReviewError("");
     } catch (error) {
       setReviewError(`Could not save the review decision: ${error.message}`);
@@ -280,6 +323,7 @@ export default function Workflow() {
     setActiveCategory(null);
     setStatus("Draft");
     setReviewed(true);
+    if (judgeMode) setJudgeStage(3);
     if (reviewId) {
       try {
         saveReview({
@@ -312,6 +356,8 @@ export default function Workflow() {
     setInputMode("write");
     setFileNotice("");
     setReviewed(false);
+    setJudgeMode(false);
+    setJudgeStage(0);
     document.getElementById("new-review")?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 350);
   }
@@ -332,6 +378,8 @@ export default function Workflow() {
       setActiveTemplate(null);
       setInputMode("write");
       setReviewed(false);
+      setJudgeMode(false);
+      setJudgeStage(0);
       setFileNotice(
         text.length > MAX_CHARS
           ? `Loaded “${file.name}” and trimmed it to the first ${MAX_CHARS.toLocaleString()} characters.`
@@ -351,6 +399,8 @@ export default function Workflow() {
     setActiveTemplate(null);
     setFileNotice("");
     setReviewed(false);
+    setJudgeMode(false);
+    setJudgeStage(0);
     setInputMode("write");
     window.setTimeout(() => textareaRef.current?.focus(), 0);
   }
@@ -363,6 +413,8 @@ export default function Workflow() {
     setReviewer("");
     setComment("");
     setReviewed(false);
+    setJudgeMode(false);
+    setJudgeStage(0);
     setReviewError("");
     setActiveCategory(null);
     setActiveTemplate(null);
@@ -446,6 +498,12 @@ export default function Workflow() {
                   <p className="ink-eyebrow">Review workspace</p>
                   <h2 id="review-title" className="ink-review__title">Start a content review</h2>
                   <p className="ink-review__sub">Paste your draft and let Inkloom AI check it for you.</p>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]/40 p-3">
+                    <p className="text-xs text-[var(--text-soft)]">Showing your project to judges?</p>
+                    <button type="button" onClick={startJudgeDemo} className="rounded-lg border border-[var(--accent-solid)] px-3 py-2 text-xs font-semibold text-[var(--accent-solid)] hover:bg-[var(--accent-solid)]/5">
+                      {judgeMode ? "Restart Judge Mode" : "Try Judge Mode"}
+                    </button>
+                  </div>
 
                   <form onSubmit={handleReview} className="mt-5">
                     <div className="ink-review__toolbar">
@@ -487,6 +545,8 @@ export default function Workflow() {
                           onChange={(event) => {
                             setContent(event.target.value);
                             setReviewed(false);
+                            setJudgeMode(false);
+                            setJudgeStage(0);
                           }}
                           required
                           rows={9}
@@ -575,6 +635,80 @@ export default function Workflow() {
                   {reviewed && (
                     <div aria-live="polite" className="ink-results fade-in mt-6">
                       {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
+                      {judgeMode && (
+                        <section aria-labelledby="judge-mode-title" className="mb-5 rounded-xl border border-violet-500/25 bg-violet-500/5 p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-700">Guided product demo · sample not saved</p>
+                              <h3 id="judge-mode-title" className="mt-1 text-sm font-semibold text-[var(--text)]">Judge Mode</h3>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setJudgeMode(false);
+                                setJudgeStage(0);
+                              }}
+                              className="text-xs font-semibold text-[var(--text-soft)] hover:text-[var(--text)]"
+                            >
+                              Exit demo
+                            </button>
+                          </div>
+                          <ol className="mt-3 grid gap-2 sm:grid-cols-4">
+                            {["Inspect findings", "Preview remix", "Apply remix", "Human decision"].map((step, index) => (
+                              <li
+                                key={step}
+                                aria-current={judgeStage === index + 1 ? "step" : undefined}
+                                className={`rounded-lg border px-2.5 py-2 text-[11px] ${
+                                  judgeStage >= index + 1
+                                    ? "border-violet-500/30 bg-violet-500/10 text-violet-800"
+                                    : "border-[var(--border)] text-[var(--text-soft)]"
+                                }`}
+                              >
+                                <span className="font-bold">{index + 1}.</span> {step}
+                              </li>
+                            ))}
+                          </ol>
+                          <p className="mt-3 text-xs leading-5 text-[var(--text-soft)]">
+                            {judgeStage === 1 && "This sample intentionally includes claim wording and a generic link label. Review the rule-based findings below."}
+                            {judgeStage === 2 && "Compare the proposed wording with the original before applying the remix."}
+                            {judgeStage === 3 && "The remix has been rechecked. Choose a human review decision to finish the walkthrough."}
+                            {judgeStage === 4 && `Walkthrough complete. The human-selected status is “${status}”. This sample was not added to review history.`}
+                          </p>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {judgeStage === 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedRemixId("on-brand");
+                                  setJudgeStage(2);
+                                }}
+                                className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800"
+                              >
+                                Next: preview the on-brand remix
+                              </button>
+                            )}
+                            {judgeStage === 2 && (
+                              <button
+                                type="button"
+                                disabled={!selectedRemix}
+                                onClick={() => acceptRemix(selectedRemix)}
+                                className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800 disabled:opacity-50"
+                              >
+                                Apply remix and continue
+                              </button>
+                            )}
+                            {judgeStage === 4 && (
+                              <button
+                                type="button"
+                                onClick={startJudgeDemo}
+                                className="rounded-lg border border-violet-500/30 px-3 py-2 text-xs font-semibold text-violet-800 hover:bg-violet-500/5"
+                              >
+                                Restart walkthrough
+                              </button>
+                            )}
+                          </div>
+                        </section>
+                      )}
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <h2 className="text-lg font-semibold text-[var(--text)]">
@@ -586,6 +720,31 @@ export default function Workflow() {
                         </div>
                         <span key={status} className={`scale-in rounded-full px-3 py-1 text-xs font-medium ${statusStyle(status)}`}>{status}</span>
                       </div>
+
+                      {brandTwinDebate && (
+                        <section aria-labelledby="brand-twin-title" className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]/40 p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                              <h3 id="brand-twin-title" className="text-sm font-semibold text-[var(--text)]">Brand Twin Debate</h3>
+                              <p className="mt-1 text-xs text-[var(--text-soft)]">Two rule-grounded perspectives—not AI opinions or an approval score.</p>
+                            </div>
+                            <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-[10px] font-semibold text-[var(--text-soft)]">Local checks</span>
+                          </div>
+                          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                            <article className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                              <h4 className="text-xs font-bold text-emerald-800">Brand Guardian</h4>
+                              <p className="mt-1.5 text-xs leading-5 text-[var(--text)]">{brandTwinDebate.guardian}</p>
+                            </article>
+                            <article className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                              <h4 className="text-xs font-bold text-amber-800">Skeptical Twin</h4>
+                              <p className="mt-1.5 text-xs leading-5 text-[var(--text)]">{brandTwinDebate.skeptic}</p>
+                            </article>
+                          </div>
+                          <p className="mt-3 text-xs leading-5 text-[var(--text-soft)]">
+                            <span className="font-semibold text-[var(--text)]">Human verdict:</span> {brandTwinDebate.verdict}
+                          </p>
+                        </section>
+                      )}
 
                       <section className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]/40 p-4" aria-labelledby="remix-title">
                         <h3 id="remix-title" className="text-sm font-semibold text-[var(--text)]">Brand-safe remix</h3>
@@ -696,9 +855,9 @@ export default function Workflow() {
                           </label>
                         </div>
                         <div className="mt-4 flex flex-wrap gap-2">
-                          <button type="button" onClick={() => updateDecision("Awaiting approval")} disabled={!reviewId} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text)] hover:border-[var(--accent-solid)] disabled:opacity-50">Request approval</button>
-                          <button type="button" onClick={() => updateDecision("Changes requested")} disabled={!reviewId} className="rounded-lg border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-700 hover:bg-amber-500/5 disabled:opacity-50">Request changes</button>
-                          <button type="button" onClick={() => updateDecision("Approved")} disabled={!reviewId} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Approve draft</button>
+                          <button type="button" onClick={() => updateDecision("Awaiting approval")} disabled={!reviewId && !judgeMode} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text)] hover:border-[var(--accent-solid)] disabled:opacity-50">Request approval</button>
+                          <button type="button" onClick={() => updateDecision("Changes requested")} disabled={!reviewId && !judgeMode} className="rounded-lg border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-700 hover:bg-amber-500/5 disabled:opacity-50">Request changes</button>
+                          <button type="button" onClick={() => updateDecision("Approved")} disabled={!reviewId && !judgeMode} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Approve draft</button>
                         </div>
                         <p className="mt-3 text-[11px] leading-4 text-[var(--text-soft)]">
                           Approval is a human decision. Inkloom’s automated checks do not publish content or replace legal, factual, or brand-owner review.

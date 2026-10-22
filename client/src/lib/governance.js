@@ -230,3 +230,32 @@ export function createBrandSafeRemixes(content, findings, rules = {}) {
       };
     });
 }
+
+export function createBrandTwinDebate(findings) {
+  const voiceFindings = findings.filter((finding) => ["Terminology", "Tone"].includes(finding.category));
+  const claimFindings = findings.filter((finding) => finding.category === "Promotional claim");
+  const accessibilityFindings = findings.filter((finding) => finding.category === "Accessibility");
+  const examples = (items) => items
+    .slice(0, 3)
+    .map((finding) => `“${finding.excerpt}”`)
+    .join(", ");
+
+  const guardian = voiceFindings.length
+    ? `Configured brand-voice checks flagged ${examples(voiceFindings)}. Resolve these before calling the draft aligned.`
+    : "No configured terminology or tone mismatches were detected. That is a narrow signal, not proof of brand fit.";
+
+  let skeptic = claimFindings.length
+    ? `Claims such as ${examples(claimFindings)} have no approved evidence attached in this review. The checker flags wording; it cannot verify truth.`
+    : "No selected promotional-claim pattern was flagged. This review does not verify factual accuracy or legal compliance.";
+  if (accessibilityFindings.length) {
+    skeptic += ` Accessibility checks also flagged ${examples(accessibilityFindings)}.`;
+  }
+
+  return {
+    guardian,
+    skeptic,
+    verdict: findings.length
+      ? `${findings.length} configured finding${findings.length === 1 ? "" : "s"} need human consideration; the checks do not decide brand fit.`
+      : "No configured checks were triggered; a human still decides whether the draft fits the brand.",
+  };
+}
