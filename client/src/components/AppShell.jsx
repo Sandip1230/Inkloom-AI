@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar.jsx";
 import Topbar from "./Topbar.jsx";
 import "../styles/Dashboard.css";
 
-export default function AppShell({ children }) {
+export default function AppShell({ children, showTopbarProfile = true }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -41,7 +41,7 @@ export default function AppShell({ children }) {
       <div className="relative z-10 flex min-h-screen">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="app-glow relative flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden border-l border-[var(--border)]">
-          <Topbar />
+          <Topbar showProfile={showTopbarProfile} />
           <main key={location.pathname} className="page-enter min-h-0 flex-1 overflow-y-auto">
             {children}
           </main>

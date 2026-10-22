@@ -15,7 +15,7 @@ function readUserFromToken() {
   }
 }
 
-export default function Topbar() {
+export default function Topbar({ showProfile = true }) {
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -106,37 +106,39 @@ export default function Topbar() {
           )}
         </div>
 
-        <div ref={menuRef} className="relative">
-          <button
-            type="button"
-            onClick={() => setMenuOpen((prev) => !prev)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-semibold text-white"
-          >
-            {initial}
-          </button>
+        {showProfile && (
+          <div ref={menuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-semibold text-white"
+            >
+              {initial}
+            </button>
 
-          {menuOpen && (
-            <div className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-lg">
-              <div className="px-2 py-1.5">
-                <p className="text-sm font-medium text-[var(--text)]">{displayName}</p>
-                {user?.email && <p className="truncate text-xs text-[var(--text-soft)]">{user.email}</p>}
+            {menuOpen && (
+              <div className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-lg">
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium text-[var(--text)]">{displayName}</p>
+                  {user?.email && <p className="truncate text-xs text-[var(--text-soft)]">{user.email}</p>}
+                </div>
+                <div className="my-1 h-px bg-[var(--border)]" />
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-rose-400 transition-colors hover:bg-rose-500/10"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <path d="M16 17l5-5-5-5" />
+                    <path d="M21 12H9" />
+                  </svg>
+                  Log out
+                </button>
               </div>
-              <div className="my-1 h-px bg-[var(--border)]" />
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-rose-400 transition-colors hover:bg-rose-500/10"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <path d="M16 17l5-5-5-5" />
-                  <path d="M21 12H9" />
-                </svg>
-                Log out
-              </button>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

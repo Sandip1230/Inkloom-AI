@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import BranchingReviewSummary from "../components/BranchingReviewSummary.jsx";
@@ -7,6 +7,89 @@ import { applySuggestion, reviewContent } from "../lib/governance.js";
 import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/reviewStore.js";
 
 const CONTENT_TYPES = ["Web page", "Email", "Social post", "Advertisement", "Other"];
+const MAX_CHARS = 12000;
+
+// Tabs shown at the top of the "Start a content review" card.
+const INPUT_TABS = [
+  { id: "write", label: "Content to review", icon: "doc" },
+  { id: "upload", label: "Upload file", icon: "upload" },
+  { id: "url", label: "Paste from URL", icon: "link" },
+  { id: "template", label: "Use a template", icon: "templates" },
+];
+
+// Feature templates. Clicking one loads the starter text into the review box.
+// Icons are simple, original drawings (not the official brand logos).
+const TEMPLATES = [
+  {
+    id: "linkedin",
+    name: "LinkedIn",
+    tag: "Professional post",
+    type: "Social post",
+    gradient: "linear-gradient(135deg, #ff9a52, #f0568a)",
+    starter:
+      "We’re excited to share [announcement] with our community.\n\nHere’s what it means for our customers:\n• [Key benefit one]\n• [Key benefit two]\n• [Key benefit three]\n\nWe’d love to hear your thoughts. Tell us in the comments.\n\n#[YourBrand] #[Topic]",
+  },
+  {
+    id: "instagram",
+    name: "Instagram",
+    tag: "Caption + hashtags",
+    type: "Social post",
+    gradient: "linear-gradient(135deg, #ffb347, #ff6f91)",
+    starter:
+      "✨ [Hook that stops the scroll]\n\n[One or two short lines about the product, moment, or story.]\n\n👉 Tap the link in our bio to [action].\n\n#[YourBrand] #[Topic] #[Community]",
+  },
+  {
+    id: "facebook",
+    name: "Facebook",
+    tag: "Community update",
+    type: "Social post",
+    gradient: "linear-gradient(135deg, #ff8a4c, #e8467c)",
+    starter:
+      "Hi everyone! 👋\n\n[Friendly update or announcement for the community.]\n\nWhat do you think? Share your thoughts below, and tag a friend who would enjoy this.\n\n[Short description of the link you are sharing]",
+  },
+  {
+    id: "blog",
+    name: "Blogs",
+    tag: "Long-form article",
+    type: "Web page",
+    gradient: "linear-gradient(135deg, #ff7a6b, #c94fb0)",
+    starter:
+      "Title: [Working title]\n\nIntro\n[Open with the problem or question your reader cares about.]\n\nKey point 1\n[Explain it with an example.]\n\nKey point 2\n[Explain it with an example.]\n\nKey point 3\n[Explain it with an example.]\n\nConclusion\n[Summarize the takeaway and invite the next step.]",
+  },
+  {
+    id: "email",
+    name: "Emails",
+    tag: "Campaign email",
+    type: "Email",
+    gradient: "linear-gradient(135deg, #ff9a52, #ec4f8a)",
+    starter:
+      "Subject: [Clear, specific subject line]\n\nHi [First name],\n\n[One sentence explaining why you are writing.]\n\n[Two or three sentences with the key details and the value for the reader.]\n\n[Describe the action], and we’ll take care of the rest.\n\nWarm regards,\n[Your name]\n[Brand name]",
+  },
+  {
+    id: "others",
+    name: "Others",
+    tag: "Ads, notices & more",
+    type: "Other",
+    gradient: "linear-gradient(135deg, #f7a35c, #d95b9a)",
+    starter:
+      "[Headline]\n\n[Two or three sentences describing the offer, update, or announcement.]\n\n[Single, clear call to action]\n\n[Contact details or link text]",
+  },
+];
+
+// Time ranges for the review-stats doughnut.
+const PERIODS = [
+  { id: "week", label: "This Week", days: 7 },
+  { id: "month", label: "This Month", days: 30 },
+  { id: "all", label: "All Time", days: null },
+];
+
+// Colours + order for the doughnut (orange → pink family to match the theme).
+const STATUS_META = [
+  { key: "Approved", color: "#ff8a4c" },
+  { key: "Awaiting approval", color: "#ee4f8f" },
+  { key: "Changes requested", color: "#f7b3c6" },
+  { key: "Draft", color: "#b58cf0" },
+];
 
 function statusStyle(status) {
   if (status === "Approved") return "bg-emerald-500/10 text-emerald-600";
@@ -15,7 +98,7 @@ function statusStyle(status) {
   return "bg-[var(--surface-2)] text-[var(--text-soft)]";
 }
 
-// Card er upor mouse nile glow mouse er pashe pashe follow korbe
+// Makes the card glow follow the mouse.
 function handleSpotlight(event) {
   const card = event.target.closest(".dashboard-metric, .dashboard-panel");
   if (!card) return;
@@ -36,6 +119,12 @@ export default function Workflow() {
   const [reviewed, setReviewed] = useState(false);
   const [reviewError, setReviewError] = useState("");
   const [activeCategory, setActiveCategory] = useState(null);
+  const [activeTemplate, setActiveTemplate] = useState(null);
+  const [inputMode, setInputMode] = useState("write");
+  const [period, setPeriod] = useState("week");
+  const [fileNotice, setFileNotice] = useState("");
+  const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -74,6 +163,25 @@ export default function Workflow() {
   ).length;
   const approvedReviews = savedReviews.filter((review) => review.status === "Approved").length;
   const savedFindingCount = savedReviews.reduce((total, review) => total + (review.findings?.length || 0), 0);
+
+  // Reviews inside the selected period, used by the doughnut.
+  const periodReviews = useMemo(() => {
+    const selected = PERIODS.find((item) => item.id === period) || PERIODS[0];
+    if (!selected.days) return savedReviews;
+    const cutoff = Date.now() - selected.days * 24 * 60 * 60 * 1000;
+    return savedReviews.filter((review) => (review.updatedAt || 0) >= cutoff);
+  }, [savedReviews, period]);
+
+  // Status breakdown (unknown statuses are counted as Draft).
+  const statusSegments = useMemo(() => {
+    const counts = Object.fromEntries(STATUS_META.map((item) => [item.key, 0]));
+    periodReviews.forEach((review) => {
+      const key = Object.prototype.hasOwnProperty.call(counts, review.status) ? review.status : "Draft";
+      counts[key] += 1;
+    });
+    return STATUS_META.map((item) => ({ ...item, count: counts[item.key] }));
+  }, [periodReviews]);
+
   const visibleFindings = activeCategory
     ? findings.filter((finding) => (
       activeCategory === "Brand voice"
@@ -156,10 +264,84 @@ export default function Workflow() {
     }
   }
 
+  // Load a template into the review box, then bring the review section into view.
+  function applyTemplate(template) {
+    const isUntouchedTemplate = TEMPLATES.some((item) => item.starter === content);
+    if (content.trim() && !isUntouchedTemplate) {
+      const replace = window.confirm("Replace the text currently in the review box with this template?");
+      if (!replace) return;
+    }
+    setContent(template.starter);
+    setContentType(template.type);
+    setActiveTemplate(template.id);
+    setInputMode("write");
+    setFileNotice("");
+    setReviewed(false);
+    document.getElementById("new-review")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 350);
+  }
+
+  // Read a plain-text file straight into the review box (stays in the browser).
+  function handleFileChange(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (file.size > 500 * 1024) {
+      setFileNotice("That file is larger than 500 KB. Please choose a smaller text file.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result || "");
+      setContent(text.slice(0, MAX_CHARS));
+      setActiveTemplate(null);
+      setInputMode("write");
+      setReviewed(false);
+      setFileNotice(
+        text.length > MAX_CHARS
+          ? `Loaded “${file.name}” and trimmed it to the first ${MAX_CHARS.toLocaleString()} characters.`
+          : `Loaded “${file.name}”.`,
+      );
+    };
+    reader.onerror = () => setFileNotice("That file could not be read. Try a plain-text file (.txt, .md, .html, .csv).");
+    reader.readAsText(file);
+  }
+
+  function chooseFile() {
+    fileInputRef.current?.click();
+  }
+
+  function clearDraft() {
+    setContent("");
+    setActiveTemplate(null);
+    setFileNotice("");
+    setReviewed(false);
+    setInputMode("write");
+    window.setTimeout(() => textareaRef.current?.focus(), 0);
+  }
+    // Reset everything and jump to a fresh review box.
+  function startNewReview() {
+    setContent("");
+    setFindings([]);
+    setReviewId(null);
+    setStatus("Draft");
+    setReviewer("");
+    setComment("");
+    setReviewed(false);
+    setReviewError("");
+    setActiveCategory(null);
+    setActiveTemplate(null);
+    setFileNotice("");
+    setInputMode("write");
+    document.getElementById("new-review")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 350);
+  }
+
   return (
-    <AppShell>
+    <AppShell showTopbarProfile={false}>
       <div className="inkloom-dashboard-scroll h-full overflow-y-auto">
-        <div onMouseMove={handleSpotlight} className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
+        <div onMouseMove={handleSpotlight} className="ink-dash mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
+          {/* ───────── Header ───────── */}
           <div className="stagger flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">
@@ -178,213 +360,344 @@ export default function Workflow() {
             </Link>
           </div>
 
+          {/* ───────── Metrics ───────── */}
           <div className="stagger mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <DashboardMetric label="Saved reviews" value={savedReviews.length} tone="red" />
-            <DashboardMetric label="Awaiting attention" value={outstandingReviews} tone="orange" />
-            <DashboardMetric label="Approved by a person" value={approvedReviews} tone="charcoal" />
-            <DashboardMetric label="Findings to review" value={savedFindingCount} tone="clay" />
+            <DashboardMetric label="Saved reviews" value={savedReviews.length} tone="rose" icon="stack" />
+            <DashboardMetric label="Awaiting attention" value={outstandingReviews} tone="orange" icon="clock" />
+            <DashboardMetric label="Approved by a person" value={approvedReviews} tone="emerald" icon="check" />
+            <DashboardMetric label="Findings to review" value={savedFindingCount} tone="violet" icon="flag" />
           </div>
 
-          <section className="stagger mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(260px,0.75fr)]">
-            <div className="dashboard-panel px-4 py-4 sm:px-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-sm font-semibold text-[var(--text)]">Review activity</h2>
-                  <p className="mt-1 text-xs text-[var(--text-soft)]">Saved review updates · Last 7 days</p>
-                </div>
-                <span className="dashboard-chart-key"><span /> reviews / day</span>
+          {/* ───────── Feature templates (sits just before the content review) ───────── */}
+          <section className="stagger mt-8" aria-labelledby="templates-title">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="ink-eyebrow">Quick start</p>
+                <h2 id="templates-title" className="ink-section-title">Feature templates</h2>
               </div>
-              <div className="review-activity-chart" role="img" aria-label={`Review updates over seven days: ${activity.map((day) => `${day.label} ${day.count}`).join(", ")}`}>
-                {activity.map((day, index) => (
-                  <div key={`${day.label}-${index}`} className="review-activity-chart__day">
-                    <span className="review-activity-chart__value">{day.count || ""}</span>
-                    <span className="review-activity-chart__track">
-                      <span style={{ height: `${day.count ? Math.max(12, Math.round((day.count / Math.max(1, ...activity.map((item) => item.count))) * 100)) : 3}%` }} />
-                    </span>
-                    <span className="review-activity-chart__label">{day.label}</span>
-                  </div>
-                ))}
-              </div>
+              <p className="text-xs text-[var(--text-soft)]">Pick one to load a starter draft into the review box.</p>
             </div>
-            <div className="dashboard-panel dashboard-next-step px-4 py-4 sm:px-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-semibold text-[var(--text)]">Keep your review moving</h2>
-                  <p className="mt-1 text-xs text-[var(--text-soft)]">A clear next step for this workspace</p>
-                </div>
-                <span className="dashboard-next-step__icon" aria-hidden="true">✦</span>
-              </div>
-              <p className="mt-4 text-sm leading-5 text-[var(--text)]">Run a draft through your approved terminology and content checks.</p>
-              <a href="#new-review" className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-[var(--accent-solid)] hover:underline">
-                Start a new review <span aria-hidden="true">→</span>
-              </a>
-              <p className="mt-4 border-t border-[var(--border)] pt-3 text-[11px] leading-4 text-[var(--text-soft)]">
-                Checks are local prototype signals, not a factual or legal clearance.
-              </p>
-            </div>
-          </section>
 
-          <div id="new-review" className="mt-8 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">Review workspace</p>
-              <h2 className="mt-1 text-xl font-semibold text-[var(--text)]">Start a content review</h2>
-            </div>
-            {savedReviews.length > 0 && <p className="text-xs text-[var(--text-soft)]">{outstandingReviews} item{outstandingReviews === 1 ? "" : "s"} need attention</p>}
-          </div>
-
-          <div className="stagger mt-4 grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(270px,0.8fr)]">
-          <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm sm:p-6">
-            <form onSubmit={handleReview}>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <label className="block text-sm font-semibold text-[var(--text)]" htmlFor="content-type">
-                  Content to review
-                  <span className="mt-1 block text-xs font-normal text-[var(--text-soft)]">
-                    Paste text from your draft. Your content stays in this browser.
-                  </span>
-                </label>
-                <select
-                  id="content-type"
-                  value={contentType}
-                  onChange={(event) => setContentType(event.target.value)}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs text-[var(--text)]"
-                >
-                  {CONTENT_TYPES.map((type) => <option key={type}>{type}</option>)}
-                </select>
-              </div>
-              <textarea
-                id="review-content"
-                value={content}
-                onChange={(event) => {
-                  setContent(event.target.value);
-                  setReviewed(false);
-                }}
-                required
-                rows={12}
-                maxLength={12000}
-                placeholder="Paste a campaign draft, product description, email, or social post…"
-                className="mt-4 w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm leading-6 text-[var(--text)] placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)] focus:outline-none"
-              />
-              <div className="mt-2 flex items-center justify-between gap-3">
-                <p className="text-xs text-[var(--text-soft)]">{content.length.toLocaleString()} / 12,000 characters</p>
+            <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+              {TEMPLATES.map((template) => (
                 <button
-                  type="submit"
-                  disabled={!content.trim()}
-                  className="rounded-lg bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)] px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  key={template.id}
+                  type="button"
+                  onClick={() => applyTemplate(template)}
+                  aria-pressed={activeTemplate === template.id}
+                  className={`ink-template ${activeTemplate === template.id ? "is-active" : ""}`}
                 >
-                  Review content
+                  <span className="ink-template__icon" style={{ "--tpl-bg": template.gradient }} aria-hidden="true">
+                    <Icon name={template.id} size={24} />
+                  </span>
+                  <span className="ink-template__text">
+                    <span className="ink-template__name">{template.name}</span>
+                    <span className="ink-template__tag">{template.tag}</span>
+                  </span>
+                  <span className="ink-template__cta">
+                    {activeTemplate === template.id ? "Loaded" : "Use template"} <span aria-hidden="true">→</span>
+                  </span>
                 </button>
-              </div>
-            </form>
-
-            {reviewed && (
-              <div aria-live="polite" className="fade-in mt-6 border-t border-[var(--border)] pt-5">
-                {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-lg font-semibold text-[var(--text)]">
-                      {issueCount ? `${issueCount} finding${issueCount === 1 ? "" : "s"} to review` : "No issues detected"}
-                    </h2>
-                    <p className="mt-1 text-xs text-[var(--text-soft)]">
-                      {issueCount ? `Across ${categoryCount} ${categoryCount === 1 ? "category" : "categories"}. Review each finding before deciding.` : "Automated checks found no matches. A human reviewer should still verify the draft."}
-                    </p>
-                  </div>
-                  <span key={status} className={`scale-in rounded-full px-3 py-1 text-xs font-medium ${statusStyle(status)}`}>{status}</span>
-                </div>
-
-                {findings.length > 0 ? (
-                  <>
-                    <BranchingReviewSummary
-                      findings={findings}
-                      activeCategory={activeCategory}
-                      onSelect={setActiveCategory}
-                    />
-                    {activeCategory && <p className="fade-in mt-4 text-xs text-[var(--text-soft)]">Showing {visibleFindings.length} findings in {activeCategory}. <button type="button" onClick={() => setActiveCategory(null)} className="font-semibold text-[var(--accent-solid)] hover:underline">Show all</button></p>}
-                    <ul className="stagger mt-4 space-y-3">
-                      {visibleFindings.map((finding) => (
-                      <li key={finding.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-soft)]">{finding.category}</span>
-                            <span className="text-xs font-medium text-amber-600">{finding.severity}</span>
-                          </div>
-                        </div>
-                        <p className="mt-3 text-sm font-semibold text-[var(--text)]">“{finding.excerpt}”</p>
-                        <p className="mt-1.5 text-sm leading-5 text-[var(--text-soft)]">{finding.explanation}</p>
-                        <p className="mt-2 text-xs text-[var(--accent-solid)]">Guideline: {finding.source}</p>
-                        <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Suggested next step</p>
-                          <p className="mt-1 text-sm text-[var(--text)]">{finding.suggestion}</p>
-                          {finding.replacement && finding.category === "Terminology" && (
-                            <button type="button" onClick={() => acceptSuggestion(finding)} className="mt-2 text-xs font-semibold text-emerald-700 hover:underline">
-                              Apply wording suggestion
-                            </button>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                  </>
-                ) : (
-                  <div className="scale-in mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-[var(--text)]">
-                    No configured checks were triggered. This is not a guarantee that the content is accurate or compliant.
-                  </div>
-                )}
-
-                <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
-                  <h3 className="text-sm font-semibold text-[var(--text)]">Human review</h3>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <label className="text-xs font-medium text-[var(--text-soft)]">
-                      Reviewer
-                      <input value={reviewer} onChange={(event) => setReviewer(event.target.value)} placeholder="Name (optional)" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
-                    </label>
-                    <label className="text-xs font-medium text-[var(--text-soft)]">
-                      Review note
-                      <input value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Context or decision rationale" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
-                    </label>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <button type="button" onClick={() => updateDecision("Awaiting approval")} disabled={!reviewId} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text)] hover:border-[var(--accent-solid)] disabled:opacity-50">Request approval</button>
-                    <button type="button" onClick={() => updateDecision("Changes requested")} disabled={!reviewId} className="rounded-lg border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-700 hover:bg-amber-500/5 disabled:opacity-50">Request changes</button>
-                    <button type="button" onClick={() => updateDecision("Approved")} disabled={!reviewId} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Approve draft</button>
-                  </div>
-                  <p className="mt-3 text-[11px] leading-4 text-[var(--text-soft)]">
-                    Approval is a human decision. Inkloom’s automated checks do not publish content or replace legal, factual, or brand-owner review.
-                  </p>
-                </div>
-              </div>
-            )}
+              ))}
+            </div>
           </section>
 
-            <aside className="stagger space-y-4">
-            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-sm font-semibold text-[var(--text)]">Your terminology rules</h2>
-                  <p className="mt-1 text-xs leading-5 text-[var(--text-soft)]">One substitution per line, written as “old term → approved term”.</p>
-                </div>
-                <Link to="/brand-kits" className="shrink-0 text-xs font-medium text-[var(--accent-solid)] hover:underline">Manage</Link>
-              </div>
-              <textarea
-                value={guidelines.preferredTerms || ""}
-                onChange={(event) => setGuidelines((current) => ({ ...current, preferredTerms: event.target.value }))}
-                rows={5}
-                placeholder={"users → customers\ncheap → accessible"}
-                className="mt-3 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-xs leading-5 text-[var(--text)] placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)] focus:outline-none"
-              />
-              <p className="mt-2 text-[11px] leading-4 text-[var(--text-soft)]">Saved in this browser only. Add verified source material to your internal review before relying on any claim.</p>
-            </section>
+          {/* ───────── Main column (content review + activity) and side column ───────── */}
+          <div className="stagger mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1.75fr)_minmax(290px,0.8fr)]">
+            <div className="min-w-0 space-y-5">
+              {/* ===== Start a content review ===== */}
+              <section id="new-review" className="ink-review scroll-mt-24" aria-labelledby="review-title">
+                <div className="ink-review__inner">
+                  <p className="ink-eyebrow">Review workspace</p>
+                  <h2 id="review-title" className="ink-review__title">Start a content review</h2>
+                  <p className="ink-review__sub">Paste your draft and let Inkloom AI check it for you.</p>
 
-            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <h2 className="text-sm font-semibold text-[var(--text)]">What gets checked</h2>
-              <ul className="mt-3 space-y-2.5 text-xs text-[var(--text-soft)]">
-                {["Unsupported absolute or comparative claims", "Approved terminology substitutions", "Descriptive link text and long sentences", "Repeated all-caps language and tone"].map((item) => (
-                  <li key={item} className="flex gap-2"><span className="text-[var(--accent-solid)]">✓</span>{item}</li>
-                ))}
-              </ul>
-              <p className="mt-4 border-t border-[var(--border)] pt-3 text-[11px] leading-4 text-[var(--text-soft)]">
-                Current prototype reviews text with local rules. Image, document and external-source verification are not yet enabled.
-              </p>
-            </section>
+                  <form onSubmit={handleReview} className="mt-5">
+                    <div className="ink-review__toolbar">
+                      <div role="tablist" aria-label="How to add content" className="ink-tabs">
+                        {INPUT_TABS.map((tab) => (
+                          <button
+                            key={tab.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={inputMode === tab.id}
+                            onClick={() => setInputMode(tab.id)}
+                            className={`ink-tab ${inputMode === tab.id ? "is-active" : ""}`}
+                          >
+                            <Icon name={tab.icon} size={16} />
+                            <span>{tab.label}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <label className="ink-select">
+                        <span className="sr-only">Content type</span>
+                        <Icon name="globe" size={17} />
+                        <select value={contentType} onChange={(event) => setContentType(event.target.value)}>
+                          {CONTENT_TYPES.map((type) => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                        <Icon name="chevron" size={15} />
+                      </label>
+                    </div>
+
+                    {inputMode === "write" && (
+                      <div className="ink-editor">
+                        <label htmlFor="review-content" className="sr-only">Content to review</label>
+                        <textarea
+                          id="review-content"
+                          ref={textareaRef}
+                          value={content}
+                          onChange={(event) => {
+                            setContent(event.target.value);
+                            setReviewed(false);
+                          }}
+                          required
+                          rows={9}
+                          maxLength={MAX_CHARS}
+                          placeholder="Paste your campaign copy, product description, email, or social post…"
+                          className="ink-editor__textarea"
+                        />
+                        <span className="ink-editor__spark" aria-hidden="true"><Icon name="sparkle" size={18} /></span>
+                      </div>
+                    )}
+
+                    {inputMode === "upload" && (
+                      <div className="ink-panel-note">
+                        <span className="ink-panel-note__icon" aria-hidden="true"><Icon name="upload" size={22} /></span>
+                        <p className="ink-panel-note__title">Upload a text file</p>
+                        <p className="ink-panel-note__text">.txt, .md, .html or .csv up to 500 KB. The file is read in your browser and is not uploaded anywhere.</p>
+                        <button type="button" onClick={chooseFile} className="ink-btn-ghost">Choose file</button>
+                      </div>
+                    )}
+
+                    {inputMode === "url" && (
+                      <div className="ink-panel-note">
+                        <span className="ink-panel-note__icon" aria-hidden="true"><Icon name="link" size={22} /></span>
+                        <p className="ink-panel-note__title">Fetching from a URL isn’t available yet</p>
+                        <p className="ink-panel-note__text">This prototype reviews text locally and doesn’t load web pages. Copy the text from the page and paste it into “Content to review”.</p>
+                        <button type="button" onClick={() => setInputMode("write")} className="ink-btn-ghost">Paste text instead</button>
+                      </div>
+                    )}
+
+                    {inputMode === "template" && (
+                      <div className="ink-chip-grid">
+                        {TEMPLATES.map((template) => (
+                          <button key={template.id} type="button" onClick={() => applyTemplate(template)} className="ink-chip">
+                            <span className="ink-chip__icon" style={{ "--tpl-bg": template.gradient }} aria-hidden="true">
+                              <Icon name={template.id} size={16} />
+                            </span>
+                            {template.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {fileNotice && <p role="status" className="ink-notice">{fileNotice}</p>}
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".txt,.md,.markdown,.html,.htm,.csv,text/*"
+                      onChange={handleFileChange}
+                      className="sr-only"
+                      tabIndex={-1}
+                      aria-hidden="true"
+                    />
+
+                    <div className="ink-review__footer">
+                      <div className="ink-tools">
+                        <button type="button" onClick={chooseFile} className="ink-tool ink-tool--wide">
+                          <Icon name="clip" size={17} />
+                          Add file
+                        </button>
+                        <button type="button" disabled title="Cloud storage isn’t connected in this prototype" aria-label="Import from cloud storage (not connected)" className="ink-tool">
+                          <Icon name="cloud" size={18} />
+                        </button>
+                        <button type="button" disabled title="Notes import isn’t connected in this prototype" aria-label="Import from notes (not connected)" className="ink-tool">
+                          <Icon name="notes" size={18} />
+                        </button>
+                        <button type="button" onClick={() => setInputMode("url")} title="Paste from URL" aria-label="Paste from URL" className="ink-tool">
+                          <Icon name="link" size={18} />
+                        </button>
+                      </div>
+
+                      <div className="ink-review__run">
+                        <span className="ink-count">{content.length.toLocaleString()} / {MAX_CHARS.toLocaleString()} characters</span>
+                        {content && (
+                          <button type="button" onClick={clearDraft} className="ink-btn-ghost ink-btn-ghost--small">Clear</button>
+                        )}
+                        <button type="submit" disabled={!content.trim()} className="ink-run">
+                          <Icon name="sparkle" size={17} />
+                          Run content review
+                          <span aria-hidden="true">→</span>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  {reviewed && (
+                    <div aria-live="polite" className="ink-results fade-in mt-6">
+                      {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <h2 className="text-lg font-semibold text-[var(--text)]">
+                            {issueCount ? `${issueCount} finding${issueCount === 1 ? "" : "s"} to review` : "No issues detected"}
+                          </h2>
+                          <p className="mt-1 text-xs text-[var(--text-soft)]">
+                            {issueCount ? `Across ${categoryCount} ${categoryCount === 1 ? "category" : "categories"}. Review each finding before deciding.` : "Automated checks found no matches. A human reviewer should still verify the draft."}
+                          </p>
+                        </div>
+                        <span key={status} className={`scale-in rounded-full px-3 py-1 text-xs font-medium ${statusStyle(status)}`}>{status}</span>
+                      </div>
+
+                      {findings.length > 0 ? (
+                        <>
+                          <BranchingReviewSummary
+                            findings={findings}
+                            activeCategory={activeCategory}
+                            onSelect={setActiveCategory}
+                          />
+                          {activeCategory && <p className="fade-in mt-4 text-xs text-[var(--text-soft)]">Showing {visibleFindings.length} findings in {activeCategory}. <button type="button" onClick={() => setActiveCategory(null)} className="font-semibold text-[var(--accent-solid)] hover:underline">Show all</button></p>}
+                          <ul className="stagger mt-4 space-y-3">
+                            {visibleFindings.map((finding) => (
+                              <li key={finding.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-soft)]">{finding.category}</span>
+                                    <span className="text-xs font-medium text-amber-600">{finding.severity}</span>
+                                  </div>
+                                </div>
+                                <p className="mt-3 text-sm font-semibold text-[var(--text)]">“{finding.excerpt}”</p>
+                                <p className="mt-1.5 text-sm leading-5 text-[var(--text-soft)]">{finding.explanation}</p>
+                                <p className="mt-2 text-xs text-[var(--accent-solid)]">Guideline: {finding.source}</p>
+                                <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                                  <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Suggested next step</p>
+                                  <p className="mt-1 text-sm text-[var(--text)]">{finding.suggestion}</p>
+                                  {finding.replacement && finding.category === "Terminology" && (
+                                    <button type="button" onClick={() => acceptSuggestion(finding)} className="mt-2 text-xs font-semibold text-emerald-700 hover:underline">
+                                      Apply wording suggestion
+                                    </button>
+                                  )}
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      ) : (
+                        <div className="scale-in mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-[var(--text)]">
+                          No configured checks were triggered. This is not a guarantee that the content is accurate or compliant.
+                        </div>
+                      )}
+
+                      <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
+                        <h3 className="text-sm font-semibold text-[var(--text)]">Human review</h3>
+                        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                          <label className="text-xs font-medium text-[var(--text-soft)]">
+                            Reviewer
+                            <input value={reviewer} onChange={(event) => setReviewer(event.target.value)} placeholder="Name (optional)" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
+                          </label>
+                          <label className="text-xs font-medium text-[var(--text-soft)]">
+                            Review note
+                            <input value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Context or decision rationale" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
+                          </label>
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <button type="button" onClick={() => updateDecision("Awaiting approval")} disabled={!reviewId} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text)] hover:border-[var(--accent-solid)] disabled:opacity-50">Request approval</button>
+                          <button type="button" onClick={() => updateDecision("Changes requested")} disabled={!reviewId} className="rounded-lg border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-700 hover:bg-amber-500/5 disabled:opacity-50">Request changes</button>
+                          <button type="button" onClick={() => updateDecision("Approved")} disabled={!reviewId} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Approve draft</button>
+                        </div>
+                        <p className="mt-3 text-[11px] leading-4 text-[var(--text-soft)]">
+                          Approval is a human decision. Inkloom’s automated checks do not publish content or replace legal, factual, or brand-owner review.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {/* ===== Review activity (directly below the content review) ===== */}
+              <section className="dashboard-panel ink-card px-4 py-4 sm:px-5" aria-labelledby="activity-title">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h2 id="activity-title" className="ink-card__title">Review activity</h2>
+                    <p className="ink-card__sub">Saved review updates · Last 7 days</p>
+                  </div>
+                  <span className="dashboard-chart-key"><span /> reviews / day</span>
+                </div>
+                <div className="review-activity-chart" role="img" aria-label={`Review updates over seven days: ${activity.map((day) => `${day.label} ${day.count}`).join(", ")}`}>
+                  {activity.map((day, index) => (
+                    <div key={`${day.label}-${index}`} className="review-activity-chart__day">
+                      <span className="review-activity-chart__value">{day.count || ""}</span>
+                      <span className="review-activity-chart__track">
+                        <span style={{ height: `${day.count ? Math.max(12, Math.round((day.count / Math.max(1, ...activity.map((item) => item.count))) * 100)) : 3}%` }} />
+                      </span>
+                      <span className="review-activity-chart__label">{day.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            {/* ===== Side column ===== */}
+            <aside className="min-w-0 space-y-5">
+              <section className="dashboard-panel ink-card px-4 py-4 sm:px-5" aria-labelledby="stats-title">
+                <div className="flex items-start justify-between gap-3">
+                  <h2 id="stats-title" className="ink-card__title ink-card__title--lg">Your Review Stats</h2>
+                  <label className="ink-select ink-select--small">
+                    <span className="sr-only">Time range</span>
+                    <select value={period} onChange={(event) => setPeriod(event.target.value)}>
+                      {PERIODS.map((item) => (
+                        <option key={item.id} value={item.id}>{item.label}</option>
+                      ))}
+                    </select>
+                    <Icon name="chevron" size={14} />
+                  </label>
+                </div>
+                <StatusDoughnut segments={statusSegments} total={periodReviews.length} />
+              </section>
+
+              <section className="ink-next" aria-labelledby="next-title">
+                <div className="ink-next__body">
+                  <h2 id="next-title" className="ink-next__title">Keep your review moving</h2>
+                  <p className="ink-next__text">A clear next step for this workspace. Run a draft through your approved terminology and content checks.</p>
+                  <button type="button" onClick={startNewReview} className="ink-next__btn">
+                    Start a new review <span aria-hidden="true">→</span>
+                  </button>
+                </div>
+                <DocStackArt />
+              </section>
+
+              <section className="side-card ink-card dashboard-panel px-4 py-4 sm:px-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h2 className="ink-card__title">Your terminology rules</h2>
+                    <p className="ink-card__sub">One substitution per line, written as “old term → approved term”.</p>
+                  </div>
+                  <Link to="/brand-kits" className="shrink-0 text-xs font-medium text-[var(--accent-solid)] hover:underline">Manage</Link>
+                </div>
+                <textarea
+                  value={guidelines.preferredTerms || ""}
+                  onChange={(event) => setGuidelines((current) => ({ ...current, preferredTerms: event.target.value }))}
+                  rows={5}
+                  placeholder={"users → customers\ncheap → accessible"}
+                  className="ink-rules"
+                />
+                <p className="mt-2 text-[11px] leading-4 text-[var(--text-soft)]">Saved in this browser only. Add verified source material to your internal review before relying on any claim.</p>
+              </section>
+
+              <section className="side-card ink-card dashboard-panel px-4 py-4 sm:px-5">
+                <h2 className="ink-card__title">What gets checked</h2>
+                <ul className="mt-3 space-y-2.5 text-xs text-[var(--text-soft)]">
+                  {["Unsupported absolute or comparative claims", "Approved terminology substitutions", "Descriptive link text and long sentences", "Repeated all-caps language and tone"].map((item) => (
+                    <li key={item} className="flex gap-2"><span className="text-[#f0568a]">✓</span>{item}</li>
+                  ))}
+                </ul>
+                <p className="mt-4 border-t border-[var(--border)] pt-3 text-[11px] leading-4 text-[var(--text-soft)]">
+                  Current prototype reviews text with local rules. Image, document and external-source verification are not yet enabled.
+                </p>
+              </section>
             </aside>
           </div>
         </div>
@@ -392,8 +705,7 @@ export default function Workflow() {
     </AppShell>
   );
 }
-
-// Number 0 theke target porjonto gune uthbe
+// Counts up from 0 to the target number.
 function CountUp({ value }) {
   const target = Number(value) || 0;
   const [display, setDisplay] = useState(0);
@@ -423,17 +735,296 @@ function CountUp({ value }) {
   return <>{display}</>;
 }
 
-function DashboardMetric({ label, value, tone }) {
+function DashboardMetric({ label, value, tone, icon }) {
   return (
     <div className={`dashboard-metric dashboard-metric--${tone}`}>
-      <span className="dashboard-metric__mark" aria-hidden="true" />
+      <span className="dashboard-metric__icon" aria-hidden="true">
+        <Icon name={icon} size={20} />
+      </span>
       <div className="min-w-0">
-        <p className="truncate text-[11px] font-medium text-[var(--text-soft)]">{label}</p>
-        <p className="mt-1 text-2xl font-semibold tracking-tight text-[var(--text)]">
+        <p className="line-clamp-2 text-[11px] font-semibold uppercase leading-snug tracking-wide text-[var(--text-soft)]">{label}</p>
+        <p className="mt-1 text-3xl font-semibold tracking-tight text-[var(--text)]">
           <CountUp value={value} />
         </p>
       </div>
-      <span className="dashboard-metric__spark" aria-hidden="true">⌁</span>
     </div>
   );
+}
+
+// Pure-SVG doughnut chart (no chart library needed): ring on the left, legend on the right.
+function StatusDoughnut({ segments, total }) {
+  const [ready, setReady] = useState(false);
+  const [hovered, setHovered] = useState(null);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const radius = 46;
+  const circumference = 2 * Math.PI * radius;
+  const visibleCount = segments.filter((segment) => segment.count > 0).length;
+  const gap = visibleCount > 1 ? 3 : 0;
+
+  let consumed = 0;
+  const arcs = segments.map((segment) => {
+    const fraction = total ? segment.count / total : 0;
+    const length = fraction > 0 ? Math.max(0.5, fraction * circumference - gap) : 0;
+    const arc = { ...segment, length, offset: consumed + gap / 2 };
+    consumed += fraction * circumference;
+    return arc;
+  });
+
+  const focus = hovered ? segments.find((segment) => segment.key === hovered) : null;
+  const summary = segments.map((segment) => `${segment.key} ${segment.count}`).join(", ");
+
+  return (
+    <div className="doughnut">
+      <div className="doughnut__chart" role="img" aria-label={`Review status breakdown: ${summary}`}>
+        <svg className="doughnut__svg" viewBox="0 0 120 120" aria-hidden="true">
+          <g transform="rotate(-90 60 60)">
+            <circle className="doughnut__track" cx="60" cy="60" r={radius} fill="none" strokeWidth="14" />
+            {arcs.map((arc) => (
+              <circle
+                key={arc.key}
+                className={`doughnut__arc ${hovered && hovered !== arc.key ? "is-dim" : ""}`}
+                cx="60"
+                cy="60"
+                r={radius}
+                fill="none"
+                stroke={arc.color}
+                strokeWidth={hovered === arc.key ? 17 : 14}
+                style={{
+                  strokeDasharray: ready ? `${arc.length} ${circumference - arc.length}` : `0 ${circumference}`,
+                  strokeDashoffset: -arc.offset,
+                }}
+                onMouseEnter={() => setHovered(arc.key)}
+                onMouseLeave={() => setHovered(null)}
+              />
+            ))}
+          </g>
+        </svg>
+        <div className="doughnut__center">
+          <strong>{focus ? focus.count : total}</strong>
+          <span>{focus ? focus.key : total === 1 ? "Review" : "Reviews"}</span>
+        </div>
+      </div>
+
+      <ul className="doughnut__legend">
+        {segments.map((segment) => (
+          <li
+            key={segment.key}
+            className={`doughnut__row ${hovered === segment.key ? "is-active" : ""}`}
+            onMouseEnter={() => setHovered(segment.key)}
+            onMouseLeave={() => setHovered(null)}
+          >
+            <span className="doughnut__dot" style={{ "--seg": segment.color }} aria-hidden="true" />
+            <span className="doughnut__name">{segment.key}</span>
+            <span className="doughnut__count">{segment.count}</span>
+          </li>
+        ))}
+        {total === 0 && (
+          <li className="doughnut__empty">No reviews in this period yet.</li>
+        )}
+      </ul>
+    </div>
+  );
+}
+
+// Decorative stack of documents for the "Keep your review moving" card.
+function DocStackArt() {
+  return (
+    <svg className="ink-next__art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="docA" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ffb06b" />
+          <stop offset="1" stopColor="#f0568a" />
+        </linearGradient>
+        <linearGradient id="docB" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ff9a52" />
+          <stop offset="1" stopColor="#c94fb0" />
+        </linearGradient>
+      </defs>
+      <g transform="rotate(10 60 60)">
+        <rect x="46" y="14" width="52" height="68" rx="9" fill="url(#docB)" opacity="0.45" />
+      </g>
+      <g transform="rotate(-2 60 60)">
+        <rect x="34" y="26" width="52" height="68" rx="9" fill="url(#docA)" opacity="0.7" />
+      </g>
+      <g transform="rotate(-12 60 60)">
+        <rect x="24" y="36" width="54" height="70" rx="9" fill="#2a1f2d" stroke="url(#docA)" strokeWidth="2" />
+        <rect x="33" y="50" width="30" height="4" rx="2" fill="#ffb06b" />
+        <rect x="33" y="60" width="36" height="4" rx="2" fill="#f4a8c2" opacity="0.8" />
+        <rect x="33" y="70" width="24" height="4" rx="2" fill="#f4a8c2" opacity="0.55" />
+        <rect x="33" y="80" width="32" height="4" rx="2" fill="#f4a8c2" opacity="0.4" />
+      </g>
+    </svg>
+  );
+}
+
+// Small inline icon set (no extra dependency). Social icons are simple original
+// drawings, not the official brand logos.
+function Icon({ name, size = 20 }) {
+  const stroke = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.9,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    focusable: "false",
+  };
+  switch (name) {
+    case "stack":
+      return (
+        <svg {...stroke}>
+          <path d="M12 3 3 8l9 5 9-5-9-5Z" />
+          <path d="m3 13 9 5 9-5" />
+          <path d="m3 17.5 9 5 9-5" opacity="0.55" />
+        </svg>
+      );
+    case "clock":
+      return (
+        <svg {...stroke}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      );
+    case "check":
+      return (
+        <svg {...stroke}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="m8 12.5 2.8 2.8L16.5 9.5" />
+        </svg>
+      );
+    case "flag":
+      return (
+        <svg {...stroke}>
+          <path d="M5 21V4" />
+          <path d="M5 4h11l-2 4 2 4H5" />
+        </svg>
+      );
+    case "sparkle":
+      return (
+        <svg {...stroke}>
+          <path d="M12 3.5 13.9 9l5.6 1.9-5.6 1.9L12 18.5l-1.9-5.7L4.5 10.9 10.1 9 12 3.5Z" />
+          <path d="M19 3v3M17.5 4.5h3" />
+          <path d="M5.5 17.5v3M4 19h3" />
+        </svg>
+      );
+    case "doc":
+      return (
+        <svg {...stroke}>
+          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" />
+          <path d="M14 3v5h5" />
+          <path d="M9 13h6M9 17h4" />
+        </svg>
+      );
+    case "upload":
+      return (
+        <svg {...stroke}>
+          <path d="M12 16V4" />
+          <path d="m7 9 5-5 5 5" />
+          <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+        </svg>
+      );
+    case "link":
+      return (
+        <svg {...stroke}>
+          <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+          <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+        </svg>
+      );
+    case "templates":
+      return (
+        <svg {...stroke}>
+          <rect x="3.5" y="3.5" width="17" height="6" rx="2" />
+          <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+          <rect x="13.5" y="13.5" width="7" height="7" rx="2" />
+        </svg>
+      );
+    case "globe":
+      return (
+        <svg {...stroke}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18" />
+          <path d="M12 3c2.6 2.4 3.9 5.4 3.9 9S14.6 18.6 12 21c-2.6-2.4-3.9-5.4-3.9-9S9.4 5.4 12 3Z" />
+        </svg>
+      );
+    case "chevron":
+      return (
+        <svg {...stroke}>
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      );
+    case "clip":
+      return (
+        <svg {...stroke}>
+          <path d="m20 11-8.5 8.5a5 5 0 0 1-7-7L13 4a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4L14 7" />
+        </svg>
+      );
+    case "cloud":
+      return (
+        <svg {...stroke}>
+          <path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10.5 3.8 3.8 0 0 1 17.5 18H7Z" />
+        </svg>
+      );
+    case "notes":
+      return (
+        <svg {...stroke}>
+          <rect x="4" y="3.5" width="16" height="17" rx="3" />
+          <path d="M9 16V8l6 8V8" />
+        </svg>
+      );
+    case "linkedin":
+      return (
+        <svg {...stroke}>
+          <rect x="3" y="3" width="18" height="18" rx="4" />
+          <path d="M8 11v5M8 8v.01M12 16v-5M12 13c0-1.4 1-2 2.2-2 1.3 0 1.8.9 1.8 2.2V16" />
+        </svg>
+      );
+    case "instagram":
+      return (
+        <svg {...stroke}>
+          <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+          <circle cx="12" cy="12" r="3.8" />
+          <path d="M17 7v.01" />
+        </svg>
+      );
+    case "facebook":
+      return (
+        <svg {...stroke}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M13.5 20v-6.5h2.2l.4-2.6h-2.6V9.6c0-.8.4-1.3 1.4-1.3h1.3V6.1c-.4-.1-1.1-.1-1.8-.1-2 0-3.2 1.2-3.2 3.2v1.7H8.7v2.6h2.1V20" />
+        </svg>
+      );
+    case "email":
+      return (
+        <svg {...stroke}>
+          <rect x="3" y="5" width="18" height="14" rx="3" />
+          <path d="m4 8 8 5.5L20 8" />
+        </svg>
+      );
+    case "blog":
+      return (
+        <svg {...stroke}>
+          <path d="m4 20 1-4.2L16.5 4.3a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.2 19 4 20Z" />
+          <path d="m14.5 6.3 3.2 3.2" />
+          <path d="M13 20h7" />
+        </svg>
+      );
+    case "others":
+      return (
+        <svg {...stroke}>
+          <rect x="4" y="4" width="7" height="7" rx="2" />
+          <rect x="13" y="4" width="7" height="7" rx="2" />
+          <rect x="4" y="13" width="7" height="7" rx="2" />
+          <path d="M16.5 13v7M13 16.5h7" />
+        </svg>
+      );
+    default:
+      return null;
+  }
 }
