@@ -29,7 +29,7 @@ function NewWorkflowRedirect() {
 }
 
 // Google/GitHub OAuth redirects here with ?token=... after login.
-// Token save kore ebar /loading e pathay (3 second loadbar), tarpor /workflow.
+// After saving the token, show the /loading screen, then continue to /workflow.
 function AuthCallback() {
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ function AuthCallback() {
   return null;
 }
 
-const LOAD_TIME = 2000; // prothom app load er 2 second
+const LOAD_TIME = 2000; // the load bar on first app load lasts 2 seconds
 
 export default function App() {
   const [ready, setReady] = useState(false);
