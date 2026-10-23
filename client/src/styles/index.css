@@ -228,7 +228,7 @@
 .scale-in   { animation: scale-in 0.35s var(--ease-out) backwards; }
 .pop-in     { animation: slide-down 0.2s var(--ease-out) backwards; transform-origin: top; }
 
-/* Children ek ek kore stagger hoye ashbe */
+/* Children appear one after another (staggered) */
 .stagger > * { animation: fade-up 0.55s var(--ease-out) backwards; }
 .stagger > *:nth-child(1) { animation-delay: 0.04s; }
 .stagger > *:nth-child(2) { animation-delay: 0.10s; }
@@ -349,7 +349,7 @@ body, .app-glow {
   animation: grow-x 0.9s var(--ease-out) backwards;
 }
 
-/* ---------- 2. Mouse spotlight glow (card er upor mouse nilei glow follow kore) ---------- */
+/* ---------- 2. Mouse spotlight glow (the glow follows the mouse over a card) ---------- */
 .dashboard-panel { position: relative; overflow: hidden; }
 .dashboard-metric::after,
 .dashboard-panel::after {
@@ -390,7 +390,7 @@ body, .app-glow {
   animation: spin-angle 4s linear infinite;
 }
 
-/* ✦ icon bhaste bhaste glow kore */
+/* The ✦ icon glows with a slow pulse */
 @keyframes icon-float {
   0%, 100% { transform: translateY(0) rotate(0deg); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-solid) 40%, transparent); }
   50%      { transform: translateY(-3px) rotate(12deg); box-shadow: 0 0 18px 2px color-mix(in srgb, var(--accent-solid) 40%, transparent); }
