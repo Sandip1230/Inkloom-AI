@@ -27,7 +27,7 @@ export default function SignUp() {
       if (!response.ok) throw new Error(data.error || "Could not create account. Try again.");
 
       localStorage.setItem("inkloom-token", data.token);
-      navigate("/workflow");
+      navigate("/loading");
     } catch (submitError) {
       setError(submitError.message);
     } finally {

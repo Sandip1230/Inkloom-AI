@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useParams, useNavigate } from "react-router-dom";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Landing from "./pages/Landing.jsx";
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
@@ -9,6 +9,8 @@ import Projects from "./pages/Projects.jsx";
 import BrandKits from "./pages/BrandKits.jsx";
 import Community from "./pages/Community.jsx";
 import CompanyAdmin from "./pages/CompanyAdmin.jsx";
+import LoadBar from "./components/LoadBar.jsx";
+import DashboardLoader from "./components/DashboardLoader.jsx";
 import { BrandProvider } from "./context/BrandContext.jsx";
 import { createProjectId } from "./lib/projectsStore.js";
 
@@ -26,22 +28,32 @@ function NewWorkflowRedirect() {
   return <Navigate to={`/workflow/${idRef.current}`} replace />;
 }
 
-// Google/GitHub OAuth (server/src/routes/auth.routes.js) redirects here with
-// ?token=... after a successful login. Without this route the token had
-// nowhere to land - the app showed a blank page and the token was lost.
+// Google/GitHub OAuth redirects here with ?token=... after login.
+// Token save kore ebar /loading e pathay (3 second loadbar), tarpor /workflow.
 function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get("token");
     if (token) localStorage.setItem("inkloom-token", token);
-    navigate("/workflow", { replace: true });
+    navigate("/loading", { replace: true });
   }, [navigate]);
 
   return null;
 }
 
+const LOAD_TIME = 2000; // prothom app load er 2 second
+
 export default function App() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), LOAD_TIME);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!ready) return <LoadBar duration={LOAD_TIME} />;
+
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -49,6 +61,7 @@ export default function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/loading" element={<DashboardLoader />} />
       <Route path="/projects" element={<Projects />} />
       <Route path="/brand-kits" element={<BrandKits />} />
       <Route path="/templates" element={<Navigate to="/brand-kits" replace />} />
@@ -56,7 +69,6 @@ export default function App() {
       <Route path="/company-admin" element={<CompanyAdmin />} />
       <Route path="/workflow" element={<NewWorkflowRedirect />} />
       <Route path="/workflow/:projectId" element={<WorkflowRoute />} />
-      {/* Unknown paths used to render nothing - now they just go home */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

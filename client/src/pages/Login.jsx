@@ -33,7 +33,7 @@ export default function Login() {
       if (!response.ok) throw new Error(data.error || "Could not sign in. Try again.");
 
       localStorage.setItem("inkloom-token", data.token);
-      navigate("/workflow");
+      navigate("/loading");
     } catch (submitError) {
       setError(submitError.message);
     } finally {
@@ -190,7 +190,7 @@ export default function Login() {
               <button type="button" onClick={handleGitHubLogin}><GitHubIcon /> GitHub</button>
             </div>
 
-            <button type="button" className="login-skip" onClick={() => navigate("/workflow")}>
+            <button type="button" className="login-skip" onClick={() => navigate("/loading")}>
               Continue without signing in
             </button>
 
