@@ -9,7 +9,7 @@ import Projects from "./pages/Projects.jsx";
 import BrandKits from "./pages/BrandKits.jsx";
 import Community from "./pages/Community.jsx";
 import CompanyAdmin from "./pages/CompanyAdmin.jsx";
-import LoadBar from "./components/LoadBar.jsx";
+import LoadBar from "./components/Loadbar.jsx";
 import DashboardLoader from "./components/DashboardLoader.jsx";
 import { BrandProvider } from "./context/BrandContext.jsx";
 import { createProjectId } from "./lib/projectsStore.js";
