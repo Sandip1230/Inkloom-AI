@@ -1,6 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import ThemeToggle from "./ThemeToggle.jsx";
+import ProfileAvatar from "./ProfileAvatar.jsx";
+import ProfilePhotoPicker from "./ProfilePhotoPicker.jsx";
+import { useAvatarStyle } from "../lib/profileStore.js";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: "grid", to: "/workflow" },
@@ -83,6 +86,8 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(() => readUserFromToken());
+  const [photoOpen, setPhotoOpen] = useState(false);
+  const [avatarStyle, setAvatarStyle] = useAvatarStyle(user?.email || user?.name);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -111,7 +116,11 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
   }
 
   const displayName = user?.name || "Guest";
-  const initial = displayName.charAt(0).toUpperCase();
+
+  function openPhotoPicker() {
+    setMenuOpen(false);
+    setPhotoOpen(true);
+  }
 
   return (
     <aside
@@ -184,9 +193,7 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
             onClick={() => setMenuOpen((prev) => !prev)}
             className="flex items-center gap-2 rounded-lg px-1 py-1 text-left transition-colors hover:bg-white/5"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-white">
-              {initial}
-            </span>
+            <ProfileAvatar name={displayName} styleId={avatarStyle} size={36} />
             <div>
               <p className="text-sm font-medium leading-tight text-white">{displayName}</p>
               <p className="text-xs leading-tight text-[var(--sidebar-text-soft)]">Free Plan</p>
@@ -204,6 +211,17 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
             )}
             <button
               type="button"
+              onClick={openPhotoPicker}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-[var(--sidebar-text)] transition-colors hover:bg-white/5"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 8a2 2 0 0 1 2-2h1.5l1.2-2h6.6l1.2 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" />
+                <circle cx="12" cy="13" r="3.4" />
+              </svg>
+              Change profile photo
+            </button>
+            <button
+              type="button"
               onClick={handleLogout}
               className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-rose-400 transition-colors hover:bg-rose-500/10"
             >
@@ -217,6 +235,14 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
           </div>
         )}
       </div>
+
+      <ProfilePhotoPicker
+        open={photoOpen}
+        name={displayName}
+        currentStyle={avatarStyle}
+        onSave={setAvatarStyle}
+        onClose={() => setPhotoOpen(false)}
+      />
     </aside>
   );
 }

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import BranchingReviewSummary from "../components/BranchingReviewSummary.jsx";
-import ParticleTitle from "../components/ParticleTitle.jsx";
+import DashboardHero from "../components/DashboardHero.jsx";
+import ReviewActivity from "../components/ReviewActivity.jsx";
 import {
   applySuggestion,
   createBrandSafeRemixes,
@@ -162,20 +163,7 @@ export default function Workflow() {
     () => listReviews(),
     [reviewed, status, findings],
   );
-  const activity = useMemo(() => {
-    const today = new Date();
-    return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(today);
-      date.setDate(today.getDate() - (6 - index));
-      const count = savedReviews.filter(
-        (review) => new Date(review.updatedAt).toDateString() === date.toDateString(),
-      ).length;
-      return {
-        label: new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(date),
-        count,
-      };
-    });
-  }, [savedReviews]);
+  
   const outstandingReviews = savedReviews.filter(
     (review) => review.status === "Draft" || review.status === "Awaiting approval",
   ).length;
@@ -428,32 +416,8 @@ export default function Workflow() {
     <AppShell showTopbarProfile={false}>
       <div className="inkloom-dashboard-scroll h-full overflow-y-auto">
         <div onMouseMove={handleSpotlight} className="ink-dash mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
-          {/* ───────── Header ───────── */}
-          <div className="stagger flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">
-                <span className="live-dot" aria-hidden="true" />
-                Inkloom AI <span className="mx-1 text-[var(--text-soft)]">/</span> <span className="aurora-text">Workspace overview</span>
-              </p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)] sm:text-4xl">
-                <ParticleTitle>Every draft, in good hands.</ParticleTitle>
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-soft)]">
-                Review the details. Keep your brand consistent. Leave the final call to people.
-              </p>
-            </div>
-            <Link to="/projects" className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 text-sm font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-solid)]">
-              All reviews <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
-
-          {/* ───────── Metrics ───────── */}
-          <div className="stagger mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <DashboardMetric label="Saved reviews" value={savedReviews.length} tone="rose" icon="stack" />
-            <DashboardMetric label="Awaiting attention" value={outstandingReviews} tone="orange" icon="clock" />
-            <DashboardMetric label="Approved by a person" value={approvedReviews} tone="emerald" icon="check" />
-            <DashboardMetric label="Findings to review" value={savedFindingCount} tone="violet" icon="flag" />
-          </div>
+                   {/* ───────── Header banner + stat cards ───────── */}
+          <DashboardHero reviews={savedReviews} />
 
           {/* ───────── Feature templates (sits just before the content review) ───────── */}
           <section className="stagger mt-8" aria-labelledby="templates-title">
@@ -493,7 +457,7 @@ export default function Workflow() {
           <div className="stagger mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1.75fr)_minmax(290px,0.8fr)]">
             <div className="min-w-0 space-y-5">
               {/* ===== Start a content review ===== */}
-              <section id="new-review" className="ink-review scroll-mt-24" aria-labelledby="review-title">
+              id="new-review" className="ink-review scroll-mt-24" aria-labelledby="review-title"
                 <div className="ink-review__inner">
                   <p className="ink-eyebrow">Review workspace</p>
                   <h2 id="review-title" className="ink-review__title">Start a content review</h2>
@@ -866,29 +830,9 @@ export default function Workflow() {
                     </div>
                   )}
                 </div>
-              </section>
+              
 
-              {/* ===== Review activity (directly below the content review) ===== */}
-              <section className="dashboard-panel ink-card px-4 py-4 sm:px-5" aria-labelledby="activity-title">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h2 id="activity-title" className="ink-card__title">Review activity</h2>
-                    <p className="ink-card__sub">Saved review updates · Last 7 days</p>
-                  </div>
-                  <span className="dashboard-chart-key"><span /> reviews / day</span>
-                </div>
-                <div className="review-activity-chart" role="img" aria-label={`Review updates over seven days: ${activity.map((day) => `${day.label} ${day.count}`).join(", ")}`}>
-                  {activity.map((day, index) => (
-                    <div key={`${day.label}-${index}`} className="review-activity-chart__day">
-                      <span className="review-activity-chart__value">{day.count || ""}</span>
-                      <span className="review-activity-chart__track">
-                        <span style={{ height: `${day.count ? Math.max(12, Math.round((day.count / Math.max(1, ...activity.map((item) => item.count))) * 100)) : 3}%` }} />
-                      </span>
-                      <span className="review-activity-chart__label">{day.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
+              
             </div>
 
             {/* ===== Side column ===== */}
@@ -949,11 +893,16 @@ export default function Workflow() {
                   Current prototype reviews text with local rules. Image, document and external-source verification are not yet enabled.
                 </p>
               </section>
-            </aside>
+                    </aside>
+          </div>
+
+          {/* ───────── Review activity (bottom of the dashboard) ───────── */}
+          <div className="mt-5">
+            <ReviewActivity reviews={savedReviews} />
           </div>
         </div>
       </div>
-    </AppShell>
+    </AppShell>    
   );
 }
 // Counts up from 0 to the target number.
