@@ -1357,3 +1357,59 @@ html.dark .hero__aurora { opacity: 0.95; }
 @media (prefers-reduced-motion: reduce) {
   .activity__bar, .pf-overlay, .pf-dialog { animation: none; transition: none; }
 }
+/* =====================================================================
+   PART D — Laptop fit + compact banner  (append at the very END of Dashboard.css)
+   ===================================================================== */
+
+/* Banner buttons */
+.hero__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.hero__btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px;
+  border: 1px solid var(--ink-line); border-radius: 12px; background: var(--hero-card);
+  color: var(--ink-title); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer;
+  backdrop-filter: blur(6px); transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.hero__btn:hover { transform: translateY(-1px); border-color: rgba(255, 122, 76, 0.55); }
+.hero__btn:focus-visible { outline: 2px solid var(--ink-orange); outline-offset: 2px; }
+.hero__btn--primary { border-color: transparent; background: var(--ink-grad); color: #fff; box-shadow: 0 12px 26px -14px rgba(240, 86, 138, 0.85); }
+.hero--compact { padding-bottom: 26px; }
+
+/* Main content + side column: stack them until there is room for both (< 1280px wide). */
+@media (max-width: 1279px) {
+  .ink-dash .ink-main-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Laptops (13"–15", ~1024–1599px wide): smaller, tighter measurements */
+@media (min-width: 1024px) and (max-width: 1599px) {
+  .ink-dash.ink-dash { padding: 18px 24px 28px; }
+  .ink-dash .hero { padding: 22px 26px 22px; border-radius: 20px; }
+  .ink-dash .hero__eyebrow { font-size: 11px; }
+  .ink-dash .hero__title { margin-top: 8px; font-size: clamp(28px, 2.7vw, 38px); }
+  .ink-dash .hero__lead { margin-top: 8px; font-size: 14px; line-height: 1.5; }
+  .ink-dash .hero__actions { margin-top: 14px; }
+  .ink-dash .hero__btn { height: 36px; padding: 0 14px; font-size: 12.5px; }
+  .ink-dash .hero__note { margin: 6px 40px 0 0; font-size: 24px; }
+  .ink-dash .hero__note-star { top: -24px; right: -30px; width: 28px; height: 28px; }
+  .ink-dash > .mt-8 { margin-top: 20px; }
+  .ink-dash .ink-section-title { font-size: 18px; }
+  .ink-dash .ink-review__inner { padding: 18px 20px 20px; }
+  .ink-dash .ink-review__title { font-size: 24px; }
+  .ink-dash .ink-editor__textarea { min-height: 150px; }
+}
+
+/* Between 1024px and 1439px the six template cards get too narrow: use 3 per row. */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .ink-dash .ink-template-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .ink-dash .ink-template { gap: 10px; padding: 14px; }
+  .ink-dash .ink-template__icon { width: 42px; height: 42px; border-radius: 13px; }
+}
+
+/* Short laptop screens (e.g. 1366x768): save vertical space */
+@media (min-width: 1024px) and (max-height: 820px) {
+  .ink-dash.ink-dash { padding-top: 14px; }
+  .ink-dash .hero { padding-top: 18px; padding-bottom: 18px; }
+  .ink-dash .hero__lead { margin-top: 6px; }
+  .ink-dash .hero__actions { margin-top: 12px; }
+  .ink-dash > .mt-8 { margin-top: 16px; }
+  .ink-dash .ink-editor__textarea { min-height: 130px; }
+}

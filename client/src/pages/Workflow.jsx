@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import BranchingReviewSummary from "../components/BranchingReviewSummary.jsx";
 import DashboardHero from "../components/DashboardHero.jsx";
-import ReviewActivity from "../components/ReviewActivity.jsx";
 import {
   applySuggestion,
   createBrandSafeRemixes,
@@ -12,7 +11,18 @@ import {
 } from "../lib/governance.js";
 import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/reviewStore.js";
 
-const CONTENT_TYPES = ["Web page", "Email", "Social post", "Advertisement", "Other"];
+const CONTENT_TYPES = [
+  "Web page",
+  "Email",
+  "Social post",
+  "Advertisement",
+  "Instagram Post",
+  "LinkedIn Post",
+  "Facebook Post",
+  "Blog Content",
+  "Report Draft",
+  "Other",
+];
 const MAX_CHARS = 12000;
 const JUDGE_DEMO_CONTENT = "Our planning tool guarantees success and offers the best solution for teams. Click here to learn more.";
 
@@ -330,7 +340,7 @@ export default function Workflow() {
       }
     }
   }
-
+  
   // Load a template into the review box, then bring the review section into view.
   function applyTemplate(template) {
     const isUntouchedTemplate = TEMPLATES.some((item) => item.starter === content);
@@ -392,7 +402,8 @@ export default function Workflow() {
     setInputMode("write");
     window.setTimeout(() => textareaRef.current?.focus(), 0);
   }
-    // Reset everything and jump to a fresh review box.
+
+  // Reset everything and jump to a fresh review box.
   function startNewReview() {
     setContent("");
     setFindings([]);
@@ -416,8 +427,8 @@ export default function Workflow() {
     <AppShell showTopbarProfile={false}>
       <div className="inkloom-dashboard-scroll h-full overflow-y-auto">
         <div onMouseMove={handleSpotlight} className="ink-dash mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
-                   {/* ───────── Header banner + stat cards ───────── */}
-          <DashboardHero reviews={savedReviews} />
+          {/* ───────── Header banner ───────── */}
+          <DashboardHero />
 
           {/* ───────── Feature templates (sits just before the content review) ───────── */}
           <section className="stagger mt-8" aria-labelledby="templates-title">
@@ -429,7 +440,7 @@ export default function Workflow() {
               <p className="text-xs text-[var(--text-soft)]">Pick one to load a starter draft into the review box.</p>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <div className="ink-template-grid mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
               {TEMPLATES.map((template) => (
                 <button
                   key={template.id}
@@ -453,11 +464,11 @@ export default function Workflow() {
             </div>
           </section>
 
-          {/* ───────── Main column (content review + activity) and side column ───────── */}
-          <div className="stagger mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1.75fr)_minmax(290px,0.8fr)]">
+          {/* ───────── Main column (content review) and side column ───────── */}
+          <div className="ink-main-grid stagger mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1.75fr)_minmax(290px,0.8fr)]">
             <div className="min-w-0 space-y-5">
               {/* ===== Start a content review ===== */}
-              id="new-review" className="ink-review scroll-mt-24" aria-labelledby="review-title"
+              <section id="new-review" className="ink-review scroll-mt-24" aria-labelledby="review-title">
                 <div className="ink-review__inner">
                   <p className="ink-eyebrow">Review workspace</p>
                   <h2 id="review-title" className="ink-review__title">Start a content review</h2>
@@ -595,7 +606,7 @@ export default function Workflow() {
                       </div>
                     </div>
                   </form>
-
+                  
                   {reviewed && (
                     <div aria-live="polite" className="ink-results fade-in mt-6">
                       {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
@@ -830,9 +841,7 @@ export default function Workflow() {
                     </div>
                   )}
                 </div>
-              
-
-              
+              </section>
             </div>
 
             {/* ===== Side column ===== */}
@@ -893,18 +902,14 @@ export default function Workflow() {
                   Current prototype reviews text with local rules. Image, document and external-source verification are not yet enabled.
                 </p>
               </section>
-                    </aside>
-          </div>
-
-          {/* ───────── Review activity (bottom of the dashboard) ───────── */}
-          <div className="mt-5">
-            <ReviewActivity reviews={savedReviews} />
+            </aside>
           </div>
         </div>
       </div>
-    </AppShell>    
+    </AppShell>
   );
 }
+
 // Counts up from 0 to the target number.
 function CountUp({ value }) {
   const target = Number(value) || 0;
