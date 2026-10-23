@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ProfileAvatar from './ProfileAvatar.jsx';
+import ProfilePhotoPicker from './ProfilePhotoPicker.jsx';
+import { useAvatarStyle } from '../lib/profileStore.js';
 
 // Decodes the JWT payload (server/src/routes/auth.routes.js signs
 // { id, name, email }) without needing a library or a /me API call.
@@ -20,6 +23,8 @@ export default function Topbar({ showProfile = true }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(() => readUserFromToken());
+  const [photoOpen, setPhotoOpen] = useState(false);
+  const [avatarStyle, setAvatarStyle] = useAvatarStyle(user?.email || user?.name);
   const notifications = []; // no notification system wired up yet — always empty for now
   const menuRef = useRef(null);
   const notifRef = useRef(null);
@@ -42,7 +47,11 @@ export default function Topbar({ showProfile = true }) {
   }
 
   const displayName = user?.name || 'Guest';
-  const initial = displayName.charAt(0).toUpperCase();
+
+  function openPhotoPicker() {
+    setMenuOpen(false);
+    setPhotoOpen(true);
+  }
 
   return (
     <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-[var(--border)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md sm:px-7">
@@ -111,9 +120,10 @@ export default function Topbar({ showProfile = true }) {
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-semibold text-white"
+              aria-label="Open profile menu"
+              className="flex h-9 w-9 items-center justify-center rounded-full"
             >
-              {initial}
+              <ProfileAvatar name={displayName} styleId={avatarStyle} size={36} />
             </button>
 
             {menuOpen && (
@@ -123,6 +133,17 @@ export default function Topbar({ showProfile = true }) {
                   {user?.email && <p className="truncate text-xs text-[var(--text-soft)]">{user.email}</p>}
                 </div>
                 <div className="my-1 h-px bg-[var(--border)]" />
+                <button
+                  type="button"
+                  onClick={openPhotoPicker}
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-[var(--text)] transition-colors hover:bg-[var(--border)]"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 8a2 2 0 0 1 2-2h1.5l1.2-2h6.6l1.2 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" />
+                    <circle cx="12" cy="13" r="3.4" />
+                  </svg>
+                  Change profile photo
+                </button>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -140,6 +161,14 @@ export default function Topbar({ showProfile = true }) {
           </div>
         )}
       </div>
+
+      <ProfilePhotoPicker
+        open={photoOpen}
+        name={displayName}
+        currentStyle={avatarStyle}
+        onSave={setAvatarStyle}
+        onClose={() => setPhotoOpen(false)}
+      />
     </header>
   );
 }
