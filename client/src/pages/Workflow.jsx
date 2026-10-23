@@ -954,7 +954,6 @@ function DashboardMetric({ label, value, tone, icon }) {
       </div>
     </div>
   );
-<<<<<<< HEAD
 }
 
 // Pure-SVG doughnut chart (no chart library needed): ring on the left, legend on the right.
@@ -1234,6 +1233,3 @@ function Icon({ name, size = 20 }) {
       return null;
   }
 }
-=======
-}""
->>>>>>> a99654f (create loadbar+upgrade Admin)
