@@ -7,47 +7,47 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f1f1f3;
+  --bg: #fffaf7;
   --surface: #ffffff;
-  --surface-2: #f4f2f7;
-  --border: #dedbe4;
+  --surface-2: #fdf5f6;
+  --border: #ecdfe4;
   --text: #2b2320;
-  --text-soft: #777080;
-  --sidebar-bg: #292334;
+  --text-soft: #7a6f78;
+  --sidebar-bg: #2b2025;
   --sidebar-text: #f4f5f7;
-  --sidebar-text-soft: #b7adca;
-  --sidebar-border: #3c304e;
-  --accent-from: #7650c9;
-  --accent-to: #a575e6;
-  --accent-solid: #6941bd;
-  --btn-gradient: linear-gradient(120deg, #6840b7 0%, #9865d2 100%);
-  --auth-panel-bg: #f4effb;
-  --auth-panel-text: #2d2140;
-  --auth-panel-muted: #746984;
-  --auth-panel-accent: #7147bd;
-  --auth-panel-glow: radial-gradient(circle at 15% 20%, rgba(143, 100, 204, 0.16), transparent 45%), radial-gradient(circle at 90% 10%, rgba(186, 142, 225, 0.18), transparent 50%);
+  --sidebar-text-soft: #c9b7be;
+  --sidebar-border: #44343c;
+  --accent-from: #ff9a52;
+  --accent-to: #f0568a;
+  --accent-solid: #f05672;
+  --btn-gradient: linear-gradient(120deg, #ff8a4c 0%, #f0568a 100%);
+  --auth-panel-bg: #fff3ed;
+  --auth-panel-text: #2b2320;
+  --auth-panel-muted: #7a6f78;
+  --auth-panel-accent: #f05672;
+  --auth-panel-glow: radial-gradient(circle at 15% 20%, rgba(255, 138, 76, 0.16), transparent 45%), radial-gradient(circle at 90% 10%, rgba(240, 86, 138, 0.16), transparent 50%);
 }
 
 .dark {
-  --bg: #111214;
-  --surface: #191a1d;
-  --surface-2: #222428;
-  --border: #33353b;
-  --text: #e45b16;
-  --text-soft: #a5a3a1;
-  --sidebar-bg: #0c0d0f;
+  --bg: #100e11;
+  --surface: #17151a;
+  --surface-2: #1e1b21;
+  --border: #302b33;
+  --text: #f5edf1;
+  --text-soft: #a9a2ac;
+  --sidebar-bg: #100e11;
   --sidebar-text: #f3f4f6;
-  --sidebar-text-soft: #a4a2a0;
-  --sidebar-border: #292a2d;
+  --sidebar-text-soft: #a9a2ac;
+  --sidebar-border: #302b33;
   --accent-from: #ff9a52;
-  --accent-to: #e86e32;
-  --accent-solid: #f18a43;
-  --btn-gradient: linear-gradient(120deg, #f29549 0%, #df632c 100%);
-  --auth-panel-bg: #171719;
-  --auth-panel-text: #f1f0ee;
-  --auth-panel-muted: #aaa7a5;
+  --accent-to: #f0568a;
+  --accent-solid: #ff8a4c;
+  --btn-gradient: linear-gradient(120deg, #ff9a52 0%, #f0568a 100%);
+  --auth-panel-bg: #17151a;
+  --auth-panel-text: #f5edf1;
+  --auth-panel-muted: #a9a2ac;
   --auth-panel-accent: #ff9a52;
-  --auth-panel-glow: radial-gradient(circle at 15% 20%, rgba(237, 131, 54, 0.16), transparent 45%), radial-gradient(circle at 90% 10%, rgba(177, 82, 36, 0.17), transparent 50%);
+  --auth-panel-glow: radial-gradient(circle at 15% 20%, rgba(255, 154, 82, 0.16), transparent 45%), radial-gradient(circle at 90% 10%, rgba(240, 86, 138, 0.17), transparent 50%);
 }
 
 .auth-panel-glow {
@@ -106,7 +106,7 @@
   display: none;
 }
 
-/* ===== Decorative background follows the active purple or orange accent. ===== */
+/* ===== Decorative background follows the active orange and pink accents. ===== */
 .page-bg {
   position: absolute;
   inset: 0;
@@ -140,11 +140,11 @@
 }
 
 .dark .page-bg::before {
-  background: radial-gradient(circle, rgba(241, 138, 67, 0.2), transparent 70%);
+  background: radial-gradient(circle, rgba(255, 154, 82, 0.2), transparent 70%);
 }
 
 .dark .page-bg::after {
-  background: radial-gradient(circle, rgba(223, 99, 44, 0.17), transparent 70%);
+  background: radial-gradient(circle, rgba(240, 86, 138, 0.17), transparent 70%);
 }
 
 /* extra thin glowing wavy streaks, dark mode only */
@@ -153,7 +153,7 @@
   width: 70vw;
   height: 2px;
   border-radius: 9999px;
-  background: linear-gradient(90deg, transparent, rgba(241, 138, 67, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 138, 76, 0.4), transparent);
   filter: blur(1.5px);
 }
 
@@ -451,15 +451,15 @@ a.bg-gradient-to-r:hover::after { animation: shine-sweep 0.8s ease; }
 }
 /* ================= AURORA ================= */
 :root {
-  --aurora-1: #a575e6;
-  --aurora-2: #7650c9;
-  --aurora-3: #d9b8ff;
-  --aurora-4: #6f9bff;
-  --aurora-5: #f0a6ff;
+  --aurora-1: #ff9a52;
+  --aurora-2: #f0568a;
+  --aurora-3: #ffd2b0;
+  --aurora-4: #ff7a6b;
+  --aurora-5: #f7b3c6;
 }
 .dark {
   --aurora-1: #ff9a52;
-  --aurora-2: #e86e32;
+  --aurora-2: #f0568a;
   --aurora-3: #ffd08a;
   --aurora-4: #ff6f91;
   --aurora-5: #ffb347;

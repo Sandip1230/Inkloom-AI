@@ -428,13 +428,13 @@ export default function Workflow() {
 
   return (
     <AppShell showTopbarProfile={false}>
-      <div className="inkloom-dashboard-scroll h-full overflow-y-auto">
+      <div className="inkloom-dashboard-scroll min-h-full">
         <div onMouseMove={handleSpotlight} className="ink-dash mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
-          {/* ───────── Header banner ───────── */}
+        <section className="dashboard-overview" aria-label="Workspace overview">
           <DashboardHero />
 
-          {/* ───────── Feature templates (sits just before the content review) ───────── */}
-          <section className="stagger mt-8" aria-labelledby="templates-title">
+          {/* ───────── Feature templates ───────── */}
+          <section className="dashboard-overview__templates stagger" aria-labelledby="templates-title">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="ink-eyebrow">Quick start</p>
@@ -443,7 +443,7 @@ export default function Workflow() {
               <p className="text-xs text-[var(--text-soft)]">Pick one to load a starter draft into the review box.</p>
             </div>
 
-            <div className="ink-template-grid mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <div className="ink-template-grid mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
               {TEMPLATES.map((template) => (
                 <button
                   key={template.id}
@@ -467,8 +467,8 @@ export default function Workflow() {
             </div>
           </section>
 
-          {/* ───────── Main column (content review) and side column ───────── */}
-          <div className="ink-main-grid stagger mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1.75fr)_minmax(290px,0.8fr)]">
+        {/* ───────── Review workspace and supporting cards ───────── */}
+        <div className="ink-main-grid stagger grid items-start gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,1fr)]">
             <div className="min-w-0 space-y-5">
               {/* ===== Start a content review ===== */}
               <section id="new-review" className="ink-review scroll-mt-24" aria-labelledby="review-title">
@@ -527,7 +527,7 @@ export default function Workflow() {
                             setJudgeStage(0);
                           }}
                           required
-                          rows={9}
+                          rows={6}
                           maxLength={MAX_CHARS}
                           placeholder="Paste your campaign copy, product description, email, or social post…"
                           className="ink-editor__textarea"
@@ -582,8 +582,13 @@ export default function Workflow() {
 
                     {fileNotice && <p role="status" className="ink-notice">{fileNotice}</p>}
 
-                    <VoiceActorPreview text={content} />
-                    <ChaosTestPanel content={content} preferredTerms={guidelines.preferredTerms || ""} />
+                    <details className="ink-extra-tools">
+                      <summary>Optional voice and stress-test tools</summary>
+                      <div className="ink-extra-tools__content">
+                        <VoiceActorPreview text={content} />
+                        <ChaosTestPanel content={content} preferredTerms={guidelines.preferredTerms || ""} />
+                      </div>
+                    </details>
 
                     <input
                       ref={fileInputRef}
@@ -630,10 +635,10 @@ export default function Workflow() {
                     <div aria-live="polite" className="ink-results fade-in mt-6">
                       {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
                       {judgeMode && (
-                        <section aria-labelledby="judge-mode-title" className="mb-5 rounded-xl border border-violet-500/25 bg-violet-500/5 p-4">
+                        <section aria-labelledby="judge-mode-title" className="mb-5 rounded-xl border border-[var(--ink-line)] bg-[var(--ink-card-2)] p-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
-                              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-700">Guided product demo · sample not saved</p>
+                              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ink-orange)]">Guided product demo · sample not saved</p>
                               <h3 id="judge-mode-title" className="mt-1 text-sm font-semibold text-[var(--text)]">Judge Mode</h3>
                             </div>
                             <button
@@ -654,8 +659,8 @@ export default function Workflow() {
                                 aria-current={judgeStage === index + 1 ? "step" : undefined}
                                 className={`rounded-lg border px-2.5 py-2 text-[11px] ${
                                   judgeStage >= index + 1
-                                    ? "border-violet-500/30 bg-violet-500/10 text-violet-800"
-                                    : "border-[var(--border)] text-[var(--text-soft)]"
+                                    ? "border-[var(--ink-orange)] bg-[var(--ink-orange)]/10 text-[var(--ink-title)]"
+                                    : "border-[var(--ink-line)] text-[var(--ink-muted)]"
                                 }`}
                               >
                                 <span className="font-bold">{index + 1}.</span> {step}
@@ -676,7 +681,7 @@ export default function Workflow() {
                                   setSelectedRemixId("on-brand");
                                   setJudgeStage(2);
                                 }}
-                                className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800"
+                                className="rounded-lg bg-[var(--ink-orange)] px-3 py-2 text-xs font-semibold text-white hover:brightness-105"
                               >
                                 Next: preview the on-brand remix
                               </button>
@@ -686,7 +691,7 @@ export default function Workflow() {
                                 type="button"
                                 disabled={!selectedRemix}
                                 onClick={() => acceptRemix(selectedRemix)}
-                                className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800 disabled:opacity-50"
+                                className="rounded-lg bg-[var(--ink-orange)] px-3 py-2 text-xs font-semibold text-white hover:brightness-105 disabled:opacity-50"
                               >
                                 Apply remix and continue
                               </button>
@@ -695,7 +700,7 @@ export default function Workflow() {
                               <button
                                 type="button"
                                 onClick={startJudgeDemo}
-                                className="rounded-lg border border-violet-500/30 px-3 py-2 text-xs font-semibold text-violet-800 hover:bg-violet-500/5"
+                                className="rounded-lg border border-[var(--ink-orange)]/30 px-3 py-2 text-xs font-semibold text-[var(--ink-orange)] hover:bg-[var(--ink-orange)]/5"
                               >
                                 Restart walkthrough
                               </button>
@@ -864,7 +869,7 @@ export default function Workflow() {
             </div>
 
             {/* ===== Side column ===== */}
-            <aside className="min-w-0 space-y-5">
+            <aside className="dashboard-side-grid min-w-0">
               <section className="dashboard-panel ink-card px-4 py-4 sm:px-5" aria-labelledby="stats-title">
                 <div className="flex items-start justify-between gap-3">
                   <h2 id="stats-title" className="ink-card__title ink-card__title--lg">Your Review Stats</h2>
@@ -903,7 +908,7 @@ export default function Workflow() {
                 <textarea
                   value={guidelines.preferredTerms || ""}
                   onChange={(event) => setGuidelines((current) => ({ ...current, preferredTerms: event.target.value }))}
-                  rows={5}
+                  rows={3}
                   placeholder={"users → customers\ncheap → accessible"}
                   className="ink-rules"
                 />
@@ -923,6 +928,7 @@ export default function Workflow() {
               </section>
             </aside>
           </div>
+          </section>
         </div>
       </div>
     </AppShell>
