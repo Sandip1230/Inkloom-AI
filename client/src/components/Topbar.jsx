@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar.jsx';
 import ProfilePhotoPicker from './ProfilePhotoPicker.jsx';
+import AccountDeletionAction from './AccountDeletionAction.jsx';
 import { useAvatarStyle } from '../lib/profileStore.js';
 
 // Decodes the JWT payload (server/src/routes/auth.routes.js signs
@@ -12,7 +13,7 @@ function readUserFromToken() {
   try {
     const payload = token.split('.')[1];
     const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    return { name: decoded.name || 'Guest', email: decoded.email || '' };
+    return { id: decoded.id || '', name: decoded.name || 'Guest', email: decoded.email || '' };
   } catch {
     return null;
   }
@@ -156,6 +157,16 @@ export default function Topbar({ showProfile = true }) {
                   </svg>
                   Log out
                 </button>
+                {user && (
+                  <AccountDeletionAction
+                    userKey={user.email || user.name}
+                    onDeleted={() => {
+                      setUser(null);
+                      setMenuOpen(false);
+                    }}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-rose-400 transition-colors hover:bg-rose-500/10 disabled:opacity-50"
+                  />
+                )}
               </div>
             )}
           </div>

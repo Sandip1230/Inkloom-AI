@@ -11,10 +11,12 @@ function createAIClient() {
   // "server took too long" / "can't reach server" errors. A fast instruct
   // model answers in a few seconds and doesn't need the reasoning workaround.
   const model = process.env.AI_MODEL || process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.1-8b-instruct';
+  const visionModel = process.env.AI_VISION_MODEL || model;
 
   if (!apiKey) throw new Error('AI_API_KEY (or OPENROUTER_API_KEY) is required for AI stages');
 
-  async function complete({ system, prompt, maxTokens = 3000 }) {
+  async function complete({ system, prompt, maxTokens = 3000, imageDataUrl }) {
+    const requestModel = imageDataUrl ? visionModel : model;
     const controller = new AbortController();
     // Fast model - 20s is generous now. Still comfortably below the
     // client's 60s axios timeout so the server always gets to respond.
@@ -32,11 +34,19 @@ function createAIClient() {
           'X-Title': 'Inkloom AI',
         },
         body: JSON.stringify({
-          model,
+          model: requestModel,
           max_tokens: maxTokens,
           messages: [
             ...(system ? [{ role: 'system', content: system }] : []),
-            { role: 'user', content: prompt },
+            {
+              role: 'user',
+              content: imageDataUrl
+                ? [
+                    { type: 'text', text: prompt },
+                    { type: 'image_url', image_url: { url: imageDataUrl } },
+                  ]
+                : prompt,
+            },
           ],
         }),
       });
@@ -51,7 +61,7 @@ function createAIClient() {
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error(`[ai/client] Provider ${response.status} for model "${model}":`, errorBody);
+      console.error(`[ai/client] Provider ${response.status} for model "${requestModel}":`, errorBody);
       throw new Error(`AI provider request failed (${response.status}): ${errorBody}`);
     }
 

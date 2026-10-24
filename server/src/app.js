@@ -7,6 +7,7 @@ const brandRoutes = require('./routes/brand.routes');
 const stageRoutes = require('./routes/stages.routes');
 const authRoutes = require('./routes/auth.routes');
 const adminRoutes = require('./routes/admin.routes');
+const reviewToolsRoutes = require('./routes/review-tools.routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -20,7 +21,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
 ];
 app.use(cors({ origin: allowedOrigins }));
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '3mb' }));
 app.use(passport.initialize());
 
 app.get('/api/health', (_request, response) => response.json({ status: 'ok' }));
@@ -28,6 +29,7 @@ app.use('/api/stages', stageRoutes);
 app.use('/api/brand', brandRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/review-tools', reviewToolsRoutes);
 
 app.use((request, response) => response.status(404).json({ error: `No route: ${request.method} ${request.originalUrl}` }));
 app.use(errorHandler);

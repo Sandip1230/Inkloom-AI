@@ -4,6 +4,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const authController = require('../controllers/auth.controller');
+const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
@@ -43,6 +44,7 @@ router.post('/login', authLimiter, authController.login);
 router.post('/forgot-password', authLimiter, authController.forgotPassword);
 router.post('/verify-reset-code', authLimiter, authController.verifyResetCode);
 router.post('/reset-password', authLimiter, authController.resetPassword);
+router.delete('/account', requireAuth, authController.deleteAccount);
 
 // --- Google ---
 router.get('/google', requireOAuthProvider('Google'), passport.authenticate('google', { scope: ['profile', 'email'], session: false }));

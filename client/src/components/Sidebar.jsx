@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import ThemeToggle from "./ThemeToggle.jsx";
 import ProfileAvatar from "./ProfileAvatar.jsx";
 import ProfilePhotoPicker from "./ProfilePhotoPicker.jsx";
+import AccountDeletionAction from "./AccountDeletionAction.jsx";
 import { useAvatarStyle } from "../lib/profileStore.js";
 
 const NAV_ITEMS = [
@@ -10,6 +11,7 @@ const NAV_ITEMS = [
   { label: "Review history", icon: "folder", to: "/projects" },
   { label: "Guidelines", icon: "sparkle", to: "/brand-kits" },
   { label: "Insights", icon: "layout", to: "/community" },
+  { label: "Brand Drift Time Machine", icon: "layout", to: "/drift" },
   { label: "Company Admin", icon: "users", to: "/company-admin" },
 ];
 
@@ -75,7 +77,7 @@ function readUserFromToken() {
   try {
     const payload = token.split(".")[1];
     const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-    return { name: decoded.name || "Guest", email: decoded.email || "" };
+    return { id: decoded.id || "", name: decoded.name || "Guest", email: decoded.email || "" };
   } catch {
     return null;
   }
@@ -232,6 +234,16 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
               </svg>
               Log out
             </button>
+            {user && (
+              <AccountDeletionAction
+                userKey={user.email || user.name}
+                onDeleted={() => {
+                  setUser(null);
+                  setMenuOpen(false);
+                }}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-rose-400 transition-colors hover:bg-rose-500/10 disabled:opacity-50"
+              />
+            )}
           </div>
         )}
       </div>

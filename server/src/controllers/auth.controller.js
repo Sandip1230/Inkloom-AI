@@ -3,6 +3,10 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const AuditEvent = require('../models/AuditEvent');
+const GovernanceSource = require('../models/GovernanceSource');
+const Organization = require('../models/Organization');
+const WorkspaceMembership = require('../models/WorkspaceMembership');
 const { sendEmail } = require('../utils/sendEmail');
 
 const RESET_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
@@ -168,4 +172,32 @@ async function resetPassword(request, response, next) {
   }
 }
 
-module.exports = { signup, login, forgotPassword, verifyResetCode, resetPassword };
+async function deleteAccount(request, response, next) {
+  try {
+    const user = await User.findById(request.userId).select('_id');
+    if (!user) return response.status(404).json({ error: 'This account no longer exists.' });
+
+    const ownedWorkspace = await Organization.exists({ ownerId: user._id });
+    if (ownedWorkspace) {
+      return response.status(409).json({
+        error: 'Account deletion is unavailable while you own a workspace. No shared workspace data was changed.',
+      });
+    }
+
+    await Promise.all([
+      WorkspaceMembership.deleteMany({ userId: user._id }),
+      AuditEvent.updateMany({ actorId: user._id }, { $set: { actorId: null } }),
+      GovernanceSource.updateMany(
+        { $or: [{ createdBy: user._id }, { 'versions.editedBy': user._id }] },
+        { $set: { createdBy: null, 'versions.$[].editedBy': null } },
+      ),
+    ]);
+    await User.deleteOne({ _id: user._id });
+
+    return response.json({ message: 'Account and personal profile data deleted.' });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+module.exports = { signup, login, forgotPassword, verifyResetCode, resetPassword, deleteAccount };

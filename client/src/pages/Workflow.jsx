@@ -10,6 +10,9 @@ import {
   reviewContent,
 } from "../lib/governance.js";
 import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/reviewStore.js";
+import VoiceActorPreview from "../components/review/VoiceActorPreview.jsx";
+import ChaosTestPanel from "../components/review/ChaosTestPanel.jsx";
+import ScreenshotReview from "../components/review/ScreenshotReview.jsx";
 
 const CONTENT_TYPES = [
   "Web page",
@@ -534,12 +537,25 @@ export default function Workflow() {
                     )}
 
                     {inputMode === "upload" && (
-                      <div className="ink-panel-note">
-                        <span className="ink-panel-note__icon" aria-hidden="true"><Icon name="upload" size={22} /></span>
-                        <p className="ink-panel-note__title">Upload a text file</p>
-                        <p className="ink-panel-note__text">.txt, .md, .html or .csv up to 500 KB. The file is read in your browser and is not uploaded anywhere.</p>
-                        <button type="button" onClick={chooseFile} className="ink-btn-ghost">Choose file</button>
-                      </div>
+                      <>
+                        <div className="ink-panel-note">
+                          <span className="ink-panel-note__icon" aria-hidden="true"><Icon name="upload" size={22} /></span>
+                          <p className="ink-panel-note__title">Upload a text file</p>
+                          <p className="ink-panel-note__text">.txt, .md, .html or .csv up to 500 KB. The file is read in your browser and is not uploaded anywhere.</p>
+                          <button type="button" onClick={chooseFile} className="ink-btn-ghost">Choose file</button>
+                        </div>
+                        <ScreenshotReview
+                          preferredTerms={guidelines.preferredTerms || ""}
+                          onUseText={(text) => {
+                            setContent(text.slice(0, MAX_CHARS));
+                            setInputMode("write");
+                            setReviewed(false);
+                            setJudgeMode(false);
+                            setJudgeStage(0);
+                            setFileNotice("Extracted text is ready for the usual local content checks.");
+                          }}
+                        />
+                      </>
                     )}
 
                     {inputMode === "url" && (
@@ -565,6 +581,9 @@ export default function Workflow() {
                     )}
 
                     {fileNotice && <p role="status" className="ink-notice">{fileNotice}</p>}
+
+                    <VoiceActorPreview text={content} />
+                    <ChaosTestPanel content={content} preferredTerms={guidelines.preferredTerms || ""} />
 
                     <input
                       ref={fileInputRef}

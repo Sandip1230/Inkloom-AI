@@ -2,9 +2,9 @@
 
 **A human-led brand-governance workspace for reviewing content before it is published.**
 
-Inkloom helps a team check draft copy against its preferred terminology and a small set of explainable writing rules. Reviewers can inspect findings, consider suggested wording, record a decision, and revisit saved drafts. The current review prototype runs in the browser: it does not send review text to an AI service or publish content.
+Inkloom helps a team check draft copy against its preferred terminology and a small set of explainable writing rules. Reviewers can inspect findings, compare delivery styles, stress-test wording, record a decision, and revisit saved drafts. Standard text checks run in the browser. Optional chaos-test and screenshot previews send the requested draft or image to the server-configured AI provider; Inkloom does not publish content.
 
-> **Prototype status:** Inkloom currently provides deterministic checks for pasted text, browser-local review history, and human decision controls. It is not a production governance or content-verification service. See [Current capabilities and limitations](#current-capabilities-and-limitations) before using it with real content.
+> **Prototype status:** Inkloom provides deterministic local checks, browser-local review history, optional AI-generated risk examples and screenshot observations, and human decision controls. AI results are not approval decisions or content verification. See [Current capabilities and limitations](#current-capabilities-and-limitations) before using it with real content.
 
 ## Contents
 
@@ -30,6 +30,7 @@ The current prototype demonstrates a simple review loop:
 3. Review explainable findings and optional wording suggestions.
 4. Ask for approval, request changes, or record a human approval.
 5. Return to saved reviews and see lightweight, browser-local insights.
+6. Preview speech delivery, stress-test possible misreadings, compare draft revisions with approved examples, or inspect a screenshot. These previews never set a review status.
 
 **The goal is to help reviewers make informed decisions—not to replace their judgment.**
 
@@ -93,6 +94,8 @@ The client is the main Inkloom governance experience. Starting the server is use
 7. Add a reviewer name or note and record a human decision.
 8. Use **Try Judge Mode** to walk through a sample review, remix, and human decision. The sample does not appear in review history.
 9. Visit **Review history** or **Insights** to review items saved in this browser.
+10. Use **Voice-Actor Preview** to compare browser-synthesized delivery styles. Run **Chaos-Test My Copy** for AI-generated risk examples, or open the upload tab for **Screenshot-to-Review**. These previews do not change the human review status.
+11. Open **Brand Drift Time Machine** in the sidebar to compare saved drafts with approved examples and inspect draft revisions.
 
 Changes to terminology and review decisions are stored in the browser’s `localStorage`. They are not shared with other users or devices.
 
@@ -100,7 +103,7 @@ Changes to terminology and review decisions are stored in the browser’s `local
 
 | Area | Available in this prototype |
 | --- | --- |
-| Content input | Pasted text, with a selected content type |
+| Content input | Pasted text, supported text files, and screenshot images, with a selected content type |
 | Terminology | User-defined preferred-term substitutions |
 | Writing checks | Unsupported absolute/comparative wording, configured terminology, generic link labels, long sentences, and repeated all-caps wording |
 | Findings | Excerpt, explanation, check/source label, and suggested next step |
@@ -108,13 +111,17 @@ Changes to terminology and review decisions are stored in the browser’s `local
 | Brand Twin Debate | Rule-grounded summary of configured findings and review limitations; no generated opinions or approval score |
 | Judge Mode | Guided, non-persisted sample walkthrough of findings, remix preview, and human decision |
 | Human review | Draft, awaiting approval, changes requested, and approved decisions; optional reviewer and note |
+| Voice-Actor Preview | Browser speech synthesis with warm expert, bold challenger, and calm guide delivery styles; preview only |
+| Chaos-Test My Copy | Optional server-side AI examples of possible misunderstanding, out-of-context readings, and unsupported promises |
+| Brand Drift Time Machine | Browser-local phrase overlap, selected promise/tone signals, and saved revision timeline against an approved example |
+| Screenshot-to-Review | Optional server-side AI extraction of visible copy and advisory contrast/readability observations from PNG, JPEG, or WebP screenshots |
 | History and insights | Summaries derived from browser-local review records |
+| Account deletion | Profile action removes personal account and membership; deletion is blocked while the account owns a workspace |
 
 The following are **not implemented in the current governance workflow**:
 
-- AI-generated or model-based review
 - Verification of facts or promotional claims against approved source documents
-- Image, document, video, or visual-asset review
+- Full accessibility measurement, OCR guarantees, or comprehensive image/document/video review
 - Shared team workspaces, collaboration across devices, or role-based permissions
 - Centralized analytics, publication integrations, or automatic publishing
 - Guaranteed detection of every brand, legal, factual, or accessibility issue
@@ -125,11 +132,11 @@ The claims check flags selected absolute or comparative wording. It does not det
 
 ### Governance client
 
-The React/Vite client runs the current review experience. The analyzer in [`client/src/lib/governance.js`](./client/src/lib/governance.js) applies deterministic text and pattern checks. [`client/src/lib/reviewStore.js`](./client/src/lib/reviewStore.js) reads and writes review records and terminology rules in browser storage. No API request is made by this review flow to process the draft.
+The React/Vite client runs deterministic checks in [`client/src/lib/governance.js`](./client/src/lib/governance.js) and stores review records and terminology rules in browser storage via [`client/src/lib/reviewStore.js`](./client/src/lib/reviewStore.js). The voice preview uses browser speech synthesis. The optional chaos-test and screenshot tools call the server; their inputs are not stored by the application.
 
 ### Express API
 
-The Express server in `server/` retains an earlier staged brand-creation API and authentication routes. It is separate from the current local governance analyzer. Some API flows require configuration such as an AI provider, JWT secret, OAuth credentials, or MongoDB; these are not required to try the browser-based review workflow.
+The Express server in `server/` also provides optional AI review tools and account deletion. Chaos-test requests use the configured AI provider; screenshot reviews need a provider/model that accepts vision input. Account deletion requires a valid sign-in token and MongoDB.
 
 For more detail, see [docs/architecture.md](./docs/architecture.md) and [docs/prompt-design.md](./docs/prompt-design.md).
 
@@ -139,6 +146,12 @@ Run the client tests:
 
 ```sh
 npm test --prefix client
+```
+
+Run the server tests:
+
+```sh
+npm test --prefix server
 ```
 
 Create the optimized client build:
@@ -157,26 +170,29 @@ The client’s tests cover representative governance-rule behavior. They do not 
 
 ## Optional server configuration
 
-The current browser-based review workflow does not need server configuration. If you want to explore the legacy API, copy [`server/.env.example`](./server/.env.example) to `server/.env` and configure only the services you intend to use. Never commit `.env` files or real credentials.
+The standard browser-based review workflow does not need server configuration. To enable chaos testing or screenshot review, deploy the Express server and configure an AI provider. Screenshot review needs a vision-capable model: set `AI_VISION_MODEL`, or choose a vision-capable `AI_MODEL`. Copy [`server/.env.example`](./server/.env.example) to `server/.env` for local setup. Never commit `.env` files or real credentials.
 
 | Variable | Used for |
 | --- | --- |
 | `PORT` | API listening port; defaults to `3001` |
 | `CLIENT_ORIGIN` | Allowed client origin for CORS and authentication redirects |
-| `AI_API_KEY` | Provider key for legacy AI stage endpoints |
-| `AI_BASE_URL` | OpenAI-compatible chat/completions endpoint for legacy AI stages |
-| `AI_MODEL` | Model name for legacy AI stages |
+| `AI_API_KEY` | Provider key for AI review tools and legacy AI stage endpoints |
+| `AI_BASE_URL` | OpenAI-compatible chat/completions endpoint |
+| `AI_MODEL` | Provider model name; use a vision-capable model for screenshot review |
+| `AI_VISION_MODEL` | Optional vision model for screenshots; defaults to `AI_MODEL` |
 | `JWT_SECRET` | Signing authentication tokens |
-| `MONGO_URI` | Optional MongoDB connection for legacy brand-session persistence |
+| `MONGO_URI` | MongoDB connection for account deletion, workspaces, and legacy brand-session persistence |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Optional Google OAuth |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_CALLBACK_URL` | Optional GitHub OAuth |
 | `BREVO_API_KEY`, `EMAIL_FROM` | Optional password-reset email delivery |
 
-Provider and database configuration only enables the corresponding legacy server features; it does not add AI or approved-source verification to the governance review flow.
+Provider and database configuration enables the optional server features. The main rule-based review remains local; AI-generated previews only run when explicitly requested.
 
 ## Privacy and responsible use
 
 - Review drafts and terminology rules remain in the current browser profile’s `localStorage`; anyone with access to that browser profile may be able to access them.
+- When requested, chaos-test text and screenshot images are sent through the Inkloom server to the configured AI provider. Do not use confidential or regulated content unless that provider is approved for it.
+- Account deletion removes the signed-in user, their workspace membership links, and local review history and projects in the current browser. Shared workspace records and audit history are preserved; audit attribution is anonymized. Accounts that own workspaces cannot currently be deleted.
 - Clearing browser storage removes local review records and guidelines. There is no team backup or synchronization.
 - Do not paste confidential, personal, regulated, or production-sensitive content into this prototype unless your organisation has approved that use and device.
 - Automated checks can produce false positives and miss issues. Treat every result as a prompt for human review, not as legal, factual, security, accessibility, or publication clearance.

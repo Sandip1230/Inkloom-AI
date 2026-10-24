@@ -10,7 +10,7 @@ const sourceVersionSchema = new mongoose.Schema(
     reviewDate: { type: Date },
     confidentiality: { type: String, enum: ['internal', 'confidential', 'public'], required: true },
     changeNote: { type: String, trim: true, maxlength: 500 },
-    editedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    editedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     createdAt: { type: Date, default: Date.now },
   },
   { _id: false },
@@ -32,7 +32,7 @@ const governanceSourceSchema = new mongoose.Schema(
     confidentiality: { type: String, enum: ['internal', 'confidential', 'public'], required: true },
     currentVersion: { type: Number, required: true, default: 1 },
     versions: { type: [sourceVersionSchema], default: [] },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   },
   { timestamps: true },
 );
