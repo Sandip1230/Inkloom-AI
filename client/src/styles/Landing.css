@@ -1855,237 +1855,226 @@
     .page .review-preview__footer button { padding: 7px; font-size: 7px; }
 }
 
-html:not(.dark) .page {
+/* =========================================================
+   ORANGE-PINK THEME (colours only - sizes are unchanged)
+   Uses the same theme variables as the dashboard, so light and
+   dark mode both match it. Replaces the old purple/blue skins.
+========================================================= */
+
+.page {
+    --lp-mark-warn-bg: rgba(255, 154, 61, 0.2);
+    --lp-mark-warn-fg: #b4560f;
+    --lp-mark-claim-bg: rgba(240, 86, 138, 0.16);
+    --lp-mark-claim-fg: #c4326b;
+    --lp-ok: #34b27b;
+
+    color: var(--text);
     background:
-        radial-gradient(ellipse at 82% 26%, rgba(130, 91, 190, 0.09), transparent 32%),
-        radial-gradient(ellipse at 18% 6%, rgba(120, 91, 178, 0.07), transparent 34%),
-        #ffffff;
-    color: #27232f;
-}
-
-html:not(.dark) .page::before {
-    border-color: rgba(105, 65, 189, 0.14);
-    box-shadow: 0 0 15px rgba(105, 65, 189, 0.035), inset 0 0 20px rgba(105, 65, 189, 0.025);
-}
-
-html:not(.dark) .page .logo {
-    color: #292331;
-}
-
-html:not(.dark) .page .logo i {
-    background: linear-gradient(100deg, #7048bf, #9c72da);
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-html:not(.dark) .page .logo-star,
-html:not(.dark) .page .ai-badge span,
-html:not(.dark) .page .stage-number {
-    color: #7952c5;
-    text-shadow: none;
-}
-
-html:not(.dark) .page .nav-links a {
-    color: #6f6879;
-}
-
-html:not(.dark) .page .nav-links a:hover {
-    color: #6440ad;
-}
-
-html:not(.dark) .page .login-btn,
-html:not(.dark) .page .theme-btn,
-html:not(.dark) .page .nav-toggle {
-    border-color: #e5dced;
-    background: #fff;
-    color: #51465f;
-}
-
-html:not(.dark) .page .start-btn,
-html:not(.dark) .page .primary-btn,
-html:not(.dark) .page .review-preview__footer button {
-    background: linear-gradient(110deg, #6840b7, #9865d2);
-    box-shadow: 0 8px 22px rgba(105, 65, 189, 0.19);
-}
-
-html:not(.dark) .page .ai-badge {
-    border-color: #e3d9ef;
-    background: #f8f4fc;
-    color: #705d88;
-    box-shadow: 0 0 15px rgba(105, 65, 189, 0.04);
-}
-
-html:not(.dark) .page h1 {
-    color: #27232f;
-}
-
-html:not(.dark) .page h1 span,
-html:not(.dark) .page .review-preview-note span {
-    background: linear-gradient(100deg, #7550c0, #a174dd);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-html:not(.dark) .page .hero-description,
-html:not(.dark) .page .social-proof p {
-    color: #716b79;
-}
-
-html:not(.dark) .page .demo-btn {
-    border-color: #e1d8eb;
-    background: #fff;
-    color: #51465f;
-}
-
-html:not(.dark) .page .play {
-    border-color: #baa7d3;
-}
-
-html:not(.dark) .page .avatar {
-    border-color: #fff;
-}
-
-html:not(.dark) .page .stat-card,
-html:not(.dark) .page .stage-card {
-    border-color: #e8e2ef;
-    background: linear-gradient(150deg, #fff, #faf8fd);
-    box-shadow: 0 8px 25px rgba(49, 34, 77, 0.045);
-}
-
-html:not(.dark) .page .stat-title,
-html:not(.dark) .page .pipeline-section h2,
-html:not(.dark) .page .stage-card h3 {
-    color: #30263e;
-}
-
-html:not(.dark) .page .stat-subtitle,
-html:not(.dark) .page .pipeline-section > p,
-html:not(.dark) .page .stage-card p {
-    color: #777080;
-}
-
-html:not(.dark) .page .stage-card:hover {
-    border-color: rgba(105, 65, 189, 0.38);
-}
-
-html:not(.dark) .page .stage-card::before {
-    background: linear-gradient(90deg, #6840b7, #a575e6);
-}
-
-html:not(.dark) .page .site-footer {
-    border-color: #e8e2ef;
-    color: #797282;
-}
-
-html:not(.dark) .page .review-preview {
-    border-color: #e6e0ed;
-    background: #fff;
-    box-shadow: 0 25px 70px rgba(41, 30, 57, 0.14), 0 0 50px rgba(105, 65, 189, 0.07);
-}
-
-html:not(.dark) .page .review-preview__topbar,
-html:not(.dark) .page .review-preview__rail,
-html:not(.dark) .page .review-preview__document,
-html:not(.dark) .page .review-preview__finding {
-    border-color: #ece7f1;
-}
-
-html:not(.dark) .page .review-preview__brand b,
-html:not(.dark) .page .review-preview__heading h2,
-html:not(.dark) .page .review-preview__finding b {
-    color: #342b40;
-}
-
-html:not(.dark) .page .review-preview__brand small,
-html:not(.dark) .page .review-preview__top-actions,
-html:not(.dark) .page .review-preview__rail,
-html:not(.dark) .page .review-preview__document-head,
-html:not(.dark) .page .review-preview__finding small,
-html:not(.dark) .page .review-preview__footer > span {
-    color: #81798a;
-}
-
-html:not(.dark) .page .review-preview__top-actions i {
-    background: #f2edf8;
-    color: #7048b4;
-}
-
-html:not(.dark) .page .review-preview__rail .is-selected {
-    background: #f0eafa;
-    color: #7048b4;
-}
-
-html:not(.dark) .page .review-preview__document {
-    background: #fbf9fd;
-}
-
-html:not(.dark) .page .review-preview__document > p {
-    color: #514a58;
-}
-
-html:not(.dark) .page .review-preview__finding {
-    background: #f8f6fb;
-}
-
-html:not(.dark) .page .review-preview-note {
-    border-color: #e6e0ed;
-    background: #fff;
-    color: #50465b;
+        radial-gradient(ellipse at 84% 18%, color-mix(in srgb, var(--accent-to) 15%, transparent), transparent 38%),
+        radial-gradient(ellipse at 10% 6%, color-mix(in srgb, var(--accent-from) 15%, transparent), transparent 40%),
+        var(--bg);
 }
 
 html.dark .page {
-    background:
-        radial-gradient(ellipse at 82% 26%, rgba(205, 103, 44, 0.12), transparent 32%),
-        radial-gradient(ellipse at 18% 6%, rgba(105, 91, 77, 0.1), transparent 34%),
-        #111214;
-    color: #f1f0ee;
+    --lp-mark-warn-bg: rgba(255, 154, 61, 0.18);
+    --lp-mark-warn-fg: #ffc27a;
+    --lp-mark-claim-bg: rgba(240, 86, 138, 0.2);
+    --lp-mark-claim-fg: #ff9fbd;
+    --lp-ok: #4cc58d;
 }
 
-html.dark .page::before {
-    border-color: rgba(255, 255, 255, 0.08);
+.page::before {
+    border-color: var(--border);
     box-shadow: none;
 }
 
-html.dark .page .logo-star,
-html.dark .page .ai-badge span,
-html.dark .page .stage-number {
-    color: #ff9a52;
-    text-shadow: 0 0 12px rgba(241, 138, 67, 0.24);
-}
+.page .logo { color: var(--text); }
 
-html.dark .page .logo i,
-html.dark .page .start-btn,
-html.dark .page .primary-btn,
-html.dark .page .review-preview__footer button {
-    background: linear-gradient(110deg, #f29549, #df632c);
-}
-
-html.dark .page .logo i {
+.page .logo i {
+    background: var(--btn-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
-html.dark .page .start-btn,
-html.dark .page .primary-btn {
-    box-shadow: 0 8px 22px rgba(223, 99, 44, 0.2);
+.page .logo-star,
+.page .ai-badge span,
+.page .stage-number {
+    color: var(--accent-solid);
+    text-shadow: none;
 }
 
-html.dark .page h1 span,
-html.dark .page .review-preview-note span {
-    background: linear-gradient(100deg, #ffb16c, #f07a3b);
+.page .logo-star {
+    text-shadow: 0 0 14px color-mix(in srgb, var(--accent-solid) 40%, transparent);
+}
+
+.page .nav-links a { color: var(--text-soft); }
+.page .nav-links a:hover { color: var(--accent-solid); }
+
+.page .login-btn,
+.page .theme-btn,
+.page .nav-toggle {
+    border-color: var(--border);
+    background: var(--surface);
+    color: var(--text);
+}
+
+.page .start-btn,
+.page .primary-btn,
+.page .review-preview__footer button {
+    background: var(--btn-gradient);
+    color: #fff;
+}
+
+.page .start-btn,
+.page .primary-btn {
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--accent-to) 28%, transparent);
+}
+
+.page .primary-btn:hover {
+    box-shadow: 0 10px 28px color-mix(in srgb, var(--accent-to) 38%, transparent);
+}
+
+.page .ai-badge {
+    border-color: color-mix(in srgb, var(--accent-solid) 30%, var(--border));
+    background: color-mix(in srgb, var(--accent-solid) 8%, var(--surface));
+    color: var(--text-soft);
+    box-shadow: none;
+}
+
+.page h1 { color: var(--text); }
+
+.page h1 span {
+    background: linear-gradient(100deg, var(--accent-from), var(--accent-to) 85%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
-html.dark .page .ai-badge {
-    border-color: rgba(241, 138, 67, 0.25);
-    background: rgba(241, 138, 67, 0.07);
-    color: #e6bb96;
+.page .hero-description,
+.page .social-proof p { color: var(--text-soft); }
+
+.page .demo-btn {
+    border-color: var(--border);
+    background: var(--surface);
+    color: var(--text);
 }
 
-html.dark .page .stage-card::before {
-    background: linear-gradient(90deg, #f29549, #df632c);
+.page .play { border-color: var(--accent-solid); color: var(--accent-solid); }
+
+.page .avatar { border-color: var(--bg); box-shadow: 0 0 0 1px var(--border); }
+.page .avatar1 { background: radial-gradient(circle at 50% 35%, #f6c6a8 0 17%, transparent 18%), linear-gradient(140deg, #ff9a52, #f0568a); }
+.page .avatar2 { background: radial-gradient(circle at 50% 35%, #e0a083 0 17%, transparent 18%), linear-gradient(140deg, #f87b6a, #d83f87); }
+.page .avatar3 { background: radial-gradient(circle at 50% 35%, #ecb899 0 17%, transparent 18%), linear-gradient(140deg, #ffb066, #f4677b); }
+.page .avatar4 { background: radial-gradient(circle at 50% 35%, #efbb98 0 17%, transparent 18%), linear-gradient(140deg, #f7a15c, #c93bb5); }
+
+.page .inkloom-particle-title__dust {
+    background:
+        radial-gradient(circle at 7% 40%, #ff9c65 0 1px, transparent 1.8px),
+        radial-gradient(circle at 16% 82%, #f0568a 0 1px, transparent 2px),
+        radial-gradient(circle at 35% 8%, #ffc17a 0 1px, transparent 2px),
+        radial-gradient(circle at 63% 93%, #ff7a9a 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 18%, #ffad6a 0 1px, transparent 2px),
+        radial-gradient(circle at 96% 66%, #f0568a 0 1px, transparent 2px);
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-to) 45%, transparent));
+}
+
+.page .stat-card,
+.page .stage-card {
+    border-color: var(--border);
+    background: var(--surface);
+    box-shadow: 0 6px 18px rgba(60, 30, 35, 0.05);
+}
+
+.page .stat-title,
+.page .pipeline-section h2,
+.page .stage-card h3 { color: var(--text); }
+
+.page .stat-subtitle,
+.page .pipeline-section > p,
+.page .stage-card p { color: var(--text-soft); }
+
+.page .stat-card.tone-red .stat-icon      { background: linear-gradient(145deg, #ff7a4c, #f0568a); }
+.page .stat-card.tone-orange .stat-icon   { background: linear-gradient(145deg, #ffb04f, #ff7a2f); }
+.page .stat-card.tone-charcoal .stat-icon { background: linear-gradient(145deg, #f56a8f, #d8409a); }
+.page .stat-card.tone-amber .stat-icon    { background: linear-gradient(145deg, #ff9a3d, #f0568a); }
+
+.page .stage-card:hover { border-color: color-mix(in srgb, var(--accent-solid) 45%, var(--border)); }
+.page .stage-card::before { background: var(--btn-gradient); }
+
+.page .site-footer { border-color: var(--border); color: var(--text-soft); }
+
+@media (max-width: 750px) {
+    .page .nav-links.open {
+        background: var(--surface);
+        border-bottom-color: var(--border);
+    }
+}
+
+/* ---- workspace preview card ---- */
+
+.page .review-preview {
+    border-color: var(--border);
+    background: var(--surface);
+    box-shadow: 0 24px 60px color-mix(in srgb, var(--accent-to) 14%, transparent), 0 8px 24px rgba(40, 20, 25, 0.1);
+}
+
+.page .review-preview__topbar,
+.page .review-preview__rail,
+.page .review-preview__document,
+.page .review-preview__finding { border-color: var(--border); }
+
+.page .review-preview__brand > span { background: var(--btn-gradient); }
+
+.page .review-preview__brand b,
+.page .review-preview__heading h2,
+.page .review-preview__finding b,
+.page .review-preview__document > p { color: var(--text); }
+
+.page .review-preview__brand small,
+.page .review-preview__top-actions,
+.page .review-preview__rail,
+.page .review-preview__heading small,
+.page .review-preview__document-head,
+.page .review-preview__finding small,
+.page .review-preview__footer > span { color: var(--text-soft); }
+
+.page .review-preview__top-actions i,
+.page .review-preview__rail .is-selected {
+    background: color-mix(in srgb, var(--accent-solid) 14%, var(--surface));
+    color: var(--accent-solid);
+}
+
+.page .review-preview__draft {
+    background: color-mix(in srgb, var(--accent-from) 18%, var(--surface));
+    color: var(--lp-mark-warn-fg);
+}
+
+.page .review-preview__document { background: var(--surface-2); }
+
+.page .review-preview__document mark { background: var(--lp-mark-warn-bg); color: var(--lp-mark-warn-fg); }
+.page .review-preview__document mark.claim { background: var(--lp-mark-claim-bg); color: var(--lp-mark-claim-fg); }
+
+.page .review-preview__finding { background: var(--surface); }
+
+.page .review-preview__finding-icon {
+    background: color-mix(in srgb, var(--accent-from) 18%, var(--surface));
+    color: var(--lp-mark-warn-fg);
+}
+
+.page .review-preview__severity { color: var(--accent-solid); }
+
+.page .review-preview__footer > span i { background: var(--lp-ok); box-shadow: 0 0 8px var(--lp-ok); }
+
+.page .review-preview-note {
+    border-color: var(--border);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 8px 22px rgba(40, 20, 25, 0.14);
+}
+
+.page .review-preview-note span {
+    background: none;
+    color: var(--accent-solid);
+    -webkit-text-fill-color: currentColor;
 }

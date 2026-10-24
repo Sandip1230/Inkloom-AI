@@ -30,7 +30,9 @@
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.65);
+  -webkit-text-stroke: 2.5px rgba(30, 6, 16, 0.85);
+  paint-order: stroke fill;
   white-space: nowrap;
   pointer-events: none;
 }
@@ -67,7 +69,7 @@
   top: 2px;
   left: 2px;
   border-radius: 100px;
-  background: linear-gradient(180deg, #050c1b, #010207);
+  background: linear-gradient(180deg, #2a0f1a, #12060b);
   pointer-events: none;
 }
 
@@ -104,7 +106,7 @@
 }
 
 .liquid-metal-button__hit-area:focus-visible {
-  outline: 3px solid var(--accent-solid, #4d00f3);
+  outline: 3px solid var(--accent-solid, #f05672);
   outline-offset: 4px;
 }
 
