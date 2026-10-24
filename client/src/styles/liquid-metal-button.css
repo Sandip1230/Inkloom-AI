@@ -6,7 +6,7 @@
 }
 
 .liquid-metal-button__perspective {
-  perspective: 1000px;
+  perspective: 500px;
   perspective-origin: 50% 50%;
 }
 
@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 10px;
+  padding: 10px 20px;
   border: none;
   border-radius: 100px;
   background: none;
@@ -40,18 +40,19 @@
   z-index: 10;
   inset: 0;
   border-radius: 100px;
-  background: linear-gradient(180deg, #5b5b5b, #141414 45%, #292929);
+  background: linear-gradient(180deg, #173b7a 0%, #07142f 28%, #02040b 66%, #102b61 100%);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.46),
-    0 18px 10px rgba(0, 0, 0, 0.07),
-    0 8px 6px rgba(0, 0, 0, 0.12),
-    0 3px 3px rgba(0, 0, 0, 0.2);
+    0 0 0 1px rgba(37, 99, 235, 0.42),
+    0 0 14px rgba(29, 78, 216, 0.28),
+    0 18px 10px rgba(0, 0, 0, 0.12),
+    0 8px 6px rgba(0, 0, 0, 0.24),
+    0 3px 3px rgba(0, 0, 0, 0.32);
   transform: translateZ(0);
   transition: transform 150ms ease, box-shadow 150ms ease;
 }
 
 .liquid-metal-button__surface.is-fallback {
-  background: linear-gradient(140deg, #858585 0%, #353535 24%, #111 58%, #575757 100%);
+  background: linear-gradient(140deg, #3268c5 0%, #102a5c 24%, #02040b 58%, #1c438a 100%);
 }
 
 .liquid-metal-button__surface.is-pressed {
@@ -66,7 +67,7 @@
   top: 2px;
   left: 2px;
   border-radius: 100px;
-  background: linear-gradient(180deg, #202020, #000);
+  background: linear-gradient(180deg, #050c1b, #010207);
   pointer-events: none;
 }
 
@@ -99,11 +100,11 @@
   border-radius: 100px;
   background: transparent;
   cursor: pointer;
-  transform: translateZ(25px);
+  transform: translateZ(30px);
 }
 
 .liquid-metal-button__hit-area:focus-visible {
-  outline: 3px solid var(--accent-solid, #6941bd);
+  outline: 3px solid var(--accent-solid, #4d00f3);
   outline-offset: 4px;
 }
 
