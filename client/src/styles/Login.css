@@ -1227,3 +1227,25 @@
     background: #191a1d;
   }
 }
+
+/* Remove the browser's autofill background so only the text shows */
+.login-input-wrap input:-webkit-autofill,
+.login-input-wrap input:-webkit-autofill:hover,
+.login-input-wrap input:-webkit-autofill:focus,
+.login-input-wrap input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #fcfbfd inset !important;
+  box-shadow: 0 0 0 1000px #fcfbfd inset !important;
+  -webkit-text-fill-color: #33263e !important;
+  caret-color: #33263e;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.dark .login-input-wrap input:-webkit-autofill,
+.dark .login-input-wrap input:-webkit-autofill:hover,
+.dark .login-input-wrap input:-webkit-autofill:focus,
+.dark .login-input-wrap input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #222428 inset !important;
+  box-shadow: 0 0 0 1000px #222428 inset !important;
+  -webkit-text-fill-color: #f1f0ee !important;
+  caret-color: #f1f0ee;
+}
