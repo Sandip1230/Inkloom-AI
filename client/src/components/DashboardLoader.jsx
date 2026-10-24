@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const TIME = 3000; // 3 second
 
@@ -11,6 +12,7 @@ const MESSAGES = [
 
 export default function DashboardLoader() {
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [percent, setPercent] = useState(0);
 
   useEffect(() => {
@@ -28,42 +30,63 @@ export default function DashboardLoader() {
   const message = MESSAGES[Math.min(Math.floor(percent / 34), MESSAGES.length - 1)];
 
   return (
-    <div className="dl-wrap">
+    <div className={`dl-wrap ${theme === "dark" ? "is-dark" : "is-light"}`}>
       <style>{`
+        /* ---------- LIGHT THEME ---------- */
+        .dl-wrap.is-light {
+          --dl-bg: radial-gradient(circle at 50% 35%, #ffffff 0%, #ececf1 75%);
+          --dl-dot: linear-gradient(135deg, #6941bd, #a575e6);
+          --dl-glow: rgba(105, 65, 189, 0.45);
+          --dl-msg: #1c1b22;
+          --dl-track: rgba(20, 20, 40, 0.10);
+          --dl-fill: linear-gradient(90deg, #6941bd, #a575e6);
+          --dl-percent: #4a4768;
+        }
+        /* ---------- DARK THEME (black + orange) ---------- */
+        .dl-wrap.is-dark {
+          --dl-bg: radial-gradient(circle at 50% 35%, #1a0e05 0%, #000000 75%);
+          --dl-dot: linear-gradient(135deg, #ff9a52, #e86e32);
+          --dl-glow: rgba(255, 138, 67, 0.6);
+          --dl-msg: #ffffff;
+          --dl-track: rgba(255, 255, 255, 0.12);
+          --dl-fill: linear-gradient(90deg, #e86e32, #ff9a52);
+          --dl-percent: #ffb27a;
+        }
+
         .dl-wrap {
           position: fixed; inset: 0; z-index: 99999;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center; gap: 26px;
-          background: radial-gradient(circle at 50% 35%, #12082b 0%, #05030c 75%);
+          background: var(--dl-bg);
           font-family: system-ui, sans-serif;
         }
         .dl-dots { display: flex; gap: 10px; }
         .dl-dots span {
           width: 14px; height: 14px; border-radius: 50%;
-          background: linear-gradient(135deg, #7c3aed, #22d3ee);
-          box-shadow: 0 0 14px #7c3aed;
+          background: var(--dl-dot);
+          box-shadow: 0 0 14px var(--dl-glow);
           animation: dl-bounce 0.9s ease-in-out infinite;
         }
         .dl-dots span:nth-child(2) { animation-delay: 0.15s; }
         .dl-dots span:nth-child(3) { animation-delay: 0.3s; }
 
-        .dl-msg { color: #e9d5ff; font-size: 16px; letter-spacing: 1px; min-height: 22px; }
+        .dl-msg { color: var(--dl-msg); font-size: 16px; letter-spacing: 1px; min-height: 22px; }
 
         .dl-bar-box { width: 360px; max-width: 80vw; }
         .dl-bar {
           height: 10px; border-radius: 999px;
-          background: rgba(255,255,255,0.1);
+          background: var(--dl-track);
           overflow: hidden;
         }
         .dl-fill {
           height: 100%; width: 0%; border-radius: 999px;
-          background: linear-gradient(90deg, #22d3ee, #7c3aed, #f472b6);
-          box-shadow: 0 0 18px #7c3aed;
+          background: var(--dl-fill);
+          box-shadow: 0 0 18px var(--dl-glow);
           animation: dl-grow 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         .dl-percent {
           margin-top: 10px; text-align: right;
-          font-family: monospace; font-size: 13px; color: #c4b5fd;
+          font-family: monospace; font-size: 13px; color: var(--dl-percent);
         }
 
         @keyframes dl-bounce {

@@ -1,5 +1,11 @@
 import { useId } from "react";
-import { DEFAULT_AVATAR_STYLE, getInitial } from "../lib/profileStore.js";
+import {
+  AVATAR_FRAMES,
+  DEFAULT_AVATAR_STYLE,
+  getInitial,
+  isCustomPhoto,
+  parseAvatarValue,
+} from "../lib/profileStore.js";
 
 // Small decorative drawings that sit behind / beside the letter.
 // They are drawn in a 100 x 100 box that is stretched over the circle.
@@ -181,20 +187,171 @@ function Decoration({ styleId, uid }) {
   }
 }
 
-export default function ProfileAvatar({ name, styleId = DEFAULT_AVATAR_STYLE, size = 32, className = "", title }) {
+// How each frame looks. "inset" = how much of the circle (in % per side)
+// the ring + the gap take, so the avatar inside shrinks a little - like Instagram.
+const STORY_STOPS = [
+  ["0", "#feda75"],
+  ["0.25", "#fa7e1e"],
+  ["0.5", "#d62976"],
+  ["0.75", "#962fbf"],
+  ["1", "#4f5bd5"],
+];
+
+const FRAME_ART = {
+  story: { kind: "gradient", inset: 8.5, stops: STORY_STOPS },
+  live: { kind: "gradient", inset: 8.5, spin: true, stops: STORY_STOPS },
+  ember: {
+    kind: "gradient",
+    inset: 8.5,
+    glow: "#ff8a4c",
+    stops: [["0", "#ffc27a"], ["0.5", "#ff7a30"], ["1", "#e8501a"]],
+  },
+  neon: {
+    kind: "gradient",
+    inset: 8.5,
+    glow: "#22d3ee",
+    stops: [["0", "#22d3ee"], ["0.5", "#7c3aed"], ["1", "#f0abfc"]],
+  },
+  gold: {
+    kind: "gradient",
+    inset: 8.5,
+    stops: [["0", "#fff1b8"], ["0.35", "#e8b84a"], ["0.7", "#b8863b"], ["1", "#f6d365"]],
+  },
+  rose: {
+    kind: "gradient",
+    inset: 8.5,
+    stops: [["0", "#ffb3c9"], ["0.5", "#f0568a"], ["1", "#c2185b"]],
+  },
+  aurora: {
+    kind: "gradient",
+    inset: 8.5,
+    stops: [["0", "#34d399"], ["0.35", "#22d3ee"], ["0.7", "#6366f1"], ["1", "#c026d3"]],
+  },
+  double: { kind: "double", inset: 10, outer: "#ff8a4c", inner: "#f0568a" },
+  dashed: { kind: "dashed", inset: 8.5, color: "#ff8a4c" },
+};
+
+// The ring itself is an SVG, so the gap between ring and photo stays transparent.
+function FrameRing({ art, uid, size, reduceMotion }) {
+  const gradientId = `${uid}-grad`;
+  const glowPx = Math.max(2, Math.round(size * 0.07));
+
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+      focusable="false"
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        overflow: "visible",
+        pointerEvents: "none",
+        filter: art.glow ? `drop-shadow(0 0 ${glowPx}px ${art.glow})` : undefined,
+      }}
+    >
+      {art.kind === "double" && (
+        <>
+          <circle cx="50" cy="50" r="48.75" fill="none" stroke={art.outer} strokeWidth="2.5" />
+          <circle cx="50" cy="50" r="44.5" fill="none" stroke={art.inner} strokeWidth="2.5" />
+        </>
+      )}
+
+      {art.kind === "dashed" && (
+        <circle cx="50" cy="50" r="47.5" fill="none" stroke={art.color} strokeWidth="5" strokeDasharray="12.65 6" />
+      )}
+
+      {art.kind === "gradient" && (
+        <>
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0">
+              {art.stops.map(([offset, color]) => (
+                <stop key={offset} offset={offset} stopColor={color} />
+              ))}
+              {art.spin && !reduceMotion && (
+                <animateTransform
+                  attributeName="gradientTransform"
+                  type="rotate"
+                  from="0 0.5 0.5"
+                  to="360 0.5 0.5"
+                  dur="3s"
+                  repeatCount="indefinite"
+                />
+              )}
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="47.5" fill="none" stroke={`url(#${gradientId})`} strokeWidth="5" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+// The round avatar itself: an uploaded photo, or a lettered style.
+function AvatarCore({ name, styleId, size, className = "", title, frameLabel }) {
   const initial = getInitial(name);
   const uid = `pf${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  const custom = isCustomPhoto(styleId);
+  const baseLabel = title || (custom ? "Your profile photo" : `Profile photo: letter ${initial}`);
+
   return (
     <span
-      className={`pf-avatar pf-avatar--${styleId} ${className}`}
+      className={`pf-avatar pf-avatar--${custom ? "custom" : styleId} ${className}`}
       style={{ "--pf-size": `${size}px` }}
       role="img"
-      aria-label={title || `Profile photo: letter ${initial}`}
+      aria-label={frameLabel ? `${baseLabel}, ${frameLabel} frame` : baseLabel}
     >
-      <svg className="pf-avatar__art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        <Decoration styleId={styleId} uid={uid} />
-      </svg>
-      <span className="pf-avatar__letter" aria-hidden="true">{initial}</span>
+      {custom ? (
+        <img
+          src={styleId}
+          alt=""
+          draggable={false}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
+        />
+      ) : (
+        <>
+          <svg className="pf-avatar__art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <Decoration styleId={styleId} uid={uid} />
+          </svg>
+          <span className="pf-avatar__letter" aria-hidden="true">{initial}</span>
+        </>
+      )}
+    </span>
+  );
+}
+
+// styleId can be a style id, an uploaded photo (data URL), or either of them
+// with a frame, e.g. "frame:story|sunset-heart".
+export default function ProfileAvatar({ name, styleId = DEFAULT_AVATAR_STYLE, size = 32, className = "", title }) {
+  const ringUid = `pf${useId().replace(/[^a-zA-Z0-9]/g, "")}r`;
+  const { base, frame } = parseAvatarValue(styleId);
+  const art = FRAME_ART[frame];
+
+  if (!art) {
+    return <AvatarCore name={name} styleId={base} size={size} className={className} title={title} />;
+  }
+
+  const innerSize = Math.round(size * (1 - (art.inset * 2) / 100));
+  const frameLabel = AVATAR_FRAMES.find((item) => item.id === frame)?.label;
+  const reduceMotion =
+    typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
+  return (
+    <span
+      className={`pf-framed pf-framed--${frame} ${className}`}
+      style={{
+        position: "relative",
+        display: "inline-grid",
+        placeItems: "center",
+        width: `${size}px`,
+        height: `${size}px`,
+        flex: `0 0 ${size}px`,
+        borderRadius: "50%",
+      }}
+    >
+      <FrameRing art={art} uid={ringUid} size={size} reduceMotion={reduceMotion} />
+      <AvatarCore name={name} styleId={base} size={innerSize} title={title} frameLabel={frameLabel} />
     </span>
   );
 }

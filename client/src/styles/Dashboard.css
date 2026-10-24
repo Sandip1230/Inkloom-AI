@@ -1075,6 +1075,9 @@ html.dark .ink-next { --next-a: #2a1814; --next-b: #2a1223; }
 .pf-option.is-active { box-shadow: 0 0 0 3px #050406, 0 0 0 5px #ff7a4c, 0 0 22px 2px rgba(240, 86, 138, 0.5); }
 
 .pf-dialog__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.pf-upload { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
+.pf-upload__hint { font-size: 12px; color: #a79ea8; }
+.pf-upload__error { flex-basis: 100%; margin: 0; font-size: 12.5px; color: #ff8a8a; }
 .pf-btn {
   padding: 10px 18px;
   border-radius: 10px;
