@@ -1249,3 +1249,10 @@
   -webkit-text-fill-color: #f1f0ee !important;
   caret-color: #f1f0ee;
 }
+
+/* Remove the inner square focus ring; the rounded outer border stays */
+.login-input-wrap input:focus,
+.login-input-wrap input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
