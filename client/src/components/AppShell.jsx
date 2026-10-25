@@ -38,7 +38,7 @@ export default function AppShell({ children, showTopbarProfile = true }) {
         />
       )}
 
-      <div className="relative z-10 flex min-h-screen">
+      <div className="relative flex min-h-screen">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="app-glow relative flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden border-l border-[var(--border)]">
           <Topbar showProfile={showTopbarProfile} />
