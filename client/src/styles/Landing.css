@@ -250,10 +250,16 @@
 }
 
 .page h1 span {
-    background: linear-gradient(100deg, #a855f7, #ec4899);
+    background: linear-gradient(100deg, #a855f7, #336bc3);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page h1 span {
+    background: linear-gradient(100deg, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
 }
 
 .hero-description {
@@ -282,13 +288,17 @@
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    background: linear-gradient(105deg, #ee37d5, #3f60ff);
+    background: linear-gradient(105deg, #2e7dbc, #3f60ff);
     box-shadow: 0 0 25px rgba(163, 47, 255, 0.28);
     transition: 0.3s;
     display: inline-flex;
     align-items: center;
     text-decoration: none;
     white-space: nowrap;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .primary-btn {
+    background: linear-gradient(105deg, #ee37d5, #3f60ff);
 }
 
 .primary-btn span {
@@ -480,6 +490,10 @@
     top: 6px;
     right: 4px;
     text-align: right;
+    color: #64a6e6;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .annotate-tr {
     color: #ff9de8;
 }
 
@@ -612,6 +626,10 @@
 }
 
 .tone-rose .card-icon {
+    background: linear-gradient(145deg, #2c52ca, #223d85);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .tone-rose .card-icon {
     background: linear-gradient(145deg, #f43f5e, #be123c);
 }
 
@@ -1230,7 +1248,12 @@
     .review-preview__heading { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
     .review-preview__heading small { color: #8d829f; font-size: 8px; letter-spacing: .12em; }
     .review-preview__heading h2 { margin: 5px 0 0; color: #ececf2; font-size: 16px; font-weight: 600; }
-    .review-preview__draft { padding: 5px 8px; border-radius: 999px; background: rgba(236,178,91,.11); color: #e4bd80; font-size: 7px; letter-spacing: .08em; }
+    .review-preview__draft { padding: 5px 8px; border-radius: 999px; background: rgba(60, 202, 154, .11); color: #5ac39f; font-size: 7px; letter-spacing: .08em; }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .review-preview__draft {
+        background: rgba(236,178,91,.11);
+        color: #e4bd80;
+}
     .review-preview__document {
         margin-top: 17px;
         padding: 14px;
@@ -1259,14 +1282,23 @@
         flex: 0 0 23px;
         place-items: center;
         border-radius: 7px;
-        background: rgba(231,172,87,.12);
-        color: #eac27f;
+        background: rgba(59, 196, 150, .12);
+        color: #57caa2;
         font-size: 12px;
     }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .review-preview__finding-icon {
+        background: rgba(231,172,87,.12);
+        color: #eac27f;
+}
     .review-preview__finding > div { display: grid; min-width: 0; gap: 2px; }
     .review-preview__finding b { color: #d9d9e1; font-size: 9px; font-weight: 600; }
     .review-preview__finding small { overflow: hidden; color: #898e9a; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-    .review-preview__severity { margin-left: auto; color: #c8a76b; font-size: 7px; letter-spacing: .08em; }
+    .review-preview__severity { margin-left: auto; color: #52a386; font-size: 7px; letter-spacing: .08em; }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .review-preview__severity {
+        color: #c8a76b;
+}
     .review-preview__footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
     .review-preview__footer > span { display: flex; align-items: center; gap: 6px; color: #9398a3; font-size: 8px; }
     .review-preview__footer > span i { width: 6px; height: 6px; border-radius: 50%; background: #65bd94; box-shadow: 0 0 9px #65bd9466; }
@@ -1540,7 +1572,13 @@
 
 .page {
     background:
-        radial-gradient(ellipse at 82% 26%, rgba(198, 73, 43, .16), transparent 32%),
+        radial-gradient(ellipse at 82% 26%, rgba(52, 141, 127, .16), transparent 32%),
+        radial-gradient(ellipse at 18% 6%, rgba(51, 159, 133, .11), transparent 34%),
+        #111214;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page {
+    background: radial-gradient(ellipse at 82% 26%, rgba(198, 73, 43, .16), transparent 32%),
         radial-gradient(ellipse at 18% 6%, rgba(220, 112, 42, .11), transparent 34%),
         #111214;
 }
@@ -1554,29 +1592,61 @@
 .page .start-btn,
 .page .primary-btn,
 .page .review-preview__footer button {
+    background: linear-gradient(110deg, #36afa3, #2e8c77);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .logo i,
+:where(html.dark) .page .start-btn,
+:where(html.dark) .page .primary-btn,
+:where(html.dark) .page .review-preview__footer button {
     background: linear-gradient(110deg, #e14b3e, #c65b22);
 }
 
 .page .logo-star,
 .page .ai-badge span,
 .page .stage-number {
+    color: #35cab1;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .logo-star,
+:where(html.dark) .page .ai-badge span,
+:where(html.dark) .page .stage-number {
     color: #ed7552;
 }
 
 .page .logo-star {
+    text-shadow: 0 0 14px rgba(49, 173, 157, .48);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .logo-star {
     text-shadow: 0 0 14px rgba(229, 76, 49, .48);
 }
 
 .page .start-btn,
 .page .primary-btn {
+    box-shadow: 0 8px 24px rgba(52, 147, 135, .24);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .start-btn,
+:where(html.dark) .page .primary-btn {
     box-shadow: 0 8px 24px rgba(207, 66, 42, .24);
 }
 
 .page .primary-btn:hover {
+    box-shadow: 0 10px 30px rgba(52, 147, 135, .36);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .primary-btn:hover {
     box-shadow: 0 10px 30px rgba(207, 66, 42, .36);
 }
 
 .page .ai-badge {
+    border-color: rgba(53, 184, 161, .25);
+    background: rgba(52, 141, 127, .08);
+    color: #abd2d0;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .ai-badge {
     border-color: rgba(230, 107, 67, .25);
     background: rgba(198, 75, 44, .08);
     color: #d2b6aa;
@@ -1584,19 +1654,36 @@
 
 .page h1 span,
 .page .review-preview-note span {
-    background: linear-gradient(100deg, #f18c55, #df493c 80%);
+    background: linear-gradient(100deg, #36ceac, #37aca0 80%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page h1 span,
+:where(html.dark) .page .review-preview-note span {
+    background: linear-gradient(100deg, #f18c55, #df493c 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
 
 .page .blue-glow,
 .page .purple-glow {
-    background: #d95732;
+    background: #36a08e;
     opacity: .2;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .blue-glow,
+:where(html.dark) .page .purple-glow {
+    background: #d95732;
 }
 
 .page .ribbon {
+    border-color: rgba(52, 167, 149, .48);
+    box-shadow: 0 0 16px rgba(53, 151, 135, .2);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .ribbon {
     border-color: rgba(223, 87, 51, .48);
     box-shadow: 0 0 16px rgba(212, 77, 43, .2);
 }
@@ -1604,26 +1691,56 @@
 .page .annotate,
 .page .annotate-tr,
 .page .annotate-br {
+    color: #45ccac;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .annotate,
+:where(html.dark) .page .annotate-tr,
+:where(html.dark) .page .annotate-br {
     color: #ed9a68;
 }
 
 .page .review-preview__brand > span {
+    background: linear-gradient(145deg, #34cbb0, #398f86);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__brand > span {
     background: linear-gradient(145deg, #ee7650, #c83f32);
 }
 
 .page .review-preview__rail .is-selected {
+    background: rgba(54, 164, 148, .16);
+    color: #42cfb4;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__rail .is-selected {
     background: rgba(220, 82, 52, .16);
     color: #f08b65;
 }
 
 .page .review-preview__top-actions i {
+    background: #2d3939;
+    color: #6cd0bd;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__top-actions i {
     background: #39302d;
     color: #efb49c;
 }
 
 .page .inkloom-particle-title__dust {
     background:
-        radial-gradient(circle at 7% 40%, #ff9c65 0 1px, transparent 1.8px),
+        radial-gradient(circle at 7% 40%, #3ddfbb 0 1px, transparent 1.8px),
+        radial-gradient(circle at 16% 82%, #32c3b1 0 1px, transparent 2px),
+        radial-gradient(circle at 35% 8%, #4ce2b4 0 1px, transparent 2px),
+        radial-gradient(circle at 63% 93%, #36af94 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 18%, #41e0b5 0 1px, transparent 2px),
+        radial-gradient(circle at 96% 66%, #33b8a4 0 1px, transparent 2px);
+    filter: drop-shadow(0 0 8px rgba(47, 198, 170, .45));
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .inkloom-particle-title__dust {
+    background: radial-gradient(circle at 7% 40%, #ff9c65 0 1px, transparent 1.8px),
         radial-gradient(circle at 16% 82%, #ed5b45 0 1px, transparent 2px),
         radial-gradient(circle at 35% 8%, #ffc17a 0 1px, transparent 2px),
         radial-gradient(circle at 63% 93%, #e1773e 0 1px, transparent 2px),
@@ -1633,10 +1750,18 @@
 }
 
 .page .stat-card.tone-red .stat-icon {
+    background: linear-gradient(145deg, #34ccb8, #398f87);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stat-card.tone-red .stat-icon {
     background: linear-gradient(145deg, #ef6951, #c83b32);
 }
 
 .page .stat-card.tone-orange .stat-icon {
+    background: linear-gradient(145deg, #33cba0, #369781);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stat-card.tone-orange .stat-icon {
     background: linear-gradient(145deg, #ef9a4e, #d3662d);
 }
 
@@ -1649,19 +1774,33 @@
 }
 
 .page .stage-card:hover {
+    border-color: rgba(50, 176, 159, .42);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stage-card:hover {
     border-color: rgba(229, 82, 54, .42);
 }
 
 .page .stage-card::before {
+    background: linear-gradient(90deg, #36afa3, #379d83);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stage-card::before {
     background: linear-gradient(90deg, #e14b3e, #d77832);
 }
 
 /* Keep the real workspace preview styled at every viewport size. */
 .page .logo i {
-    background: linear-gradient(100deg, #f18c55, #df493c);
+    background: linear-gradient(100deg, #36ceac, #37aca0);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .logo i {
+    background: linear-gradient(100deg, #f18c55, #df493c);
+    -webkit-background-clip: text;
+    background-clip: text;
 }
 
 .page .hero {
@@ -1691,8 +1830,12 @@
     border: 1px solid rgba(255, 255, 255, .11);
     border-radius: 18px;
     background: #191b21;
-    box-shadow: 0 30px 90px rgba(0, 0, 0, .38), 0 0 70px rgba(210, 81, 47, .12);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, .38), 0 0 70px rgba(55, 150, 135, .12);
     transform: perspective(1400px) rotateY(-3deg) rotateX(1deg);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview {
+    box-shadow: 0 30px 90px rgba(0, 0, 0, .38), 0 0 70px rgba(210, 81, 47, .12);
 }
 
 .page .review-preview__topbar {
@@ -1717,10 +1860,14 @@
     height: 22px;
     place-items: center;
     border-radius: 7px;
-    background: linear-gradient(145deg, #ee7650, #c83f32);
+    background: linear-gradient(145deg, #34cbb0, #398f86);
     color: white;
     font-size: 13px;
     font-weight: 700;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__brand > span {
+    background: linear-gradient(145deg, #ee7650, #c83f32);
 }
 .page .review-preview__brand b { color: #e8e8ee; font-size: 12px; }
 .page .review-preview__brand small { margin-left: 6px; color: #858995; font-size: 8px; letter-spacing: .1em; }
@@ -1731,10 +1878,15 @@
     height: 26px;
     place-items: center;
     border-radius: 50%;
-    background: #39302d;
-    color: #efb49c;
+    background: #2d3939;
+    color: #6cd0bd;
     font-size: 8px;
     font-style: normal;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__top-actions i {
+    background: #39302d;
+    color: #efb49c;
 }
 
 .page .review-preview__body { display: flex; min-height: 340px; }
@@ -1751,12 +1903,26 @@
     font-size: 14px;
 }
 .page .review-preview__rail span { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 8px; }
-.page .review-preview__rail .is-selected { background: rgba(220, 82, 52, .16); color: #f0a080; }
+.page .review-preview__rail .is-selected { background: rgba(54, 164, 148, .16); color: #56d0b9; }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__rail .is-selected {
+    background: rgba(220, 82, 52, .16);
+    color: #f0a080;
+}
 .page .review-preview__main { min-width: 0; flex: 1; padding: 19px; }
 .page .review-preview__heading { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
-.page .review-preview__heading small { color: #a18d83; font-size: 8px; letter-spacing: .12em; }
+.page .review-preview__heading small { color: #83a1a0; font-size: 8px; letter-spacing: .12em; }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__heading small {
+    color: #a18d83;
+}
 .page .review-preview__heading h2 { margin: 5px 0 0; color: #ececf2; font-size: 16px; font-weight: 600; }
-.page .review-preview__draft { flex-shrink: 0; padding: 5px 8px; border-radius: 999px; background: rgba(236, 155, 83, .11); color: #e9b58a; font-size: 7px; letter-spacing: .08em; }
+.page .review-preview__draft { flex-shrink: 0; padding: 5px 8px; border-radius: 999px; background: rgba(54, 201, 160, .11); color: #60c9ac; font-size: 7px; letter-spacing: .08em; }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__draft {
+    background: rgba(236, 155, 83, .11);
+    color: #e9b58a;
+}
 .page .review-preview__document {
     margin-top: 17px;
     padding: 14px;
@@ -1785,18 +1951,31 @@
     flex: 0 0 23px;
     place-items: center;
     border-radius: 7px;
+    background: rgba(55, 190, 156, .12);
+    color: #57caa2;
+    font-size: 12px;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__finding-icon {
     background: rgba(231, 141, 76, .12);
     color: #eac27f;
-    font-size: 12px;
 }
 .page .review-preview__finding > div { display: grid; min-width: 0; gap: 2px; }
 .page .review-preview__finding b { color: #d9d9e1; font-size: 9px; font-weight: 600; }
 .page .review-preview__finding small { overflow: hidden; color: #989ca6; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-.page .review-preview__severity { margin-left: auto; color: #d8a477; font-size: 7px; letter-spacing: .08em; }
+.page .review-preview__severity { margin-left: auto; color: #56b69c; font-size: 7px; letter-spacing: .08em; }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__severity {
+    color: #d8a477;
+}
 .page .review-preview__footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
 .page .review-preview__footer > span { display: flex; align-items: center; gap: 6px; color: #a1a4ad; font-size: 8px; }
 .page .review-preview__footer > span i { width: 6px; height: 6px; border-radius: 50%; background: #65bd94; box-shadow: 0 0 9px #65bd9466; }
-.page .review-preview__footer button { flex-shrink: 0; padding: 7px 10px; border: 0; border-radius: 7px; background: linear-gradient(110deg, #e14b3e, #c65b22); color: white; font-size: 8px; }
+.page .review-preview__footer button { flex-shrink: 0; padding: 7px 10px; border: 0; border-radius: 7px; background: linear-gradient(110deg, #36afa3, #2e8c77); color: white; font-size: 8px; }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview__footer button {
+    background: linear-gradient(110deg, #e14b3e, #c65b22);
+}
 .page .review-preview__footer button b { margin-left: 4px; }
 .page .review-preview-note {
     position: absolute;
@@ -1806,16 +1985,25 @@
     padding: 9px 13px;
     border: 1px solid rgba(255, 255, 255, .12);
     border-radius: 10px;
-    background: #24211f;
-    color: #e0d5d0;
+    background: #1f2424;
+    color: #d0e0df;
     font-size: 9px;
     box-shadow: 0 8px 22px #0004;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview-note {
+    background: #24211f;
+    color: #e0d5d0;
 }
 
 .page .review-preview-note span {
     background: none;
-    color: #ed8057;
+    color: #39caaf;
     -webkit-text-fill-color: currentColor;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview-note span {
+    color: #ed8057;
 }
 
 @media (max-width: 1000px) {
@@ -1862,10 +2050,10 @@
 ========================================================= */
 
 .page {
-    --lp-mark-warn-bg: rgba(255, 154, 61, 0.2);
-    --lp-mark-warn-fg: #b4560f;
-    --lp-mark-claim-bg: rgba(240, 86, 138, 0.16);
-    --lp-mark-claim-fg: #c4326b;
+    --lp-mark-warn-bg: rgba(35, 217, 166, 0.2);
+    --lp-mark-warn-fg: #1e7e65;
+    --lp-mark-claim-bg: rgba(55, 103, 205, 0.16);
+    --lp-mark-claim-fg: #38558c;
     --lp-ok: #34b27b;
 
     color: var(--text);
@@ -1873,6 +2061,13 @@
         radial-gradient(ellipse at 84% 18%, color-mix(in srgb, var(--accent-to) 15%, transparent), transparent 38%),
         radial-gradient(ellipse at 10% 6%, color-mix(in srgb, var(--accent-from) 15%, transparent), transparent 40%),
         var(--bg);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page {
+    --lp-mark-warn-bg: rgba(255, 154, 61, 0.2);
+    --lp-mark-warn-fg: #b4560f;
+    --lp-mark-claim-bg: rgba(240, 86, 138, 0.16);
+    --lp-mark-claim-fg: #c4326b;
 }
 
 html.dark .page {
@@ -1970,19 +2165,33 @@ html.dark .page {
 
 .page .inkloom-particle-title__dust {
     background:
-        radial-gradient(circle at 7% 40%, #ff9c65 0 1px, transparent 1.8px),
+        radial-gradient(circle at 7% 40%, #3ddfbb 0 1px, transparent 1.8px),
+        radial-gradient(circle at 16% 82%, #3767cd 0 1px, transparent 2px),
+        radial-gradient(circle at 35% 8%, #4ce2b4 0 1px, transparent 2px),
+        radial-gradient(circle at 63% 93%, #4c75e2 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 18%, #41e0b5 0 1px, transparent 2px),
+        radial-gradient(circle at 96% 66%, #3767cd 0 1px, transparent 2px);
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-to) 45%, transparent));
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .inkloom-particle-title__dust {
+    background: radial-gradient(circle at 7% 40%, #ff9c65 0 1px, transparent 1.8px),
         radial-gradient(circle at 16% 82%, #f0568a 0 1px, transparent 2px),
         radial-gradient(circle at 35% 8%, #ffc17a 0 1px, transparent 2px),
         radial-gradient(circle at 63% 93%, #ff7a9a 0 1px, transparent 2px),
         radial-gradient(circle at 84% 18%, #ffad6a 0 1px, transparent 2px),
         radial-gradient(circle at 96% 66%, #f0568a 0 1px, transparent 2px);
-    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-to) 45%, transparent));
 }
 
 .page .stat-card,
 .page .stage-card {
     border-color: var(--border);
     background: var(--surface);
+    box-shadow: 0 6px 18px rgba(31, 47, 58, 0.05);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stat-card,
+:where(html.dark) .page .stage-card {
     box-shadow: 0 6px 18px rgba(60, 30, 35, 0.05);
 }
 
@@ -1994,9 +2203,21 @@ html.dark .page {
 .page .pipeline-section > p,
 .page .stage-card p { color: var(--text-soft); }
 
-.page .stat-card.tone-red .stat-icon      { background: linear-gradient(145deg, #ff7a4c, #f0568a); }
-.page .stat-card.tone-orange .stat-icon   { background: linear-gradient(145deg, #ffb04f, #ff7a2f); }
-.page .stat-card.tone-charcoal .stat-icon { background: linear-gradient(145deg, #f56a8f, #d8409a); }
+.page .stat-card.tone-red .stat-icon      { background: linear-gradient(145deg, #2cddbc, #3767cd); }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stat-card.tone-red .stat-icon      {
+    background: linear-gradient(145deg, #ff7a4c, #f0568a);
+}
+.page .stat-card.tone-orange .stat-icon   { background: linear-gradient(145deg, #2edda6, #22d0a8); }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stat-card.tone-orange .stat-icon   {
+    background: linear-gradient(145deg, #ffb04f, #ff7a2f);
+}
+.page .stat-card.tone-charcoal .stat-icon { background: linear-gradient(145deg, #446ed5, #3b69a5); }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .stat-card.tone-charcoal .stat-icon {
+    background: linear-gradient(145deg, #f56a8f, #d8409a);
+}
 .page .stat-card.tone-amber .stat-icon    { background: linear-gradient(145deg, #ff9a3d, #f0568a); }
 
 .page .stage-card:hover { border-color: color-mix(in srgb, var(--accent-solid) 45%, var(--border)); }
@@ -2016,6 +2237,10 @@ html.dark .page {
 .page .review-preview {
     border-color: var(--border);
     background: var(--surface);
+    box-shadow: 0 24px 60px color-mix(in srgb, var(--accent-to) 14%, transparent), 0 8px 24px rgba(21, 32, 39, 0.1);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview {
     box-shadow: 0 24px 60px color-mix(in srgb, var(--accent-to) 14%, transparent), 0 8px 24px rgba(40, 20, 25, 0.1);
 }
 
@@ -2070,6 +2295,10 @@ html.dark .page {
     border-color: var(--border);
     background: var(--surface);
     color: var(--text);
+    box-shadow: 0 8px 22px rgba(21, 32, 39, 0.14);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .page .review-preview-note {
     box-shadow: 0 8px 22px rgba(40, 20, 25, 0.14);
 }
 

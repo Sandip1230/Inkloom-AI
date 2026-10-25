@@ -26,7 +26,7 @@
   border-radius: 100px;
   background: none;
   box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.45);
-  color: #f9f5f5;
+  color: #f5f9f9;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
@@ -35,6 +35,10 @@
   paint-order: stroke fill;
   white-space: nowrap;
   pointer-events: none;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .liquid-metal-button__content {
+  color: #f9f5f5;
 }
 
 .liquid-metal-button__surface {
@@ -69,8 +73,12 @@
   top: 2px;
   left: 2px;
   border-radius: 100px;
-  background: linear-gradient(180deg, #2a0f1a, #12060b);
+  background: linear-gradient(180deg, #0f141f, #12060b);
   pointer-events: none;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .liquid-metal-button__inner {
+  background: linear-gradient(180deg, #2a0f1a, #12060b);
 }
 
 .liquid-metal-button__shader {
@@ -106,8 +114,12 @@
 }
 
 .liquid-metal-button__hit-area:focus-visible {
-  outline: 3px solid var(--accent-solid, #f05672);
+  outline: 3px solid var(--accent-solid, #375dcd);
   outline-offset: 4px;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .liquid-metal-button__hit-area:focus-visible {
+  outline: 3px solid var(--accent-solid, #f05672);
 }
 
 .liquid-metal-button__ripple {

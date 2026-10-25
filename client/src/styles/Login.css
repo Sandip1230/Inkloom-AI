@@ -4,7 +4,13 @@
   display: grid;
   place-items: center;
   background:
-    radial-gradient(ellipse at 12% 12%, rgba(255, 196, 150, 0.38), transparent 32%),
+    radial-gradient(ellipse at 12% 12%, rgba(95, 229, 194, 0.38), transparent 32%),
+    radial-gradient(ellipse at 88% 90%, rgba(123, 156, 233, 0.45), transparent 32%),
+    #f8fefd;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-page {
+  background: radial-gradient(ellipse at 12% 12%, rgba(255, 196, 150, 0.38), transparent 32%),
     radial-gradient(ellipse at 88% 90%, rgba(255, 190, 210, 0.45), transparent 32%),
     #fffaf7;
 }
@@ -15,6 +21,10 @@
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 27px;
   background: #fff;
+  box-shadow: 0 24px 80px rgba(51, 109, 102, 0.16);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-shell {
   box-shadow: 0 24px 80px rgba(150, 60, 50, 0.16);
 }
 
@@ -32,12 +42,16 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #2b2320;
+  color: #202b2b;
   font-size: 17px;
   font-weight: 750;
   letter-spacing: -0.04em;
   text-decoration: none;
   white-space: nowrap;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-brand {
+  color: #2b2320;
 }
 
 .login-brand-mark,
@@ -52,18 +66,27 @@
 }
 
 .login-brand-light {
-  color: #f0568a;
+  color: #3767cd;
   font-weight: 500;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-brand-light {
+  color: #f0568a;
 }
 
 .login-beta {
   padding: 3px 7px;
-  border: 1px solid #fbd3cf;
+  border: 1px solid #8be3da;
   border-radius: 20px;
-  color: #e5456f;
+  color: #365bb8;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.08em;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-beta {
+  border: 1px solid #fbd3cf;
+  color: #e5456f;
 }
 
 .login-header-note {
@@ -91,7 +114,13 @@
   overflow: hidden;
   padding: 44px clamp(30px, 6vw, 86px);
   background:
-    radial-gradient(ellipse at 12% 10%, rgba(255, 214, 160, 0.5), transparent 37%),
+    radial-gradient(ellipse at 12% 10%, rgba(102, 230, 189, 0.5), transparent 37%),
+    radial-gradient(ellipse at 84% 92%, rgba(109, 149, 231, 0.34), transparent 38%),
+    linear-gradient(118deg, #29c09d 0%, #3dd0c6 50%, #3867c2 100%);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-stage {
+  background: radial-gradient(ellipse at 12% 10%, rgba(255, 214, 160, 0.5), transparent 37%),
     radial-gradient(ellipse at 84% 92%, rgba(255, 170, 200, 0.34), transparent 38%),
     linear-gradient(118deg, #f4772f 0%, #f2605f 50%, #e8508a 100%);
 }
@@ -146,11 +175,15 @@
 
 .login-spark {
   position: absolute;
-  color: #ffe3ef;
+  color: #e5eefd;
   font-size: 23px;
   font-weight: 300;
   opacity: 0.85;
   pointer-events: none;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-spark {
+  color: #ffe3ef;
 }
 
 .login-spark-one {
@@ -161,12 +194,20 @@
 .login-spark-two {
   top: 16%;
   right: 6%;
+  color: #7ae9c0;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-spark-two {
   color: #ffe9bd;
 }
 
 .login-spark-three {
   right: 45%;
   bottom: 6%;
+  color: #d9fcf0;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-spark-three {
   color: #fff0d6;
 }
 
@@ -184,12 +225,17 @@
   padding: 7px 12px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 30px;
-  background: rgba(140, 30, 40, 0.16);
-  color: #fff3ea;
+  background: rgba(36, 49, 100, 0.16);
+  color: #ecfdf9;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-eyebrow {
+  background: rgba(140, 30, 40, 0.16);
+  color: #fff3ea;
 }
 
 .login-story h1 {
@@ -201,6 +247,10 @@
 }
 
 .login-story h1 span {
+  color: #76e9bf;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-story h1 span {
   color: #ffe7b8;
 }
 
@@ -227,8 +277,12 @@
   padding: 9px 11px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 13px;
-  background: rgba(140, 30, 40, 0.16);
+  background: rgba(36, 49, 100, 0.16);
   backdrop-filter: blur(8px);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-benefit {
+  background: rgba(140, 30, 40, 0.16);
 }
 
 .login-benefit-icon {
@@ -236,10 +290,15 @@
   width: 28px;
   height: 28px;
   place-items: center;
-  border: 1px solid rgba(255, 236, 222, 0.5);
+  border: 1px solid rgba(224, 253, 245, 0.5);
   border-radius: 9px;
-  color: #fff3ea;
+  color: #ecfdf9;
   font-size: 15px;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-benefit-icon {
+  border: 1px solid rgba(255, 236, 222, 0.5);
+  color: #fff3ea;
 }
 
 .login-benefit strong,
@@ -264,10 +323,16 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
+  background: #f8fefd;
+  box-shadow: 0 17px 44px rgba(31, 41, 85, 0.28);
+  color: #202b2b;
+  transform: rotate(-1.2deg);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview {
   background: #fffaf7;
   box-shadow: 0 17px 44px rgba(120, 25, 30, 0.28);
   color: #2b2320;
-  transform: rotate(-1.2deg);
 }
 
 .login-preview-top,
@@ -280,8 +345,12 @@
   min-height: 38px;
   gap: 10px;
   padding: 0 13px;
-  border-bottom: 1px solid #f3e4e6;
+  border-bottom: 1px solid #e4e7f3;
   background: #fff;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-top {
+  border-bottom: 1px solid #f3e4e6;
 }
 
 .login-preview-dots {
@@ -293,14 +362,26 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  background: #dfe7ec;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-dots i {
   background: #ecdfe4;
 }
 
 .login-preview-dots i:first-child {
+  background: #677cc9;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-dots i:first-child {
   background: #e9939d;
 }
 
 .login-preview-dots i:nth-child(2) {
+  background: #52c79c;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-dots i:nth-child(2) {
   background: #e8c377;
 }
 
@@ -309,10 +390,14 @@
 }
 
 .login-preview-label {
-  color: #8b7a80;
+  color: #7a848b;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.1em;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-label {
+  color: #8b7a80;
 }
 
 .login-preview-status {
@@ -344,23 +429,35 @@
   flex-direction: column;
   align-items: flex-start;
   padding: 11px;
-  border: 1px solid #f3e4e6;
+  border: 1px solid #e4e7f3;
   border-radius: 9px;
   background: #fff;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-document {
+  border: 1px solid #f3e4e6;
+}
 
 .login-preview-kicker {
-  color: #a58b92;
+  color: #8b9aa5;
   font-size: 6px;
   font-weight: 700;
   letter-spacing: 0.1em;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-kicker {
+  color: #a58b92;
+}
 
 .login-preview-document strong {
   margin-top: 7px;
-  color: #3a2427;
+  color: #24313a;
   font-family: "Fraunces", Georgia, serif;
   font-size: 14px;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-document strong {
+  color: #3a2427;
 }
 
 .login-preview-line {
@@ -368,6 +465,10 @@
   height: 4px;
   margin-top: 6px;
   border-radius: 4px;
+  background: #e8eef2;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-line {
   background: #f3e7ea;
 }
 
@@ -423,9 +524,14 @@
   gap: 8px;
   min-height: 36px;
   padding: 0 14px;
+  border-top: 1px solid #e4e7f3;
+  color: #767f86;
+  font-size: 8px;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-footer {
   border-top: 1px solid #f3e4e6;
   color: #86767c;
-  font-size: 8px;
 }
 
 .login-preview-avatar {
@@ -442,8 +548,12 @@
 
 .login-preview-arrow {
   margin-left: auto;
-  color: #f0568a;
+  color: #3767cd;
   font-size: 13px;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-preview-arrow {
+  color: #f0568a;
 }
 
 .login-story-footer {
@@ -458,9 +568,14 @@
   z-index: 1;
   width: 100%;
   padding: 29px;
-  border: 1px solid rgba(240, 86, 138, 0.14);
+  border: 1px solid rgba(55, 103, 205, 0.14);
   border-radius: 22px;
   background: #fff;
+  box-shadow: 0 20px 54px rgba(35, 47, 93, 0.26);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-card {
+  border: 1px solid rgba(240, 86, 138, 0.14);
   box-shadow: 0 20px 54px rgba(130, 30, 40, 0.26);
 }
 
@@ -479,22 +594,34 @@
 
 .login-card-kicker {
   margin: 0 0 4px;
-  color: #b08a8e;
+  color: #8aa0b0;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.13em;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-card-kicker {
+  color: #b08a8e;
+}
 
 .login-card-heading h2 {
   margin: 0;
-  color: #2b2320;
+  color: #202b2b;
   font-family: "Fraunces", Georgia, serif;
   font-size: 27px;
   font-weight: 600;
   letter-spacing: -0.045em;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-card-heading h2 {
+  color: #2b2320;
+}
 
 .login-card-heading h2 span {
+  color: #3767cd;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-card-heading h2 span {
   color: #f0568a;
 }
 
@@ -523,9 +650,13 @@
 .login-field {
   display: grid;
   gap: 6px;
-  color: #4a3b3f;
+  color: #3b444a;
   font-size: 11px;
   font-weight: 650;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-field {
+  color: #4a3b3f;
 }
 
 .login-input-wrap {
@@ -534,14 +665,25 @@
   align-items: center;
   gap: 10px;
   padding: 0 12px;
-  border: 1px solid #ecdfe4;
+  border: 1px solid #dfe7ec;
   border-radius: 9px;
+  background: #fcfffe;
+  color: #9aaab6;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-input-wrap {
+  border: 1px solid #ecdfe4;
   background: #fffdfc;
   color: #b69aa0;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .login-input-wrap:focus-within {
+  border-color: #3767cd;
+  box-shadow: 0 0 0 3px rgba(55, 103, 205, 0.15);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-input-wrap:focus-within {
   border-color: #f0568a;
   box-shadow: 0 0 0 3px rgba(240, 86, 138, 0.15);
 }
@@ -552,12 +694,20 @@
   border: 0;
   outline: 0;
   background: transparent;
-  color: #2b2320;
+  color: #202b2b;
   font: inherit;
   font-size: 12px;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-input-wrap input {
+  color: #2b2320;
+}
 
 .login-input-wrap input::placeholder {
+  color: #aeb6bc;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-input-wrap input::placeholder {
   color: #bcaeb2;
 }
 
@@ -568,8 +718,12 @@
   padding: 2px;
   border: 0;
   background: transparent;
-  color: #a8909a;
+  color: #909ea8;
   cursor: pointer;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-password-toggle {
+  color: #a8909a;
 }
 
 .login-form-options {
@@ -592,14 +746,23 @@
   width: 13px;
   height: 13px;
   margin: 0;
+  accent-color: #3767cd;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-remember input {
   accent-color: #f0568a;
 }
 
 .login-form-options a,
 .login-signup a {
-  color: #d93f78;
+  color: #3a5ea6;
   font-weight: 650;
   text-decoration: none;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-form-options a,
+:where(html.dark) .login-signup a {
+  color: #d93f78;
 }
 
 .login-form-options a:hover,
@@ -616,8 +779,8 @@
   padding: 0 16px;
   border: 0;
   border-radius: 9px;
-  background: linear-gradient(105deg, #ff8a4c, #f0568a);
-  box-shadow: 0 8px 18px rgba(240, 86, 100, 0.3);
+  background: linear-gradient(105deg, #2cddb5, #3767cd);
+  box-shadow: 0 8px 18px rgba(55, 86, 205, 0.3);
   color: #fff;
   font: inherit;
   font-size: 12px;
@@ -625,9 +788,18 @@
   cursor: pointer;
   transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-submit {
+  background: linear-gradient(105deg, #ff8a4c, #f0568a);
+  box-shadow: 0 8px 18px rgba(240, 86, 100, 0.3);
+}
 
 .login-submit:hover:not(:disabled) {
   transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(55, 86, 205, 0.4);
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-submit:hover:not(:disabled) {
   box-shadow: 0 10px 22px rgba(240, 86, 100, 0.4);
 }
 
@@ -641,17 +813,26 @@
   align-items: center;
   gap: 11px;
   margin: 18px 0 13px;
-  color: #a08f95;
+  color: #8f99a0;
   font-size: 9px;
   white-space: nowrap;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-divider {
+  color: #a08f95;
 }
 
 .login-divider::before,
 .login-divider::after {
   height: 1px;
   flex: 1;
-  background: #f1e4e7;
+  background: #e4ecf1;
   content: "";
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-divider::before,
+:where(html.dark) .login-divider::after {
+  background: #f1e4e7;
 }
 
 .login-socials {
@@ -666,18 +847,28 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid #ecdfe4;
+  border: 1px solid #dfe7ec;
   border-radius: 9px;
   background: #fff;
-  color: #3b2c30;
+  color: #2c353b;
   font: inherit;
   font-size: 10px;
   font-weight: 650;
   cursor: pointer;
   transition: background 150ms ease, border-color 150ms ease;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-socials button {
+  border: 1px solid #ecdfe4;
+  color: #3b2c30;
+}
 
 .login-socials button:hover {
+  border-color: #8196d6;
+  background: #f6f8fe;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-socials button:hover {
   border-color: #f3b9c4;
   background: #fff5f6;
 }
@@ -688,13 +879,21 @@
   padding: 8px;
   border: 0;
   background: transparent;
-  color: #8b7c82;
+  color: #7c858b;
   font: inherit;
   font-size: 10px;
   cursor: pointer;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-skip {
+  color: #8b7c82;
+}
 
 .login-skip:hover {
+  color: #3a5ea6;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-skip:hover {
   color: #d93f78;
 }
 
@@ -717,16 +916,24 @@
 
 .login-terms {
   margin: 12px 0 0;
-  color: #a08f95;
+  color: #8f99a0;
   font-size: 8px;
   line-height: 1.5;
   text-align: center;
 }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-terms {
+  color: #a08f95;
+}
 
 .login-terms a {
-  color: #9a6a76;
+  color: #6a869a;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-terms a {
+  color: #9a6a76;
 }
 
 @media (max-width: 1050px) {
@@ -820,8 +1027,12 @@
     align-self: center;
     padding: 22px;
     border-radius: 17px;
-    box-shadow: 0 14px 34px rgba(130, 30, 40, 0.22);
+    box-shadow: 0 14px 34px rgba(35, 47, 93, 0.22);
   }
+/*  dark mode keeps the original orange / pink  */
+:where(html.dark) .login-card {
+    box-shadow: 0 14px 34px rgba(130, 30, 40, 0.22);
+}
 }
 
 @media (max-width: 430px) {

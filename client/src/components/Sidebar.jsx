@@ -128,7 +128,7 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
   return (
     <aside
       className={
-        "fixed inset-y-0 left-0 z-40 flex h-full w-72 max-w-[85vw] shrink-0 flex-col overflow-y-auto rounded-r-2xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-4 py-4 text-[var(--sidebar-text)] shadow-2xl transition-transform duration-300 ease-in-out md:rounded-none md:border-y-0 md:border-l-0 " +
+        "app-sidebar fixed inset-y-0 left-0 z-40 flex h-full w-72 max-w-[85vw] shrink-0 flex-col overflow-y-auto rounded-r-2xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-4 py-4 text-[var(--sidebar-text)] shadow-2xl transition-transform duration-300 ease-in-out md:rounded-none md:border-y-0 md:border-l-0 " +
         (open ? "translate-x-0" : "-translate-x-[110%]") +
         " md:sticky md:top-0 md:z-auto md:h-screen md:w-60 md:max-w-none md:translate-x-0 md:shadow-sm"
       }

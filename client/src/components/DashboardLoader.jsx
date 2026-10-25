@@ -34,13 +34,13 @@ export default function DashboardLoader() {
       <style>{`
         /* ---------- LIGHT THEME ---------- */
         .dl-wrap.is-light {
-          --dl-bg: radial-gradient(circle at 50% 35%, #ffffff 0%, #ececf1 75%);
-          --dl-dot: linear-gradient(135deg, #6941bd, #a575e6);
-          --dl-glow: rgba(105, 65, 189, 0.45);
-          --dl-msg: #1c1b22;
+          --dl-bg: radial-gradient(circle at 50% 35%, #ffffff 0%, #e3f2f1 75%);
+          --dl-dot: linear-gradient(135deg, #0e9aa7, #2f6fe4);
+          --dl-glow: rgba(20, 184, 166, 0.45);
+          --dl-msg: #12272b;
           --dl-track: rgba(20, 20, 40, 0.10);
-          --dl-fill: linear-gradient(90deg, #6941bd, #a575e6);
-          --dl-percent: #4a4768;
+          --dl-fill: linear-gradient(90deg, #0e9aa7, #2f6fe4);
+          --dl-percent: #3f6064;
         }
         /* ---------- DARK THEME (black + orange) ---------- */
         .dl-wrap.is-dark {

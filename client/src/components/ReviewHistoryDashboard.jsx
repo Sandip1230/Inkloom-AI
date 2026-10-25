@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext.jsx";
 import {
   CATEGORIES,
   GRANULARITIES,
@@ -124,15 +125,17 @@ function Rating({ value }) {
 }
 
 // orange -> pink across the bars, like the design
-function barColor(index, count) {
+function barColor(index, count, theme) {
   const t = count > 1 ? index / (count - 1) : 0;
-  const from = [255, 168, 76];
-  const to = [255, 62, 128];
+  // dark = orange → pink, light = green → blue
+  const from = theme === "dark" ? [255, 168, 76] : [20, 184, 166];
+  const to = theme === "dark" ? [255, 62, 128] : [47, 111, 228];
   const mix = from.map((channel, i) => Math.round(channel + (to[i] - channel) * t));
   return `rgb(${mix.join(",")})`;
 }
 
 function TrendChart({ reviews }) {
+  const { theme } = useTheme();
   const [granularity, setGranularity] = useState("daily");
   const mode = GRANULARITIES.find((item) => item.id === granularity) || GRANULARITIES[0];
   const buckets = useMemo(() => buildTrend(reviews, granularity), [reviews, granularity]);
@@ -176,7 +179,7 @@ function TrendChart({ reviews }) {
               return (
                 <div key={bucket.key} className={`rh-col ${index === peakIndex ? "is-peak" : ""}`} tabIndex={0} title={`${bucket.full}: ${label}`}>
                   {bucket.count > 0 ? (
-                    <span className="rh-bar" style={{ height: `${Math.max(4, (bucket.count / top) * 100)}%`, background: barColor(index, buckets.length) }}>
+                    <span className="rh-bar" style={{ height: `${Math.max(4, (bucket.count / top) * 100)}%`, background: barColor(index, buckets.length, theme) }}>
                       <span className="rh-bar__tip">{label}</span>
                     </span>
                   ) : (

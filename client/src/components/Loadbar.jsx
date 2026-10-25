@@ -19,14 +19,14 @@ export default function LoadBar({ duration = 2000 }) {
       <style>{`
         /* ---------- LIGHT THEME ---------- */
         .lb-wrap.is-light {
-          --lb-bg: radial-gradient(circle at 50% 40%, #ffffff 0%, #ececf1 75%);
-          --lb-ring-a: #6941bd;
-          --lb-ring-b: #a575e6;
-          --lb-title: #6941bd;
+          --lb-bg: radial-gradient(circle at 50% 40%, #ffffff 0%, #e3f2f1 75%);
+          --lb-ring-a: #0e9aa7;
+          --lb-ring-b: #2f6fe4;
+          --lb-title: #0e9aa7;
           --lb-track: rgba(20, 20, 40, 0.10);
-          --lb-fill: linear-gradient(90deg, #6941bd, #a575e6);
-          --lb-glow: rgba(105, 65, 189, 0.45);
-          --lb-percent: #4a4768;
+          --lb-fill: linear-gradient(90deg, #0e9aa7, #2f6fe4);
+          --lb-glow: rgba(20, 184, 166, 0.45);
+          --lb-percent: #3f6064;
         }
         /* ---------- DARK THEME (black + orange) ---------- */
         .lb-wrap.is-dark {

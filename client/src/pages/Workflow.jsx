@@ -45,7 +45,7 @@ const TEMPLATES = [
     name: "LinkedIn",
     tag: "Professional post",
     type: "Social post",
-    gradient: "linear-gradient(135deg, #ff9a52, #f0568a)",
+    gradient: "var(--tpl-linkedin)",
     starter:
       "We’re excited to share [announcement] with our community.\n\nHere’s what it means for our customers:\n• [Key benefit one]\n• [Key benefit two]\n• [Key benefit three]\n\nWe’d love to hear your thoughts. Tell us in the comments.\n\n#[YourBrand] #[Topic]",
   },
@@ -54,7 +54,7 @@ const TEMPLATES = [
     name: "Instagram",
     tag: "Caption + hashtags",
     type: "Social post",
-    gradient: "linear-gradient(135deg, #ffb347, #ff6f91)",
+    gradient: "var(--tpl-instagram)",
     starter:
       "✨ [Hook that stops the scroll]\n\n[One or two short lines about the product, moment, or story.]\n\n👉 Tap the link in our bio to [action].\n\n#[YourBrand] #[Topic] #[Community]",
   },
@@ -63,7 +63,7 @@ const TEMPLATES = [
     name: "Facebook",
     tag: "Community update",
     type: "Social post",
-    gradient: "linear-gradient(135deg, #ff8a4c, #e8467c)",
+    gradient: "var(--tpl-facebook)",
     starter:
       "Hi everyone! 👋\n\n[Friendly update or announcement for the community.]\n\nWhat do you think? Share your thoughts below, and tag a friend who would enjoy this.\n\n[Short description of the link you are sharing]",
   },
@@ -72,7 +72,7 @@ const TEMPLATES = [
     name: "Blogs",
     tag: "Long-form article",
     type: "Web page",
-    gradient: "linear-gradient(135deg, #ff7a6b, #c94fb0)",
+    gradient: "var(--tpl-blog)",
     starter:
       "Title: [Working title]\n\nIntro\n[Open with the problem or question your reader cares about.]\n\nKey point 1\n[Explain it with an example.]\n\nKey point 2\n[Explain it with an example.]\n\nKey point 3\n[Explain it with an example.]\n\nConclusion\n[Summarize the takeaway and invite the next step.]",
   },
@@ -81,7 +81,7 @@ const TEMPLATES = [
     name: "Emails",
     tag: "Campaign email",
     type: "Email",
-    gradient: "linear-gradient(135deg, #ff9a52, #ec4f8a)",
+    gradient: "var(--tpl-email)",
     starter:
       "Subject: [Clear, specific subject line]\n\nHi [First name],\n\n[One sentence explaining why you are writing.]\n\n[Two or three sentences with the key details and the value for the reader.]\n\n[Describe the action], and we’ll take care of the rest.\n\nWarm regards,\n[Your name]\n[Brand name]",
   },
@@ -90,7 +90,7 @@ const TEMPLATES = [
     name: "Others",
     tag: "Ads, notices & more",
     type: "Other",
-    gradient: "linear-gradient(135deg, #f7a35c, #d95b9a)",
+    gradient: "var(--tpl-others)",
     starter:
       "[Headline]\n\n[Two or three sentences describing the offer, update, or announcement.]\n\n[Single, clear call to action]\n\n[Contact details or link text]",
   },
@@ -103,12 +103,12 @@ const PERIODS = [
   { id: "all", label: "All Time", days: null },
 ];
 
-// Colours + order for the doughnut (orange → pink family to match the theme).
+// Colours + order for the doughnut (theme tokens: blue/green in light, orange/pink in dark).
 const STATUS_META = [
-  { key: "Approved", color: "#ff8a4c" },
-  { key: "Awaiting approval", color: "#ee4f8f" },
-  { key: "Changes requested", color: "#f7b3c6" },
-  { key: "Draft", color: "#b58cf0" },
+  { key: "Approved", color: "var(--st-approved)" },
+  { key: "Awaiting approval", color: "var(--st-awaiting)" },
+  { key: "Changes requested", color: "var(--st-changes)" },
+  { key: "Draft", color: "var(--st-draft)" },
 ];
 
 function statusStyle(status) {
@@ -919,7 +919,7 @@ export default function Workflow() {
                 <h2 className="ink-card__title">What gets checked</h2>
                 <ul className="mt-3 space-y-2.5 text-xs text-[var(--text-soft)]">
                   {["Unsupported absolute or comparative claims", "Approved terminology substitutions", "Descriptive link text and long sentences", "Repeated all-caps language and tone"].map((item) => (
-                    <li key={item} className="flex gap-2"><span className="text-[#f0568a]">✓</span>{item}</li>
+                    <li key={item} className="flex gap-2"><span className="text-[var(--check)]">✓</span>{item}</li>
                   ))}
                 </ul>
                 <p className="mt-4 border-t border-[var(--border)] pt-3 text-[11px] leading-4 text-[var(--text-soft)]">
@@ -1022,9 +1022,9 @@ function StatusDoughnut({ segments, total }) {
                 cy="60"
                 r={radius}
                 fill="none"
-                stroke={arc.color}
                 strokeWidth={hovered === arc.key ? 17 : 14}
                 style={{
+                  stroke: arc.color,
                   strokeDasharray: ready ? `${arc.length} ${circumference - arc.length}` : `0 ${circumference}`,
                   strokeDashoffset: -arc.offset,
                 }}
@@ -1067,12 +1067,12 @@ function DocStackArt() {
     <svg className="ink-next__art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="docA" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ffb06b" />
-          <stop offset="1" stopColor="#f0568a" />
+          <stop offset="0" style={{ stopColor: "var(--art-a1)" }} />
+          <stop offset="1" style={{ stopColor: "var(--art-a2)" }} />
         </linearGradient>
         <linearGradient id="docB" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ff9a52" />
-          <stop offset="1" stopColor="#c94fb0" />
+          <stop offset="0" style={{ stopColor: "var(--art-b1)" }} />
+          <stop offset="1" style={{ stopColor: "var(--art-b2)" }} />
         </linearGradient>
       </defs>
       <g transform="rotate(10 60 60)">
@@ -1082,11 +1082,11 @@ function DocStackArt() {
         <rect x="34" y="26" width="52" height="68" rx="9" fill="url(#docA)" opacity="0.7" />
       </g>
       <g transform="rotate(-12 60 60)">
-        <rect x="24" y="36" width="54" height="70" rx="9" fill="#2a1f2d" stroke="url(#docA)" strokeWidth="2" />
-        <rect x="33" y="50" width="30" height="4" rx="2" fill="#ffb06b" />
-        <rect x="33" y="60" width="36" height="4" rx="2" fill="#f4a8c2" opacity="0.8" />
-        <rect x="33" y="70" width="24" height="4" rx="2" fill="#f4a8c2" opacity="0.55" />
-        <rect x="33" y="80" width="32" height="4" rx="2" fill="#f4a8c2" opacity="0.4" />
+        <rect x="24" y="36" width="54" height="70" rx="9" style={{ fill: "var(--art-doc)" }} stroke="url(#docA)" strokeWidth="2" />
+        <rect x="33" y="50" width="30" height="4" rx="2" style={{ fill: "var(--art-line-warm)" }} />
+        <rect x="33" y="60" width="36" height="4" rx="2" style={{ fill: "var(--art-line)" }} opacity="0.8" />
+        <rect x="33" y="70" width="24" height="4" rx="2" style={{ fill: "var(--art-line)" }} opacity="0.55" />
+        <rect x="33" y="80" width="32" height="4" rx="2" style={{ fill: "var(--art-line)" }} opacity="0.4" />
       </g>
     </svg>
   );
