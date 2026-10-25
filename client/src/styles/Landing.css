@@ -2078,3 +2078,142 @@ html.dark .page {
     color: var(--accent-solid);
     -webkit-text-fill-color: currentColor;
 }
+
+.page .navbar {
+    height: 76px;
+    padding-right: clamp(24px, 3.5vw, 48px);
+    padding-left: clamp(24px, 3.5vw, 48px);
+}
+
+.page .logo {
+    gap: 8px;
+    font-size: 20px;
+}
+
+.page .hero {
+    min-height: 540px;
+    padding: 20px clamp(28px, 3.5vw, 48px) 44px;
+}
+
+.page .ai-badge {
+    min-height: 34px;
+    height: auto;
+    margin-top: 0;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+.page h1 {
+    max-width: 620px;
+    margin-top: 20px;
+    font-size: clamp(42px, 4.7vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+}
+
+.page .hero-description {
+    max-width: 48ch;
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+.page .hero-buttons {
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.page .social-proof {
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.page .avatar {
+    width: 34px;
+    height: 34px;
+}
+
+.page .social-proof p {
+    font-size: 12px;
+}
+
+.page .hero-right {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.page .stats-row {
+    gap: 12px;
+    padding-bottom: 52px;
+}
+
+.page .pipeline-section {
+    padding-bottom: 68px;
+}
+
+.page .pipeline-section h2 {
+    font-size: clamp(24px, 3vw, 32px);
+}
+
+@media (max-width: 1000px) {
+    .page h1 {
+        font-size: clamp(40px, 5vw, 52px);
+    }
+}
+
+@media (max-width: 750px) {
+    .page .navbar {
+        height: 70px;
+    }
+
+    .page .hero {
+        min-height: auto;
+        padding: 32px 24px 42px;
+        gap: 24px;
+    }
+
+    .page h1 {
+        max-width: 570px;
+        font-size: clamp(40px, 8vw, 54px);
+    }
+
+    .page .hero-description {
+        font-size: 15px;
+    }
+
+    .page .hero-right {
+        padding: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .page .navbar {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .page .logo {
+        font-size: 18px;
+    }
+
+    .page .hero {
+        padding: 26px 18px 36px;
+    }
+
+    .page h1 {
+        margin-top: 18px;
+        font-size: clamp(36px, 10vw, 44px);
+    }
+
+    .page .hero-description {
+        font-size: 14px;
+    }
+
+    .page .social-proof p {
+        font-size: 11px;
+    }
+
+    .page .pipeline-section h2 {
+        font-size: 25px;
+    }
+}
