@@ -76,9 +76,6 @@ export default function Topbar({ showProfile = true }) {
           placeholder="Search reviews, guidelines…"
           className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] py-2 pl-10 pr-14 text-xs text-[var(--text)] placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)] focus:outline-none"
         />
-        <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-soft)]">
-          Ctrl K
-        </kbd>
       </div>
 
       <div className="ml-auto flex items-center gap-3">
