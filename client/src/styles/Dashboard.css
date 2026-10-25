@@ -1352,7 +1352,7 @@ html.dark .hero__aurora { opacity: 0.95; }
 }
 /*  dark mode keeps the original orange / pink  */
 :where(html.dark) .hero__note {
-  color: #ee4f7d;
+  color: #eff708;
 }
 .hero__note p { margin: 0; }
 .hero__note-star { position: absolute; top: -30px; right: -36px; color: #718cda; }
