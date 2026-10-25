@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "../context/ThemeContext.jsx";
+import BrandLogo from "./BrandLogo.jsx";
 
 export default function LoadBar({ duration = 2000 }) {
   const { theme } = useTheme();
@@ -21,7 +22,6 @@ export default function LoadBar({ duration = 2000 }) {
           --lb-bg: radial-gradient(circle at 50% 40%, #ffffff 0%, #ececf1 75%);
           --lb-ring-a: #6941bd;
           --lb-ring-b: #a575e6;
-          --lb-logo: #1c1b22;
           --lb-title: #6941bd;
           --lb-track: rgba(20, 20, 40, 0.10);
           --lb-fill: linear-gradient(90deg, #6941bd, #a575e6);
@@ -33,7 +33,6 @@ export default function LoadBar({ duration = 2000 }) {
           --lb-bg: radial-gradient(circle at 50% 40%, #1a0e05 0%, #000000 70%);
           --lb-ring-a: #ff9a52;
           --lb-ring-b: #e86e32;
-          --lb-logo: #ffffff;
           --lb-title: #ff9a52;
           --lb-track: rgba(255, 255, 255, 0.12);
           --lb-fill: linear-gradient(90deg, #e86e32, #ff9a52);
@@ -68,8 +67,7 @@ export default function LoadBar({ duration = 2000 }) {
           animation: lb-spin 1.6s linear infinite reverse;
         }
         .lb-logo {
-          font-size: 34px; font-weight: 800; color: var(--lb-logo);
-          font-family: system-ui, sans-serif;
+          width: 72px; height: 72px; object-fit: contain;
           animation: lb-pulse 1.4s ease-in-out infinite;
         }
         .lb-title {
@@ -102,7 +100,7 @@ export default function LoadBar({ duration = 2000 }) {
       <div className="lb-logo-box">
         <div className="lb-ring" />
         <div className="lb-ring2" />
-        <div className="lb-logo">IL</div>
+        <BrandLogo className="lb-logo" />
       </div>
 
       <div className="lb-title">Inkloom AI</div>

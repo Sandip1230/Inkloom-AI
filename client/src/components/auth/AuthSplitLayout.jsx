@@ -1,3 +1,5 @@
+import BrandLogo from "../BrandLogo.jsx";
+
 const FEATURES = [
   {
     title: "Explainable checks",
@@ -52,9 +54,7 @@ export default function AuthSplitLayout({ badge, heading, highlight, description
         {/* nav */}
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-bold text-white">
-              I
-            </span>
+            <BrandLogo className="h-8 w-8 shrink-0 object-contain" />
             <span className="text-base font-semibold">Inkloom AI</span>
             <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-medium text-[var(--auth-panel-muted)]">
               Beta

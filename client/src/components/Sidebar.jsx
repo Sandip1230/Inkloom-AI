@@ -4,6 +4,7 @@ import ThemeToggle from "./ThemeToggle.jsx";
 import ProfileAvatar from "./ProfileAvatar.jsx";
 import ProfilePhotoPicker from "./ProfilePhotoPicker.jsx";
 import AccountDeletionAction from "./AccountDeletionAction.jsx";
+import BrandLogo from "./BrandLogo.jsx";
 import { useAvatarStyle } from "../lib/profileStore.js";
 
 const NAV_ITEMS = [
@@ -132,11 +133,9 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
         " md:sticky md:top-0 md:z-auto md:h-screen md:w-60 md:max-w-none md:translate-x-0 md:shadow-sm"
       }
     >
-      <div className="flex items-center gap-2 px-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-bold text-white">
-          I
-        </span>
-        <span className="text-lg font-semibold text-white">Inkloom AI</span>
+    <div className="flex items-center gap-2 px-2">
+      <BrandLogo className="h-7 w-7 shrink-0 object-contain" />
+      <span className="text-lg font-semibold text-white">Inkloom AI</span>
 
         {/* Mobile-only close button for the drawer */}
         <button

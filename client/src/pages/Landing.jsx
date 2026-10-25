@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext.jsx";
 import ParticleTitle from "../components/ParticleTitle.jsx";
+import BrandLogo from "../components/BrandLogo.jsx";
 import { LiquidMetalButton } from "../components/ui/liquid-metal-button";
 import "../styles/Landing.css";
 
@@ -83,7 +84,7 @@ export default function Landing() {
       {/* ================= NAVBAR ================= */}
       <nav className="navbar">
         <a href="#top" className="logo">
-          <span className="logo-star">✦</span>
+          <BrandLogo className="h-9 w-9 shrink-0 object-contain" />
           <span>
             Ink<i>loom</i>
           </span>

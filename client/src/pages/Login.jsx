@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import BrandLogo from "../components/BrandLogo.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import "../styles/Login.css";
 
@@ -54,7 +55,7 @@ export default function Login() {
       <section className="login-shell" aria-label="Sign in to Inkloom AI">
         <header className="login-header">
           <Link to="/" className="login-brand" aria-label="Inkloom AI home">
-            <span className="login-brand-mark">I</span>
+            <BrandLogo className="login-brand-mark" />
             <span>Inkloom <span className="login-brand-light">AI</span></span>
             <span className="login-beta">BETA</span>
           </Link>
@@ -120,7 +121,7 @@ export default function Login() {
 
           <section className="login-card" aria-labelledby="login-title">
             <div className="login-card-heading">
-              <span className="login-card-mark" aria-hidden="true">I</span>
+              <BrandLogo className="login-card-mark" />
               <div>
                 <p className="login-card-kicker">YOUR WORKSPACE AWAITS</p>
                 <h2 id="login-title">Welcome back<span>.</span></h2>

@@ -42,18 +42,13 @@
 
 .login-brand-mark,
 .login-card-mark {
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-weight: 800;
-  background: linear-gradient(145deg, #ff8a4c, #f0568a);
+  display: block;
+  object-fit: contain;
 }
 
 .login-brand-mark {
   width: 34px;
   height: 34px;
-  border-radius: 11px;
-  font-size: 17px;
 }
 
 .login-brand-light {
@@ -480,9 +475,6 @@
   width: 42px;
   height: 42px;
   flex: 0 0 42px;
-  border-radius: 14px;
-  font-size: 20px;
-  box-shadow: 0 7px 16px rgba(240, 86, 100, 0.3);
 }
 
 .login-card-kicker {
@@ -1021,12 +1013,6 @@
 .dark .login-brand,
 .dark .login-card-heading h2 {
   color: #f1f0ee;
-}
-
-.dark .login-brand-mark,
-.dark .login-card-mark {
-  background: linear-gradient(145deg, #ff9a52, #f0568a);
-  box-shadow: 0 7px 16px rgba(240, 86, 138, 0.25);
 }
 
 .dark .login-brand-light,
