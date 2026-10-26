@@ -13,6 +13,7 @@ import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/r
 import VoiceActorPreview from "../components/review/VoiceActorPreview.jsx";
 import ChaosTestPanel from "../components/review/ChaosTestPanel.jsx";
 import ScreenshotReview from "../components/review/ScreenshotReview.jsx";
+import FindingFeedback, { MissedIssueReport } from "../components/review/FindingFeedback.jsx";
 
 const CONTENT_TYPES = [
   "Web page",
@@ -176,7 +177,7 @@ export default function Workflow() {
     () => listReviews(),
     [reviewed, status, findings],
   );
-  
+
   const outstandingReviews = savedReviews.filter(
     (review) => review.status === "Draft" || review.status === "Awaiting approval",
   ).length;
@@ -343,7 +344,7 @@ export default function Workflow() {
       }
     }
   }
-  
+
   // Load a template into the review box, then bring the review section into view.
   function applyTemplate(template) {
     const isUntouchedTemplate = TEMPLATES.some((item) => item.starter === content);
@@ -630,7 +631,7 @@ export default function Workflow() {
                       </div>
                     </div>
                   </form>
-                  
+
                   {reviewed && (
                     <div aria-live="polite" className="ink-results fade-in mt-6">
                       {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
@@ -831,6 +832,7 @@ export default function Workflow() {
                                     </button>
                                   )}
                                 </div>
+                                <FindingFeedback finding={finding} content={content} reviewId={reviewId} reviewerName={reviewer} />
                               </li>
                             ))}
                           </ul>
@@ -840,7 +842,7 @@ export default function Workflow() {
                           No configured checks were triggered. This is not a guarantee that the content is accurate or compliant.
                         </div>
                       )}
-
+                      <MissedIssueReport content={content} reviewId={reviewId} reviewerName={reviewer} />
                       <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
                         <h3 className="text-sm font-semibold text-[var(--text)]">Human review</h3>
                         <div className="mt-3 grid gap-3 sm:grid-cols-2">

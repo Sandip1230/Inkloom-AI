@@ -12,7 +12,7 @@ export function checkOf(finding) {
   return "other";
 }
 
-const WHOLE_CHECKS = new Set(["all-caps", "long-sentence"]);
+export const WHOLE_CHECKS = new Set(["all-caps", "long-sentence"]);
 
 export function keyOf(item) {
   const check = item.check || checkOf(item);
