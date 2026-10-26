@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { label: "Guidelines", icon: "sparkle", to: "/brand-kits" },
   { label: "Insights", icon: "layout", to: "/community" },
   { label: "Brand Drift Time Machine", icon: "layout", to: "/drift" },
+  { label: "Quality Evaluation", icon: "layout", to: "/quality" },
   { label: "Company Admin", icon: "users", to: "/company-admin" },
 ];
 
