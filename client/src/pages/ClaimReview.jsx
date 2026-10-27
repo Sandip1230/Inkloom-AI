@@ -4,19 +4,41 @@ import AppShell from "../components/AppShell.jsx";
 import { adminRequest } from "../api/adminApi.js";
 import ClaimsPanel from "../components/claimreview/ClaimsPanel.jsx";
 import DocumentsPanel from "../components/claimreview/DocumentsPanel.jsx";
-import { ErrorNote, cardClass, inputClass } from "../components/claimreview/shared.jsx";
+import ProcessGuide from "../components/claimreview/ProcessGuide.jsx";
+import SignInGuide from "../components/claimreview/SignInGuide.jsx";
+import SampleScenario from "../components/claimreview/SampleScenario.jsx";
+import { Badge, ErrorNote, Icon, cardClass, inputClass, primaryBtn } from "../components/claimreview/shared.jsx";
+import "../styles/ClaimReview.css";
 
 const TABS = [
-  ["claims", "Claim review"],
-  ["documents", "Reference documents"],
+  ["claims", "Claim review", "search"],
+  ["documents", "Reference documents", "file"],
 ];
 const WORKSPACE_KEY = "inkloom-claim-review-workspace";
+const GUIDE_KEY = "inkloom-claim-review-guide-seen";
+// Messages the server sends with a 401 (see requireAuth).
+const AUTH_ERROR = /sign in|session is invalid|has expired|cannot access workspace/i;
 
-function readStoredWorkspace() {
+const ROLE_NOTE = {
+  owner: "You can manage sources, submit claims and record final decisions.",
+  admin: "You can manage sources, submit claims and record final decisions.",
+  reviewer: "You can submit claims and record final decisions.",
+  creator: "You can submit claims. A reviewer records the final decision.",
+};
+
+function readStored(key) {
   try {
-    return localStorage.getItem(WORKSPACE_KEY) || "";
+    return localStorage.getItem(key) || "";
   } catch {
     return "";
+  }
+}
+
+function hasToken() {
+  try {
+    return Boolean(localStorage.getItem("inkloom-token") || localStorage.getItem("brandloom-token"));
+  } catch {
+    return false;
   }
 }
 
@@ -26,20 +48,34 @@ export default function ClaimReview() {
   const [tab, setTab] = useState("claims");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [authIssue, setAuthIssue] = useState(() => (hasToken() ? "" : "missing"));
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
+    if (!hasToken()) {
+      setAuthIssue("missing");
+      setLoading(false);
+      return undefined;
+    }
+    setAuthIssue("");
+    setError("");
+    setLoading(true);
     adminRequest("/workspaces")
       .then((data) => {
         if (!active) return;
         setWorkspaces(data);
-        const stored = readStoredWorkspace();
+        const stored = readStored(WORKSPACE_KEY);
         setWorkspaceId(data.some((item) => item._id === stored) ? stored : data[0]?._id || "");
       })
-      .catch((loadError) => { if (active) setError(loadError.message); })
+      .catch((loadError) => {
+        if (!active) return;
+        if (AUTH_ERROR.test(loadError.message || "")) setAuthIssue("expired");
+        else setError(loadError.message);
+      })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [attempt]);
 
   function chooseWorkspace(id) {
     setWorkspaceId(id);
@@ -54,61 +90,109 @@ export default function ClaimReview() {
   const role = workspace?.role || "creator";
   const canManage = role === "owner" || role === "admin";
   const canReview = canManage || role === "reviewer";
+  // Which step of the process guide the person is on right now.
+  const currentStep = !workspace ? 1 : tab === "documents" ? 2 : 3;
+  const firstVisit = !readStored(GUIDE_KEY);
+
+  useEffect(() => {
+    if (!workspace) return;
+    try {
+      localStorage.setItem(GUIDE_KEY, "1");
+    } catch {
+      // ignore - the guide just opens again next time
+    }
+  }, [workspace]);
 
   return (
     <AppShell>
       <div className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-[var(--text)]">Source-grounded claim review</h1>
-            <p className="mt-1 max-w-2xl text-sm text-[var(--text-soft)]">
-              Check statements against approved reference documents. The system suggests Supported, Contradicted, or Unverified and shows its evidence; a human reviewer decides.
-            </p>
-          </div>
-          {workspaces.length > 0 && (
-            <label className="text-xs font-medium text-[var(--text-soft)]">
-              Workspace
-              <select value={workspaceId} onChange={(event) => chooseWorkspace(event.target.value)} className={`${inputClass} min-w-52`}>
-                {workspaces.map((item) => (
-                  <option key={item._id} value={item._id}>{item.name} ({item.role})</option>
-                ))}
-              </select>
-            </label>
-          )}
-        </div>
-
-        <div className="mt-4"><ErrorNote message={error} /></div>
-
-        {loading ? (
-          <p className="mt-8 text-sm text-[var(--text-soft)]">Loading workspaces...</p>
-        ) : !workspace ? (
-          !error && (
-            <section className={`${cardClass} mt-8`}>
-              <h2 className="text-base font-semibold text-[var(--text)]">Create or join a workspace first</h2>
-              <p className="mt-2 text-sm text-[var(--text-soft)]">
-                Reference documents and claim reviews belong to a workspace so roles and audit history apply.
-                Sign in, then create a workspace in <Link to="/company-admin" className="font-medium text-[var(--accent-solid)] hover:underline">Company Admin</Link>.
+        <header className={`${cardClass} cr-hero cr-rise`}>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="min-w-0">
+              <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--accent-solid)]">
+                <Icon name="shield" size={14} /> Human-in-the-loop verification
               </p>
-            </section>
-          )
+              <h1 className="mt-1 text-2xl font-semibold text-[var(--text)]">Source-grounded claim review</h1>
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--text-soft)]">
+                Check statements against approved reference documents. The system suggests Supported, Contradicted, or Unverified and shows its evidence; a human reviewer decides.
+              </p>
+            </div>
+            {!authIssue && workspaces.length > 0 && (
+              <label className="text-xs font-medium text-[var(--text-soft)]">
+                Workspace
+                <select value={workspaceId} onChange={(event) => chooseWorkspace(event.target.value)} className={`${inputClass} min-w-52`}>
+                  {workspaces.map((item) => (
+                    <option key={item._id} value={item._id}>{item.name} ({item.role})</option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
+          {workspace && (
+            <p className="mt-4 flex flex-wrap items-center gap-2 text-xs text-[var(--text-soft)]">
+              <Badge tone="accent">Your role: {role}</Badge>
+              <span>{ROLE_NOTE[role]}</span>
+            </p>
+          )}
+        </header>
+
+        {authIssue ? (
+          <SignInGuide reason={authIssue} hasToken={hasToken()} onRetry={() => setAttempt((value) => value + 1)} />
         ) : (
           <>
-            <nav className="mt-6 flex gap-1 overflow-x-auto border-b border-[var(--border)]" aria-label="Claim review sections">
-              {TABS.map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setTab(key)}
-                  aria-current={tab === key ? "page" : undefined}
-                  className={`shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition ${tab === key ? "border-[var(--accent-solid)] text-[var(--accent-solid)]" : "border-transparent text-[var(--text-soft)] hover:text-[var(--text)]"}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </nav>
-            {tab === "claims"
-              ? <ClaimsPanel key={workspaceId} workspaceId={workspaceId} canReview={canReview} />
-              : <DocumentsPanel key={workspaceId} workspaceId={workspaceId} canManage={canManage} />}
+            <div className="mt-4"><ErrorNote message={error} /></div>
+
+            {loading ? (
+              <div className="mt-8 space-y-3" aria-busy="true" aria-live="polite">
+                <div className="h-24 animate-pulse rounded-2xl bg-[var(--surface-2)]" />
+                <div className="h-40 animate-pulse rounded-2xl bg-[var(--surface-2)]" />
+                <span className="sr-only">Loading workspaces...</span>
+              </div>
+            ) : !workspace ? (
+              !error && (
+                <div className="mt-6 space-y-6">
+                  <section className={`${cardClass} cr-rise`}>
+                    <h2 className="text-base font-semibold text-[var(--text)]">Create or join a workspace first</h2>
+                    <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                      Reference documents and claim reviews belong to a workspace so roles and audit history apply.
+                      You are signed in, but you are not a member of any workspace yet.
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <Link to="/company-admin" className={`${primaryBtn} inline-flex items-center gap-2`}>
+                        <Icon name="building" size={16} /> Open Company Admin
+                      </Link>
+                      <span className="text-xs text-[var(--text-soft)]">Create a workspace, or ask an owner to invite you.</span>
+                    </div>
+                  </section>
+                  <ProcessGuide current={1} />
+                  <SampleScenario />
+                </div>
+              )
+            ) : (
+              <>
+                <div className="mt-6">
+                  <ProcessGuide current={currentStep} defaultOpen={firstVisit} />
+                </div>
+
+                <nav className="mt-6 flex gap-1 overflow-x-auto border-b border-[var(--border)]" aria-label="Claim review sections">
+                  {TABS.map(([key, label, icon]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setTab(key)}
+                      aria-current={tab === key ? "page" : undefined}
+                      className={`inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition ${tab === key ? "border-[var(--accent-solid)] text-[var(--accent-solid)]" : "border-transparent text-[var(--text-soft)] hover:text-[var(--text)]"}`}
+                    >
+                      <Icon name={icon} size={16} />
+                      {label}
+                    </button>
+                  ))}
+                </nav>
+                {tab === "claims"
+                  ? <ClaimsPanel key={workspaceId} workspaceId={workspaceId} canReview={canReview} />
+                  : <DocumentsPanel key={workspaceId} workspaceId={workspaceId} canManage={canManage} />}
+              </>
+            )}
           </>
         )}
       </div>

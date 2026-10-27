@@ -11,6 +11,7 @@ Inkloom helps a team check draft copy against its preferred terminology and a sm
 - [What Inkloom does](#what-inkloom-does)
 - [Quick start](#quick-start)
 - [Use the review workspace](#use-the-review-workspace)
+- [Claim Review](#claim-review)
 - [Current capabilities and limitations](#current-capabilities-and-limitations)
 - [Quality evaluation and feedback](#quality-evaluation-and-feedback)
 - [How the application is structured](#how-the-application-is-structured)
@@ -22,19 +23,21 @@ Inkloom helps a team check draft copy against its preferred terminology and a sm
 
 ## What Inkloom does
 
-Organisations create content through many people and tools. Without a clear review process, drafts can drift from approved language, make claims without evidence, or overlook basic readability and accessibility practices. Inkloom is intended to make those issues easier to spot and discuss before publication.
+Organisations create content through many people and tools. Without a clear review process, drafts can drift from approved language, contain potentially unsupported claims, or overlook basic readability and accessibility practices. Inkloom helps teams identify these issues and review content before publication.
 
-The current prototype demonstrates a simple review loop:
+The current prototype demonstrates a simple review workflow:
 
-1. Maintain preferred-term substitutions.
+1. Maintain preferred-term substitutions to ensure consistent brand language.
 2. Paste a draft and choose its content type.
-3. Review explainable findings and optional wording suggestions.
-4. Ask for approval, request changes, or record a human approval.
-5. Return to saved reviews and see lightweight, browser-local insights.
-6. Preview speech delivery, stress-test possible misreadings, compare draft revisions with approved examples, or inspect a screenshot. These previews never set a review status.
+3. Review explainable findings, potential claim-related concerns, and optional wording suggestions.
+4. Use **Claim Review** to examine claims in draft content and assess potential issues using the available review functionality.
+5. Compare rule-grounded findings, explore alternative wording, and revisit draft revisions against approved examples.
+6. Preview speech delivery, stress-test possible misinterpretations, or inspect screenshots for visible content and potential readability or contrast concerns.
+7. Record human decisions, request changes, and revisit saved reviews through browser-local history and insights.
+
+Claim Review complements Inkloom's existing governance checks by helping reviewers examine claims before publication. Automated findings are advisory and should not be treated as definitive proof of factual accuracy or as a substitute for supporting evidence and human judgment.
 
 **The goal is to help reviewers make informed decisions—not to replace their judgment.**
-
 ## Quick start
 
 ### Requirements
@@ -97,7 +100,11 @@ The client is the main Inkloom governance experience. Starting the server is use
 9. Visit **Review history** or **Insights** to review items saved in this browser.
 10. Use **Voice-Actor Preview** to compare browser-synthesized delivery styles. Run **Chaos-Test My Copy** for AI-generated risk examples, or open the upload tab for **Screenshot-to-Review**. These previews do not change the human review status.
 11. Open **Brand Drift Time Machine** in the sidebar to compare saved drafts with approved examples and inspect draft revisions.
-12. Use **Report incorrect finding** under any finding, or **Report a missed issue** below the findings, to record reviewer feedback. Open **Quality Evaluation** in the sidebar to see precision and recall against labeled sample drafts and to triage the reports. These reports never change a review decision.
+
+12. Open **Claim Review** to review claims in your draft using the available claim-review functionality. Examine the identified claims and review results to determine whether further clarification, revision, or supporting evidence may be needed. Claim Review supports the review process but does not automatically establish the factual accuracy of every claim.
+
+13. Use **Report incorrect finding** under any finding, or **Report a missed issue** below the findings, to record reviewer feedback. Open **Quality Evaluation** in the sidebar to see precision and recall against labeled sample drafts and to triage the reports. These reports never change a review decision.
+
 
 Changes to terminology and review decisions are stored in the browser’s `localStorage`. They are not shared with other users or devices.
 
@@ -108,6 +115,7 @@ Changes to terminology and review decisions are stored in the browser’s `local
 | Content input | Pasted text, supported text files, and screenshot images, with a selected content type |
 | Terminology | User-defined preferred-term substitutions |
 | Writing checks | Unsupported absolute/comparative wording, configured terminology, generic link labels, long sentences, and repeated all-caps wording |
+| Claim Review | Dedicated workflow for reviewing claims and identifying potential issues; findings support human assessment and do not automatically verify factual accuracy |
 | Findings | Excerpt, explanation, check/source label, and suggested next step |
 | Suggestions and remixes | Optional deterministic wording replacements and previews, rechecked against local rules before applying |
 | Brand Twin Debate | Rule-grounded summary of configured findings and review limitations; no generated opinions or approval score |
