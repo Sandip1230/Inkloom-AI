@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { label: "Guidelines", icon: "sparkle", to: "/brand-kits" },
   { label: "Insights", icon: "layout", to: "/community" },
   { label: "Brand Drift Time Machine", icon: "layout", to: "/drift" },
+  { label: "Claim Review", icon: "shield", to: "/claim-review" },
   { label: "Company Admin", icon: "users", to: "/company-admin" },
 ];
 
@@ -63,6 +64,13 @@ function NavIcon({ name }) {
           <path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6" />
           <circle cx="17" cy="8" r="2.5" />
           <path d="M22 20c0-2.6-2-4.8-5-5.6" />
+        </svg>
+      );
+    case "shield":
+      return (
+        <svg {...common}>
+          <path d="M12 3 5 6v5c0 4.4 2.9 8.3 7 10 4.1-1.7 7-5.6 7-10V6l-7-3Z" />
+          <path d="m9 12 2 2 4-4" />
         </svg>
       );
     default:
