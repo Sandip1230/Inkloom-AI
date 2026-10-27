@@ -13,7 +13,11 @@ const NAV_ITEMS = [
   { label: "Guidelines", icon: "sparkle", to: "/brand-kits" },
   { label: "Insights", icon: "layout", to: "/community" },
   { label: "Brand Drift Time Machine", icon: "layout", to: "/drift" },
+<<<<<<< HEAD
   { label: "Claim Review", icon: "shield", to: "/claim-review" },
+=======
+  { label: "Quality Evaluation", icon: "layout", to: "/quality" },
+>>>>>>> 0e7088404d1bf75debf90b750f983c32a7d4c664
   { label: "Company Admin", icon: "users", to: "/company-admin" },
 ];
 

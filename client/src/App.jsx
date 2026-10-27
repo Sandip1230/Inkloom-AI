@@ -10,7 +10,11 @@ import BrandKits from "./pages/BrandKits.jsx";
 import Community from "./pages/Community.jsx";
 import CompanyAdmin from "./pages/CompanyAdmin.jsx";
 import DriftTimeMachine from "./pages/DriftTimeMachine.jsx";
+<<<<<<< HEAD
 import ClaimReview from "./pages/ClaimReview.jsx";
+=======
+import QualityEvaluation from "./pages/QualityEvaluation.jsx";
+>>>>>>> 0e7088404d1bf75debf90b750f983c32a7d4c664
 import LoadBar from "./components/Loadbar.jsx";
 import DashboardLoader from "./components/DashboardLoader.jsx";
 import { BrandProvider } from "./context/BrandContext.jsx";
@@ -69,6 +73,7 @@ export default function App() {
       <Route path="/templates" element={<Navigate to="/brand-kits" replace />} />
       <Route path="/community" element={<Community />} />
       <Route path="/drift" element={<DriftTimeMachine />} />
+      <Route path="/quality" element={<QualityEvaluation />} />
       <Route path="/company-admin" element={<CompanyAdmin />} />
       <Route path="/claim-review" element={<ClaimReview />} />
       <Route path="/workflow" element={<NewWorkflowRedirect />} />
