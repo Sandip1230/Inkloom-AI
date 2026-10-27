@@ -8,6 +8,8 @@ import ProcessGuide from "../components/claimreview/ProcessGuide.jsx";
 import SignInGuide from "../components/claimreview/SignInGuide.jsx";
 import SampleScenario from "../components/claimreview/SampleScenario.jsx";
 import { Badge, ErrorNote, Icon, cardClass, inputClass, primaryBtn } from "../components/claimreview/shared.jsx";
+import { PageHero } from "../components/ThemeIcons.jsx";
+import "../styles/ThemePages.css";
 import "../styles/ClaimReview.css";
 
 const TABS = [
@@ -106,17 +108,18 @@ export default function ClaimReview() {
   return (
     <AppShell>
       <div className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8">
-        <header className={`${cardClass} cr-hero cr-rise`}>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="min-w-0">
-              <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--accent-solid)]">
-                <Icon name="shield" size={14} /> Human-in-the-loop verification
-              </p>
-              <h1 className="mt-1 text-2xl font-semibold text-[var(--text)]">Source-grounded claim review</h1>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--text-soft)]">
-                Check statements against approved reference documents. The system suggests Supported, Contradicted, or Unverified and shows its evidence; a human reviewer decides.
-              </p>
-            </div>
+        <PageHero
+          icon="shield"
+          eyebrow="Human-in-the-loop verification"
+          title="Source-grounded claim review"
+          text="Check statements against approved reference documents. The system suggests Supported, Contradicted, or Unverified and shows its evidence; a human reviewer decides."
+          notice={workspace ? (
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[var(--text-soft)]">
+              <Badge tone="accent">Your role: {role}</Badge>
+              <span>{ROLE_NOTE[role]}</span>
+            </p>
+          ) : null}
+        >
             {!authIssue && workspaces.length > 0 && (
               <label className="text-xs font-medium text-[var(--text-soft)]">
                 Workspace
@@ -127,14 +130,7 @@ export default function ClaimReview() {
                 </select>
               </label>
             )}
-          </div>
-          {workspace && (
-            <p className="mt-4 flex flex-wrap items-center gap-2 text-xs text-[var(--text-soft)]">
-              <Badge tone="accent">Your role: {role}</Badge>
-              <span>{ROLE_NOTE[role]}</span>
-            </p>
-          )}
-        </header>
+        </PageHero>
 
         {authIssue ? (
           <SignInGuide reason={authIssue} hasToken={hasToken()} onRetry={() => setAttempt((value) => value + 1)} />
@@ -144,8 +140,8 @@ export default function ClaimReview() {
 
             {loading ? (
               <div className="mt-8 space-y-3" aria-busy="true" aria-live="polite">
-                <div className="h-24 animate-pulse rounded-2xl bg-[var(--surface-2)]" />
-                <div className="h-40 animate-pulse rounded-2xl bg-[var(--surface-2)]" />
+                <div className="tp-card h-24 animate-pulse" />
+                <div className="tp-card h-40 animate-pulse" />
                 <span className="sr-only">Loading workspaces...</span>
               </div>
             ) : !workspace ? (
@@ -174,14 +170,14 @@ export default function ClaimReview() {
                   <ProcessGuide current={currentStep} defaultOpen={firstVisit} />
                 </div>
 
-                <nav className="mt-6 flex gap-1 overflow-x-auto border-b border-[var(--border)]" aria-label="Claim review sections">
+                <nav className="tp-tabs mt-6" aria-label="Claim review sections">
                   {TABS.map(([key, label, icon]) => (
                     <button
                       key={key}
                       type="button"
                       onClick={() => setTab(key)}
                       aria-current={tab === key ? "page" : undefined}
-                      className={`inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition ${tab === key ? "border-[var(--accent-solid)] text-[var(--accent-solid)]" : "border-transparent text-[var(--text-soft)] hover:text-[var(--text)]"}`}
+                      className={`tp-tab ${tab === key ? "is-active" : ""}`}
                     >
                       <Icon name={icon} size={16} />
                       {label}

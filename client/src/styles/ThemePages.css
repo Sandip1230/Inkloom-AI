@@ -1,0 +1,367 @@
+/* Shared theme layer for: Brand Drift Time Machine, Insights, Claim Review,
+   Quality Evaluation and Company Admin.
+
+   It reuses the same look as the Review History dashboard and follows the
+   project theme automatically through the variables in index.css:
+     light  -> teal  -> blue   (--accent-from / --accent-to)
+     dark   -> orange -> pink
+   Nothing in here hard-codes a colour that does not change with the theme,
+   except the semantic status colours (ok / warn / danger), which are tuned
+   per theme below. */
+
+:root {
+  --tp-ok: #0f9d8a;
+  --tp-ok-soft: rgba(15, 157, 138, 0.12);
+  --tp-ok-line: rgba(15, 157, 138, 0.32);
+  --tp-warn: #b7791f;
+  --tp-warn-soft: rgba(217, 144, 28, 0.13);
+  --tp-warn-line: rgba(217, 144, 28, 0.34);
+  --tp-danger: #d6336c;
+  --tp-danger-soft: rgba(214, 51, 108, 0.1);
+  --tp-danger-line: rgba(214, 51, 108, 0.3);
+  --tp-shadow: 0 10px 30px rgba(63, 95, 117, 0.08);
+  --tp-card: #ffffff;
+  --tp-card-line: var(--border);
+  --tp-glow: rgba(20, 184, 166, 0.28);
+}
+html.dark {
+  --tp-ok: #34d399;
+  --tp-ok-soft: rgba(52, 211, 153, 0.14);
+  --tp-ok-line: rgba(52, 211, 153, 0.34);
+  --tp-warn: #fbbf24;
+  --tp-warn-soft: rgba(251, 191, 36, 0.14);
+  --tp-warn-line: rgba(251, 191, 36, 0.34);
+  --tp-danger: #ff6b8f;
+  --tp-danger-soft: rgba(255, 107, 143, 0.13);
+  --tp-danger-line: rgba(255, 107, 143, 0.34);
+  --tp-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+  --tp-card: linear-gradient(160deg, #1c1517 0%, #130e11 100%);
+  --tp-glow: rgba(255, 110, 80, 0.3);
+}
+
+/* ---------- page header ("hero") ---------- */
+.tp-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px solid color-mix(in srgb, var(--accent-from) 35%, var(--border));
+  border-radius: 18px;
+  background:
+    radial-gradient(70% 140% at 100% 0%, color-mix(in srgb, var(--accent-to) 16%, transparent), transparent 65%),
+    radial-gradient(60% 120% at 0% 100%, color-mix(in srgb, var(--accent-from) 12%, transparent), transparent 70%),
+    var(--surface);
+  box-shadow: var(--tp-shadow);
+}
+.tp-hero__main { display: flex; min-width: 0; align-items: flex-start; gap: 14px; }
+.tp-hero__icon {
+  display: grid;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 14px;
+  color: #fff;
+  background: var(--btn-gradient);
+  box-shadow: 0 8px 22px var(--tp-glow);
+}
+.tp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-solid);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.tp-title {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.tp-sub { margin: 6px 0 0; max-width: 46rem; color: var(--text-soft); font-size: 13px; line-height: 1.6; }
+
+/* ---------- cards ---------- */
+.tp-card {
+  min-width: 0;
+  border: 1px solid var(--tp-card-line);
+  border-radius: 16px;
+  background: var(--tp-card);
+  box-shadow: var(--tp-shadow);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tp-card--sm { border-radius: 14px; box-shadow: none; }
+.tp-card--soft { background: var(--surface-2); box-shadow: none; }
+.tp-card--hover:hover {
+  border-color: color-mix(in srgb, var(--accent-solid) 55%, var(--border));
+  box-shadow: 0 14px 32px -16px color-mix(in srgb, var(--accent-solid) 55%, transparent);
+}
+.tp-card h2 { letter-spacing: -0.01em; }
+
+/* heading with a small gradient icon, used at the top of cards */
+.tp-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tp-head__icon { display: inline-flex; flex: none; color: var(--accent-solid); }
+
+/* ---------- stat cards ---------- */
+.tp-stat {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--accent-from) 38%, var(--border));
+  border-radius: 16px;
+  background:
+    radial-gradient(90% 140% at 100% 0%, color-mix(in srgb, var(--accent-from) 18%, transparent) 0%, transparent 60%),
+    var(--surface);
+  box-shadow: var(--tp-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.tp-stat:hover { transform: translateY(-2px); }
+.tp-stat--alt {
+  border-color: color-mix(in srgb, var(--accent-to) 40%, var(--border));
+  background:
+    radial-gradient(90% 140% at 100% 0%, color-mix(in srgb, var(--accent-to) 20%, transparent) 0%, transparent 60%),
+    var(--surface);
+}
+.tp-stat__icon {
+  display: grid;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--accent-from);
+  background: color-mix(in srgb, var(--accent-from) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-from) 32%, transparent);
+}
+.tp-stat--alt .tp-stat__icon {
+  color: var(--accent-to);
+  background: color-mix(in srgb, var(--accent-to) 16%, transparent);
+  border-color: color-mix(in srgb, var(--accent-to) 32%, transparent);
+}
+.tp-stat__text { display: flex; min-width: 0; flex-direction: column; }
+.tp-stat__value {
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
+}
+.tp-stat__label { margin-top: 3px; color: var(--text-soft); font-size: 12.5px; font-weight: 500; }
+.tp-stat__hint { margin-top: 2px; color: var(--text-soft); font-size: 11px; line-height: 1.4; }
+
+/* ---------- progress bars ---------- */
+.tp-track { overflow: hidden; border-radius: 999px; background: var(--surface-2); }
+.tp-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  transition: width 0.5s ease;
+}
+.tp-fill--ok { background: var(--tp-ok); }
+.tp-fill--warn { background: var(--tp-warn); }
+.tp-fill--danger { background: var(--tp-danger); }
+
+/* ---------- buttons / inputs / tabs ---------- */
+.tp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 11px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--btn-gradient);
+  box-shadow: 0 8px 22px -8px var(--tp-glow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+.tp-btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 12px 26px -8px var(--tp-glow); }
+.tp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.tp-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid color-mix(in srgb, var(--accent-solid) 45%, var(--border));
+  border-radius: 11px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface-2);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+.tp-btn-ghost:hover:not(:disabled) {
+  border-color: var(--accent-solid);
+  color: var(--accent-solid);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-solid) 14%, transparent);
+}
+.tp-btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+.tp-btn-sm { padding: 5px 11px; border-radius: 9px; font-size: 12px; }
+
+.tp-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text);
+  font-size: 13.5px;
+  background: var(--bg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.tp-input:focus {
+  outline: none;
+  border-color: var(--accent-solid);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-solid) 18%, transparent);
+}
+
+.tp-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+.tp-tab {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.tp-tab:hover { color: var(--text); }
+.tp-tab.is-active { color: #fff; background: var(--btn-gradient); box-shadow: 0 6px 16px -6px var(--tp-glow); }
+.tp-tab__count {
+  padding: 1px 7px;
+  border-radius: 999px;
+  color: var(--text-soft);
+  font-size: 11px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+.tp-tab.is-active .tp-tab__count { color: #fff; background: rgba(255, 255, 255, 0.22); }
+
+/* ---------- pills / status tones ---------- */
+.tp-pill {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 2px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--surface-2);
+}
+.tp-tone-ok { color: var(--tp-ok); border-color: var(--tp-ok-line); background: var(--tp-ok-soft); }
+.tp-tone-warn { color: var(--tp-warn); border-color: var(--tp-warn-line); background: var(--tp-warn-soft); }
+.tp-tone-danger { color: var(--tp-danger); border-color: var(--tp-danger-line); background: var(--tp-danger-soft); }
+.tp-tone-accent {
+  color: var(--accent-solid);
+  border-color: color-mix(in srgb, var(--accent-solid) 35%, transparent);
+  background: color-mix(in srgb, var(--accent-solid) 12%, transparent);
+}
+.tp-tone-muted { color: var(--text-soft); border-color: var(--border); background: var(--surface-2); }
+
+/* text / background helpers for the semantic colours */
+.tp-text-ok { color: var(--tp-ok); }
+.tp-text-warn { color: var(--tp-warn); }
+.tp-text-danger { color: var(--tp-danger); }
+.tp-text-accent { color: var(--accent-solid); }
+.tp-bg-ok { background: var(--tp-ok); }
+.tp-bg-warn { background: var(--tp-warn); }
+.tp-bg-danger { background: var(--tp-danger); }
+.tp-border-l-ok { border-left-color: var(--tp-ok); }
+.tp-border-l-warn { border-left-color: var(--tp-warn); }
+.tp-border-l-danger { border-left-color: var(--tp-danger); }
+.tp-panel-ok { border-color: var(--tp-ok-line); background: var(--tp-ok-soft); }
+.tp-panel-warn { border-color: var(--tp-warn-line); background: var(--tp-warn-soft); }
+.tp-panel-danger { border-color: var(--tp-danger-line); background: var(--tp-danger-soft); }
+.tp-notice { padding: 8px 12px; border: 1px solid; border-radius: 11px; font-size: 13.5px; }
+
+/* round step / number badge (guides, flows) */
+.tp-dot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--btn-gradient);
+}
+.tp-dot--ok { background: var(--tp-ok); }
+.tp-dot--warn { background: var(--tp-warn); }
+
+/* dashed empty state */
+.tp-empty {
+  border: 1px dashed color-mix(in srgb, var(--accent-solid) 40%, var(--border));
+  border-radius: 14px;
+  color: var(--text-soft);
+  background: color-mix(in srgb, var(--accent-solid) 4%, transparent);
+}
+
+/* list rows inside cards */
+.tp-row {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  transition: border-color 0.15s ease;
+}
+.tp-row:hover { border-color: color-mix(in srgb, var(--accent-solid) 45%, var(--border)); }
+
+/* table */
+.tp-table thead tr { color: var(--text-soft); }
+.tp-table tbody tr { border-top: 1px solid var(--border); transition: background 0.15s ease; }
+.tp-table tbody tr:hover { background: color-mix(in srgb, var(--accent-solid) 6%, transparent); }
+
+/* modal used by Claim Review documents */
+.tp-backdrop { background: rgba(8, 10, 14, 0.6); backdrop-filter: blur(3px); }
+
+@media (max-width: 700px) {
+  .tp-hero { padding: 16px; border-radius: 16px; }
+  .tp-title { font-size: 21px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tp-stat, .tp-btn, .tp-card, .tp-fill { transition: none; }
+  .tp-stat:hover, .tp-btn:hover:not(:disabled) { transform: none; }
+}
+
+/* gradient fill helper used by step badges, logos and meter bars */
+.tp-fill-grad { background: linear-gradient(135deg, var(--accent-from), var(--accent-to)); }
+.tp-dot--ok { background: var(--tp-ok); }
+.tp-dot--warn { background: var(--tp-warn); }
+
+/* compact stat tile (vertical) used inside cards, e.g. the Claim Review overview */
+.tp-stat--col { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 14px; border-radius: 14px; box-shadow: none; }
+.tp-stat--col:hover { transform: none; }

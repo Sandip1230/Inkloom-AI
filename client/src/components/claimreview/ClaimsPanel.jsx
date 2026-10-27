@@ -17,10 +17,10 @@ const EXAMPLES = [
   "Support is available 24/7 on all plans.",
 ];
 const RELATION_BORDER = {
-  supports: "border-l-emerald-500",
-  contradicts: "border-l-rose-500",
-  neutral: "border-l-slate-400",
-  unassessed: "border-l-slate-400",
+  supports: "tp-border-l-ok",
+  contradicts: "tp-border-l-danger",
+  neutral: "border-l-[var(--text-soft)]",
+  unassessed: "border-l-[var(--text-soft)]",
 };
 
 function locationLabel(location) {
@@ -51,8 +51,8 @@ function Overview({ claims }) {
   if (stats.total === 0) return null;
 
   const tiles = [
-    { label: "Total claims", value: stats.total, icon: "message", tone: "text-[var(--accent-solid)]" },
-    { label: "Awaiting review", value: stats.pending, icon: "clock", tone: "text-amber-600" },
+    { label: "Total claims", value: stats.total, icon: "message", tone: "tp-text-accent" },
+    { label: "Awaiting review", value: stats.pending, icon: "clock", tone: "tp-text-warn" },
     ...STATUSES.map((status) => ({
       label: status, value: stats.counts[status], icon: STATUS_META[status].icon, tone: STATUS_META[status].text,
     })),
@@ -62,7 +62,7 @@ function Overview({ claims }) {
     <section className={`${cardClass} cr-rise`} aria-label="Claims overview">
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {tiles.map((tile) => (
-          <li key={tile.label} className="rounded-xl border border-[var(--border)] p-3">
+          <li key={tile.label} className="tp-stat tp-stat--col">
             <p className={`flex items-center gap-1.5 text-[11px] font-medium ${tile.tone}`}>
               <Icon name={tile.icon} size={13} /> {tile.label}
             </p>
@@ -129,8 +129,8 @@ function ClaimFlow({ claim }) {
     <ol className="flex flex-col gap-2 sm:flex-row sm:items-stretch" aria-label="Claim progress">
       {steps.map((step, index) => (
         <li key={step.key} className="flex flex-1 items-center gap-2">
-          <div className={`flex flex-1 items-center gap-3 rounded-xl border p-3 ${step.done ? "border-emerald-500/30 bg-emerald-500/5" : "border-amber-500/30 bg-amber-500/5"}`}>
-            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${step.done ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"}`}>
+          <div className={`flex flex-1 items-center gap-3 rounded-xl border p-3 ${step.done ? "tp-panel-ok" : "tp-panel-warn"}`}>
+            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${step.done ? "tp-dot--ok text-white" : "tp-dot--warn text-white"}`}>
               <Icon name={step.done && step.key !== "decision" ? "check" : step.icon} size={15} />
             </span>
             <div className="min-w-0">

@@ -95,7 +95,7 @@ export default function ProcessGuide({ current = -1, defaultOpen = true }) {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`flex h-9 w-9 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-white" : active ? "bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-white" : "bg-[var(--surface-2)] text-[var(--text-soft)]"}`}
+                      className={`flex h-9 w-9 items-center justify-center rounded-full ${done ? "tp-dot--ok text-white" : active ? "tp-fill-grad text-white" : "bg-[var(--surface-2)] text-[var(--text-soft)]"}`}
                     >
                       <Icon name={done ? "check" : step.icon} size={17} />
                     </span>
@@ -112,7 +112,7 @@ export default function ProcessGuide({ current = -1, defaultOpen = true }) {
             })}
           </ol>
 
-          <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+          <div className="mt-5 tp-row p-4">
             <p className="text-xs font-semibold text-[var(--text)]">What the three statuses mean</p>
             <ul className="mt-3 grid gap-3 sm:grid-cols-3">
               {STATUSES.map((status) => (

@@ -40,7 +40,7 @@ const COPY = {
 // A static, non-interactive sample so people can see what they will get after signing in.
 function PreviewCard() {
   return (
-    <div className="cr-float rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lg" aria-hidden="true">
+    <div className="cr-float tp-card p-4 shadow-lg" aria-hidden="true">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-soft)]">Sample claim</p>
       <p className="mt-1 text-sm font-medium text-[var(--text)]">"Customer data is encrypted at rest."</p>
       <div className="mt-3 flex items-center gap-2">
@@ -66,7 +66,7 @@ export default function SignInGuide({ reason = "missing", onRetry, hasToken = fa
       <section className={`${cardClass} cr-hero cr-rise overflow-hidden`}>
         <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           <div>
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-white">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl tp-fill-grad text-white">
               <Icon name="lock" size={22} />
             </span>
             <h2 className="mt-4 text-xl font-semibold text-[var(--text)]">{copy.title}</h2>
@@ -133,12 +133,12 @@ export default function SignInGuide({ reason = "missing", onRetry, hasToken = fa
               <ul className="mt-3 space-y-1.5">
                 {role.can.map((item) => (
                   <li key={item} className="flex items-start gap-2 text-xs text-[var(--text)]">
-                    <Icon name="check" size={14} className="mt-0.5 text-emerald-600" /> {item}
+                    <Icon name="check" size={14} className="mt-0.5 tp-text-ok" /> {item}
                   </li>
                 ))}
                 {(role.cannot || []).map((item) => (
                   <li key={item} className="flex items-start gap-2 text-xs text-[var(--text-soft)]">
-                    <Icon name="x" size={14} className="mt-0.5 text-rose-500" /> {item}
+                    <Icon name="x" size={14} className="mt-0.5 tp-text-danger" /> {item}
                   </li>
                 ))}
               </ul>

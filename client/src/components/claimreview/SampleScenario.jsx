@@ -18,12 +18,12 @@ const STEPS = [
 
 function MockWindow({ label, children }) {
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg)]">
+    <div className="tp-row">
       <div className="flex items-center justify-between gap-2 border-b border-[var(--border)] px-4 py-2">
         <span className="flex gap-1.5" aria-hidden="true">
-          <span className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+          <span className="h-2.5 w-2.5 rounded-full tp-bg-danger" />
+          <span className="h-2.5 w-2.5 rounded-full tp-bg-warn" />
+          <span className="h-2.5 w-2.5 rounded-full tp-bg-ok" />
         </span>
         <span className="truncate text-[11px] font-medium text-[var(--text-soft)]">{label}</span>
         <Badge tone="muted">Sample</Badge>
@@ -46,13 +46,13 @@ function AccountPane() {
   return (
     <MockWindow label="Sign up">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white"><Icon name="check" size={20} /></span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-full tp-dot--ok text-white"><Icon name="check" size={20} /></span>
         <div>
           <p className="text-sm font-semibold text-[var(--text)]">Welcome, Alex!</p>
           <p className="text-xs text-[var(--text-soft)]">alex@example.com · account ready</p>
         </div>
       </div>
-      <p className="mt-4 rounded-lg border border-dashed border-[var(--border)] p-3 text-xs leading-5 text-[var(--text-soft)]">
+      <p className="mt-4 tp-empty p-3 text-xs leading-5 text-[var(--text-soft)]">
         Next, open Claim Review. It will tell you that you are not in a workspace yet - that is normal for a new account.
       </p>
     </MockWindow>
@@ -105,7 +105,7 @@ function ClaimPane() {
         <StatusBadge status="Supported" />
         <span className="text-[11px] text-[var(--text-soft)]">AI-suggested, awaiting review</span>
       </div>
-      <div className="mt-3 rounded-xl border border-l-4 border-[var(--border)] border-l-emerald-500 p-3">
+      <div className="mt-3 rounded-xl border border-l-4 border-[var(--border)] tp-border-l-ok p-3">
         <p className="text-xs font-semibold text-[var(--text)]">E1 · Security whitepaper <span className="font-normal text-[var(--text-soft)]">· v1</span></p>
         <blockquote className="mt-2 border-l-2 border-[var(--accent-solid)] pl-3 text-sm leading-6 text-[var(--text)]">
           <HighlightedExcerpt excerpt={SAMPLE_EXCERPT} quote={SAMPLE_QUOTE} />
@@ -183,7 +183,7 @@ export default function SampleScenario() {
                   aria-current={active ? "step" : undefined}
                   className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${active ? "border-[var(--accent-solid)] bg-[var(--accent-solid)]/5" : "border-[var(--border)] hover:border-[var(--accent-solid)]"}`}
                 >
-                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-white" : active ? "bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-white" : "bg-[var(--surface-2)] text-[var(--text-soft)]"}`}>
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${done ? "tp-dot--ok text-white" : active ? "tp-fill-grad text-white" : "bg-[var(--surface-2)] text-[var(--text-soft)]"}`}>
                     <Icon name={done ? "check" : item.icon} size={15} />
                   </span>
                   <span className="min-w-0">

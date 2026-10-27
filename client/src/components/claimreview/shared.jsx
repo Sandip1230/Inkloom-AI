@@ -1,50 +1,50 @@
-export const inputClass = "mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-[var(--accent-solid)] focus:outline-none";
-export const cardClass = "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6";
-export const primaryBtn = "rounded-lg bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)] px-4 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50";
-export const ghostBtn = "rounded-lg border border-[var(--border)] px-4 py-2.5 text-sm font-medium text-[var(--text)] transition hover:border-[var(--accent-solid)] disabled:opacity-50";
-export const smallBtn = "rounded-md border border-[var(--border)] px-2.5 py-1 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent-solid)] disabled:opacity-50";
+export const inputClass = "tp-input mt-1.5";
+export const cardClass = "tp-card p-5 sm:p-6";
+export const primaryBtn = "tp-btn";
+export const ghostBtn = "tp-btn-ghost";
+export const smallBtn = "tp-btn-ghost tp-btn-sm";
 
 export const STATUSES = ["Supported", "Contradicted", "Unverified"];
 
 export const TONES = {
-  danger: "border-rose-500/25 bg-rose-500/10 text-rose-600",
-  warn: "border-amber-500/25 bg-amber-500/10 text-amber-600",
-  ok: "border-emerald-500/25 bg-emerald-500/10 text-emerald-700",
-  muted: "border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-soft)]",
-  accent: "border-[var(--accent-solid)]/30 bg-[var(--accent-solid)]/10 text-[var(--accent-solid)]",
+  danger: "tp-tone-danger",
+  warn: "tp-tone-warn",
+  ok: "tp-tone-ok",
+  muted: "tp-tone-muted",
+  accent: "tp-tone-accent",
 };
 
-// Visual meaning of each status. All class names are written out in full so Tailwind can see them.
+// Visual meaning of each status. Colours come from the theme layer (ThemePages.css).
 export const STATUS_META = {
   Supported: {
     tone: "ok",
     icon: "check",
     meaning: "Approved sources back this claim.",
-    bar: "bg-emerald-500",
-    dot: "bg-emerald-500",
-    border: "border-l-emerald-500",
-    panel: "border-emerald-500/30 bg-emerald-500/5",
-    text: "text-emerald-700",
+    bar: "tp-bg-ok",
+    dot: "tp-bg-ok",
+    border: "tp-border-l-ok",
+    panel: "tp-panel-ok",
+    text: "tp-text-ok",
   },
   Contradicted: {
     tone: "danger",
     icon: "x",
     meaning: "Approved sources conflict with this claim.",
-    bar: "bg-rose-500",
-    dot: "bg-rose-500",
-    border: "border-l-rose-500",
-    panel: "border-rose-500/30 bg-rose-500/5",
-    text: "text-rose-600",
+    bar: "tp-bg-danger",
+    dot: "tp-bg-danger",
+    border: "tp-border-l-danger",
+    panel: "tp-panel-danger",
+    text: "tp-text-danger",
   },
   Unverified: {
     tone: "warn",
     icon: "help",
     meaning: "Approved sources cannot confirm or deny it.",
-    bar: "bg-amber-500",
-    dot: "bg-amber-500",
-    border: "border-l-amber-500",
-    panel: "border-amber-500/30 bg-amber-500/5",
-    text: "text-amber-600",
+    bar: "tp-bg-warn",
+    dot: "tp-bg-warn",
+    border: "tp-border-l-warn",
+    panel: "tp-panel-warn",
+    text: "tp-text-warn",
   },
 };
 
@@ -103,7 +103,7 @@ export function Icon({ name, size = 18, className = "" }) {
 
 export function Badge({ tone = "muted", children, title }) {
   return (
-    <span title={title} className={`inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] font-semibold ${TONES[tone] || TONES.muted}`}>
+    <span title={title} className={`tp-pill ${TONES[tone] || TONES.muted}`}>
       {children}
     </span>
   );
@@ -129,11 +129,11 @@ export function ApprovalBadge({ status }) {
 
 export function ErrorNote({ message }) {
   if (!message) return null;
-  return <p role="alert" className="rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-sm text-rose-600">{message}</p>;
+  return <p role="alert" className="tp-notice tp-tone-danger">{message}</p>;
 }
 
 export function EmptyNote({ children }) {
-  return <p className="rounded-lg border border-dashed border-[var(--border)] p-4 text-sm text-[var(--text-soft)]">{children}</p>;
+  return <p className="tp-empty p-4 text-sm">{children}</p>;
 }
 
 // Renders an excerpt with the model's quoted words highlighted (when they really occur in it).

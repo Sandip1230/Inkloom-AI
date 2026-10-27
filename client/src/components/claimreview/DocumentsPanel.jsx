@@ -141,7 +141,7 @@ export default function DocumentsPanel({ workspaceId, canManage }) {
         )}
       </section>
 
-      {notice && <p role="status" className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">{notice}</p>}
+      {notice && <p role="status" className="rounded-lg border tp-tone-ok">{notice}</p>}
       <ErrorNote message={error} />
 
       {form && canManage && (
@@ -276,7 +276,7 @@ export default function DocumentsPanel({ workspaceId, canManage }) {
       </section>
 
       {preview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-label="Document text" onClick={() => setPreview(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center tp-backdrop p-4" role="dialog" aria-modal="true" aria-label="Document text" onClick={() => setPreview(null)}>
           <div className={`${cardClass} flex max-h-[85vh] w-full max-w-3xl flex-col`} onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between gap-3">
               <h3 className="truncate text-sm font-semibold text-[var(--text)]">{preview.title} · v{preview.version}</h3>
