@@ -31,11 +31,8 @@ app.use('/api/brand', brandRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/review-tools', reviewToolsRoutes);
-<<<<<<< HEAD
 app.use('/api/workspaces/:workspaceId/reviews', workspaceReviewsRoutes);
-=======
 app.use('/api/claim-review', claimReviewRoutes);
->>>>>>> 75066ee35106e0b1c34fe64b8897f20375abf493
 
 app.use((request, response) => response.status(404).json({ error: `No route: ${request.method} ${request.originalUrl}` }));
 app.use(errorHandler);

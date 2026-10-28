@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
-import { compareDrafts, reviewVersions } from "../lib/drift.js";
+import { PageHero, TpIcon } from "../components/ThemeIcons.jsx";
+import { annotateVersions, buildTimeline, compareDrafts, reviewVersions } from "../lib/drift.js";
 import { listReviews } from "../lib/reviewStore.js";
+import "../styles/ThemePages.css";
+import "../styles/DriftTimeMachine.css";
 
 function formatDate(value) {
   if (!value) return "Date unavailable";
@@ -250,7 +253,7 @@ function TimeTravel({ item, baselineOptions }) {
             <p className="dtm-eyebrow">Compare with approved wording</p>
             <h2 id="dtm-compare-title" className="text-base font-bold text-[var(--text)]">How far did version {index + 1} drift from your approved example?</h2>
           </div>
-          {baselineOptions.length > 0 && (
+          {baselineOptions.length > 0 && baseline && (
             <label className="text-xs font-semibold text-[var(--text-soft)]">
               Approved example
               <select value={baseline.id} onChange={(event) => setBaselineId(event.target.value)} className="tp-input mt-1.5">
@@ -300,21 +303,32 @@ function TimeTravel({ item, baselineOptions }) {
 export default function DriftTimeMachine() {
   const [reviews] = useState(() => {
     try {
-      return listReviews();
+      const stored = listReviews();
+      return Array.isArray(stored) ? stored : [];
     } catch {
       return [];
     }
   });
-  const drafts = useMemo(() => reviews.filter((review) => review.status !== "Approved" && review.content), [reviews]);
-  const approved = useMemo(() => reviews.filter((review) => review.status === "Approved" && review.content), [reviews]);
-  const [draftId, setDraftId] = useState(() => drafts[0]?.id || "");
-  const [approvedId, setApprovedId] = useState(() => approved[0]?.id || "");
-  const selectedDraft = drafts.find((review) => review.id === draftId) || drafts[0];
-  const selectedApproved = approved.find((review) => review.id === approvedId) || approved[0];
-  const comparison = selectedDraft && selectedApproved
-    ? compareDrafts(selectedDraft.content, selectedApproved.content)
-    : null;
-  const versions = reviewVersions(selectedDraft);
+
+  // Oldest -> newest, only reviews that actually have saved wording.
+  const timeline = useMemo(() => buildTimeline(reviews), [reviews]);
+  const [selectedId, setSelectedId] = useState(() => timeline[timeline.length - 1]?.id || "");
+  const selected = timeline.find((item) => item.id === selectedId) || timeline[timeline.length - 1] || null;
+
+  const totals = useMemo(() => ({
+    reviews: timeline.length,
+    versions: timeline.reduce((sum, item) => sum + item.versionCount, 0),
+    edited: timeline.filter((item) => item.versionCount > 1).length,
+    approved: timeline.filter((item) => item.status === "Approved").length,
+  }), [timeline]);
+
+  // Approved reviews (other than the one being viewed) can be used as the "approved example".
+  const baselineOptions = useMemo(
+    () => timeline
+      .filter((item) => item.status === "Approved" && item.id !== selected?.id)
+      .sort((a, b) => b.updatedAt - a.updatedAt),
+    [timeline, selected?.id],
+  );
 
   return (
     <AppShell>
