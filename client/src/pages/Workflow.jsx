@@ -9,7 +9,7 @@ import {
   createBrandTwinDebate,
   reviewContent,
 } from "../lib/governance.js";
-import { getGuidelines } from "../lib/reviewStore.js";
+import { getGuidelines, listReviews } from "../lib/reviewStore.js";
 import { useReviewStore } from "../lib/useReviewStore.js";
 import WorkspaceSwitcher from "../components/review/WorkspaceSwitcher.jsx";
 import TeamDrafts from "../components/review/TeamDrafts.jsx";
@@ -155,12 +155,14 @@ export default function Workflow() {
   const [period, setPeriod] = useState("week");
   const [fileNotice, setFileNotice] = useState("");
   const textareaRef = useRef(null);
-    useEffect(() => {
+  const fileInputRef = useRef(null);
+
+  // Switching workspace starts a fresh, unsaved review.
+  useEffect(() => {
     setReviewId(null);
     setReviewRev(undefined);
     setStatus("Draft");
   }, [store.workspaceId]);
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -185,11 +187,26 @@ export default function Workflow() {
     () => reviewed ? createBrandTwinDebate(findings) : null,
     [findings, reviewed],
   );
+
+  // ASSUMPTION: the store exposes its list of reviews as `store.reviews`.
+  // If it uses another name, change it here and in activeReview below.
+  const storeReviews = store.reviews;
   const savedReviews = useMemo(
-    () => listReviews(),
-    [reviewed, status, findings],
+    () => (Array.isArray(storeReviews) ? storeReviews : listReviews()),
+    [storeReviews, reviewed, status, findings],
   );
-  
+
+  // The saved copy of the review currently open in the editor (team workspaces).
+  // ASSUMPTION: same `store.reviews` list as above.
+  const activeReview = useMemo(
+    () => (reviewId && Array.isArray(storeReviews) ? storeReviews.find((review) => review.id === reviewId) || null : null),
+    [storeReviews, reviewId],
+  );
+  // True when a teammate saved a newer version than the one on screen.
+  const teamUpdateAvailable = Boolean(
+    store.shared && activeReview && reviewRev !== undefined && activeReview.contentRev !== reviewRev,
+  );
+
   const outstandingReviews = savedReviews.filter(
     (review) => review.status === "Draft" || review.status === "Awaiting approval",
   ).length;
@@ -224,7 +241,7 @@ export default function Workflow() {
     ))
     : findings;
 
-   function currentDraft(overrides = {}) {
+  function currentDraft(overrides = {}) {
     return {
       id: reviewId,
       contentRev: reviewRev,
@@ -270,6 +287,28 @@ export default function Workflow() {
     setReviewed(true);
     setJudgeMode(false);
     setJudgeStage(0);
+    setActiveCategory(null);
+    setSelectedRemixId(null);
+    setActiveTemplate(null);
+    setInputMode("write");
+    setFileNotice("");
+    setReviewError("");
+    document.getElementById("new-review")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Guided demo: loads the sample text and runs the review without saving anything.
+  function startJudgeDemo() {
+    const results = reviewContent(JUDGE_DEMO_CONTENT, guidelines);
+    setContent(JUDGE_DEMO_CONTENT);
+    setFindings(results);
+    setReviewId(null);
+    setReviewRev(undefined);
+    setStatus("Draft");
+    setReviewer("");
+    setComment("");
+    setReviewed(true);
+    setJudgeMode(true);
+    setJudgeStage(1);
     setActiveCategory(null);
     setSelectedRemixId(null);
     setActiveTemplate(null);
@@ -332,25 +371,16 @@ export default function Workflow() {
     setStatus("Draft");
     setReviewed(true);
     if (judgeMode) setJudgeStage(3);
+    // Judge-mode samples are never saved.
     if (reviewId) {
-      try {
-        saveReview({
-          id: reviewId,
-          content: remix.content,
-          contentType,
-          findings: remix.remainingFindings,
-          status: "Draft",
-          reviewer,
-          comment,
-          guidelineSnapshot: guidelines,
-        });
-        setReviewError("");
-      } catch (error) {
-        setReviewError(`Could not save the remixed draft: ${error.message}`);
-      }
+      await persist({
+        content: remix.content,
+        findings: remix.remainingFindings,
+        status: "Draft",
+      });
     }
   }
-  
+
   // Load a template into the review box, then bring the review section into view.
   function applyTemplate(template) {
     const isUntouchedTemplate = TEMPLATES.some((item) => item.starter === content);
@@ -852,47 +882,50 @@ export default function Workflow() {
                         </div>
                       )}
                       <MissedIssueReport content={content} reviewId={reviewId} reviewerName={reviewer} />
+
+                      {/* ===== Human review ===== */}
                       <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
                         <h3 className="text-sm font-semibold text-[var(--text)]">Human review</h3>
-                          {store.shared && !judgeMode ? (
-                        <>
-                          {teamUpdateAvailable && (
-                            <div role="status" className="mt-5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-700">
-                              A teammate updated this review.
-                              <button type="button" onClick={() => openReview(activeReview)} className="rounded-lg border border-amber-500/40 px-3 py-1.5 font-semibold">
-                                Load latest
-                              </button>
+
+                        {store.shared && !judgeMode ? (
+                          <>
+                            {teamUpdateAvailable && (
+                              <div role="status" className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-700">
+                                A teammate updated this review.
+                                <button type="button" onClick={() => openReview(activeReview)} className="rounded-lg border border-amber-500/40 px-3 py-1.5 font-semibold">
+                                  Load latest
+                                </button>
+                              </div>
+                            )}
+                            <TeamReviewPanel
+                              review={activeReview}
+                              store={store}
+                              note={comment}
+                              onNoteChange={setComment}
+                              onDecision={updateDecision}
+                              busy={saving}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                              <label className="text-xs font-medium text-[var(--text-soft)]">
+                                Reviewer
+                                <input value={reviewer} onChange={(event) => setReviewer(event.target.value)} placeholder="Name (optional)" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
+                              </label>
+                              <label className="text-xs font-medium text-[var(--text-soft)]">
+                                Review note
+                                <input value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Context or decision rationale" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
+                              </label>
                             </div>
-                          )}
-                          <TeamReviewPanel
-                            review={activeReview}
-                            store={store}
-                            note={comment}
-                            onNoteChange={setComment}
-                            onDecision={updateDecision}
-                            busy={saving}
-                          />
-                        </>
-                      ) : (
-                        <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
-                          {/* ...tor ager Human review er puro content ekdom jemon chhilo temon... */}
-                        </div>
-                      )}
-                        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                          <label className="text-xs font-medium text-[var(--text-soft)]">
-                            Reviewer
-                            <input value={reviewer} onChange={(event) => setReviewer(event.target.value)} placeholder="Name (optional)" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
-                          </label>
-                          <label className="text-xs font-medium text-[var(--text-soft)]">
-                            Review note
-                            <input value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Context or decision rationale" className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)]" />
-                          </label>
-                        </div>
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          <button type="button" onClick={() => updateDecision("Awaiting approval")} disabled={!reviewId && !judgeMode} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text)] hover:border-[var(--accent-solid)] disabled:opacity-50">Request approval</button>
-                          <button type="button" onClick={() => updateDecision("Changes requested")} disabled={!reviewId && !judgeMode} className="rounded-lg border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-700 hover:bg-amber-500/5 disabled:opacity-50">Request changes</button>
-                          <button type="button" onClick={() => updateDecision("Approved")} disabled={!reviewId && !judgeMode} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Approve draft</button>
-                        </div>
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              <button type="button" onClick={() => updateDecision("Awaiting approval")} disabled={!reviewId && !judgeMode} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text)] hover:border-[var(--accent-solid)] disabled:opacity-50">Request approval</button>
+                              <button type="button" onClick={() => updateDecision("Changes requested")} disabled={!reviewId && !judgeMode} className="rounded-lg border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-700 hover:bg-amber-500/5 disabled:opacity-50">Request changes</button>
+                              <button type="button" onClick={() => updateDecision("Approved")} disabled={!reviewId && !judgeMode} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Approve draft</button>
+                            </div>
+                          </>
+                        )}
+
                         <p className="mt-3 text-[11px] leading-4 text-[var(--text-soft)]">
                           Approval is a human decision. Inkloom’s automated checks do not publish content or replace legal, factual, or brand-owner review.
                         </p>
