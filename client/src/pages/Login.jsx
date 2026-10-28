@@ -35,7 +35,7 @@ export default function Login() {
       if (!response.ok) throw new Error(data.error || "Could not sign in. Try again.");
 
       localStorage.setItem("inkloom-token", data.token);
-      addNotification("🎉 Congratulations! You logged in successfully.");
+      addNotification("Authentication successful. You are now signed in to your Inkloom AI workspace.");
       navigate("/loading");
     } catch (submitError) {
       setError(submitError.message);

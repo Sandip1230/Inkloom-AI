@@ -1,3 +1,4 @@
+import { addNotification } from "./lib/notificationStore.js";
 import { Routes, Route, Navigate, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useRef, useEffect, useState } from "react";
 import Landing from "./pages/Landing.jsx";
@@ -77,10 +78,17 @@ function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get("token");
-    if (token) localStorage.setItem("inkloom-token", token);
-    navigate("/loading", { replace: true });
-  }, [navigate]);
+  const token = new URLSearchParams(window.location.search).get("token");
+  if (token) {
+    const previousToken = localStorage.getItem("inkloom-token");
+    localStorage.setItem("inkloom-token", token);
+    // Only notify for a new sign-in (also stops duplicates in React dev mode)
+    if (token !== previousToken) {
+      addNotification("Authentication successful. You are now signed in to your Inkloom AI workspace.");
+    }
+  }
+  navigate("/loading", { replace: true });
+}, [navigate]);
 
   return null;
 }

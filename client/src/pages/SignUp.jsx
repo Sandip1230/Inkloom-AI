@@ -29,7 +29,7 @@ export default function SignUp() {
       if (!response.ok) throw new Error(data.error || "Could not create account. Try again.");
 
       localStorage.setItem("inkloom-token", data.token);
-      addNotification("🎉 Congratulations! You signed up successfully.");
+      addNotification("Your Inkloom AI account has been created and is ready to use. You can begin by setting up your first project.");
       navigate("/loading");
     } catch (submitError) {
       setError(submitError.message);
