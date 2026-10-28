@@ -21,6 +21,7 @@ Inkloom helps a team check draft copy against its preferred terminology and a sm
 - [Project layout](#project-layout)
 - [Documentation](#documentation)
 
+
 ## What Inkloom does
 
 Organisations create content through many people and tools. Without a clear review process, drafts can drift from approved language, contain potentially unsupported claims, or overlook basic readability and accessibility practices. Inkloom helps teams identify these issues and review content before publication.
