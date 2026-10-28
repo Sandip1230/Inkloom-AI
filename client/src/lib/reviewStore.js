@@ -39,3 +39,8 @@ export function saveReview(review) {
 export function createReviewId() {
   return `review_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
+
+
+export function replaceReviews(reviews) {
+  localStorage.setItem(REVIEW_KEY, JSON.stringify(reviews));
+}

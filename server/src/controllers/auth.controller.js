@@ -6,6 +6,7 @@ const User = require('../models/User');
 const AuditEvent = require('../models/AuditEvent');
 const GovernanceSource = require('../models/GovernanceSource');
 const SharedReview = require('../models/SharedReview');
+const PersonalReview = require('../models/PersonalReview');
 const Organization = require('../models/Organization');
 const WorkspaceMembership = require('../models/WorkspaceMembership');
 const { sendEmail } = require('../utils/sendEmail');
@@ -187,6 +188,7 @@ async function deleteAccount(request, response, next) {
 
     await Promise.all([
       WorkspaceMembership.deleteMany({ userId: user._id }),
+      PersonalReview.deleteMany({ userId: user._id }),
       AuditEvent.updateMany({ actorId: user._id }, { $set: { actorId: null } }),
       GovernanceSource.updateMany(
         { $or: [{ createdBy: user._id }, { 'versions.editedBy': user._id }] },
