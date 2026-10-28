@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import AppShell from "../components/AppShell.jsx";
 import { compareDrafts, reviewVersions } from "../lib/drift.js";
-import { listReviews } from "../lib/reviewStore.js";
+import { useReviewStore } from "../lib/useReviewStore.js";
 
 function formatDate(value) {
   if (!value) return "Date unavailable";
@@ -37,13 +37,7 @@ function PhraseList({ title, phrases, emptyMessage }) {
 }
 
 export default function DriftTimeMachine() {
-  const [reviews] = useState(() => {
-    try {
-      return listReviews();
-    } catch {
-      return [];
-    }
-  });
+  const { reviews } = useReviewStore();
   const drafts = useMemo(() => reviews.filter((review) => review.status !== "Approved" && review.content), [reviews]);
   const approved = useMemo(() => reviews.filter((review) => review.status === "Approved" && review.content), [reviews]);
   const [draftId, setDraftId] = useState(() => drafts[0]?.id || "");

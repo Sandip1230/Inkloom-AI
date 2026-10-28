@@ -9,7 +9,11 @@ import {
   createBrandTwinDebate,
   reviewContent,
 } from "../lib/governance.js";
-import { createReviewId, getGuidelines, listReviews, saveReview } from "../lib/reviewStore.js";
+import { getGuidelines } from "../lib/reviewStore.js";
+import { useReviewStore } from "../lib/useReviewStore.js";
+import WorkspaceSwitcher from "../components/review/WorkspaceSwitcher.jsx";
+import TeamDrafts from "../components/review/TeamDrafts.jsx";
+import TeamReviewPanel from "../components/review/TeamReviewPanel.jsx";
 import VoiceActorPreview from "../components/review/VoiceActorPreview.jsx";
 import ChaosTestPanel from "../components/review/ChaosTestPanel.jsx";
 import ScreenshotReview from "../components/review/ScreenshotReview.jsx";
@@ -133,6 +137,9 @@ export default function Workflow() {
   const [contentType, setContentType] = useState(CONTENT_TYPES[0]);
   const [findings, setFindings] = useState([]);
   const [reviewId, setReviewId] = useState(null);
+  const [reviewRev, setReviewRev] = useState(undefined);
+  const [saving, setSaving] = useState(false);
+  const store = useReviewStore();
   const [status, setStatus] = useState("Draft");
   const [reviewer, setReviewer] = useState("");
   const [comment, setComment] = useState("");
@@ -147,6 +154,11 @@ export default function Workflow() {
   const [period, setPeriod] = useState("week");
   const [fileNotice, setFileNotice] = useState("");
   const textareaRef = useRef(null);
+    useEffect(() => {
+    setReviewId(null);
+    setReviewRev(undefined);
+    setStatus("Draft");
+  }, [store.workspaceId]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -172,10 +184,10 @@ export default function Workflow() {
     () => reviewed ? createBrandTwinDebate(findings) : null,
     [findings, reviewed],
   );
-  const savedReviews = useMemo(
-    () => listReviews(),
-    [reviewed, status, findings],
-  );
+  const savedReviews = store.reviews;
+  const activeReview = store.reviews.find((item) => item.id === reviewId) || null;
+  const teamUpdateAvailable = store.shared && !saving && activeReview
+    && reviewRev !== undefined && activeReview.contentRev !== reviewRev;
   
   const outstandingReviews = savedReviews.filter(
     (review) => review.status === "Draft" || review.status === "Awaiting approval",
@@ -211,77 +223,87 @@ export default function Workflow() {
     ))
     : findings;
 
-  function handleReview(event) {
-    event.preventDefault();
-    const results = reviewContent(content, guidelines);
-    const id = reviewId || createReviewId();
-    setFindings(results);
-    setReviewId(id);
-    setStatus("Draft");
+   function currentDraft(overrides = {}) {
+    return {
+      id: reviewId,
+      contentRev: reviewRev,
+      content,
+      contentType,
+      findings,
+      status: "Draft",
+      reviewer,
+      comment,
+      guidelineSnapshot: guidelines,
+      ...overrides,
+    };
+  }
+
+  // Saves to the workspace (shared) or this browser (personal). Status always comes back from the store.
+  async function persist(overrides = {}) {
+    setSaving(true);
+    try {
+      const saved = await store.save(currentDraft(overrides));
+      setReviewId(saved.id);
+      setReviewRev(saved.contentRev);
+      setStatus(saved.status);
+      setReviewError("");
+      return saved;
+    } catch (error) {
+      setReviewError(`Could not save this review: ${error.message}`);
+      return null;
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // Load a saved (team) review into the editor.
+  function openReview(review) {
+    setContent(review.content);
+    setContentType(review.contentType || CONTENT_TYPES[0]);
+    setFindings(Array.isArray(review.findings) ? review.findings : reviewContent(review.content, guidelines));
+    setReviewId(review.id);
+    setReviewRev(review.contentRev);
+    setStatus(review.status);
+    setReviewer(review.reviewer || "");
+    setComment("");
     setReviewed(true);
     setJudgeMode(false);
     setJudgeStage(0);
     setActiveCategory(null);
     setSelectedRemixId(null);
-    try {
-      saveReview({
-        id,
-        content,
-        contentType,
-        findings: results,
-        status: "Draft",
-        reviewer,
-        comment,
-        guidelineSnapshot: guidelines,
-      });
-      setReviewError("");
-    } catch (error) {
-      setReviewError(`Review ran, but could not be saved in this browser: ${error.message}`);
-    }
-  }
-
-  function startJudgeDemo() {
-    if (!judgeMode && content.trim() && content !== JUDGE_DEMO_CONTENT) {
-      const replace = window.confirm("Replace the text currently in the review box with the Judge Mode sample?");
-      if (!replace) return;
-    }
-
-    const demoFindings = reviewContent(JUDGE_DEMO_CONTENT, guidelines);
-    setContent(JUDGE_DEMO_CONTENT);
-    setContentType("Social post");
     setActiveTemplate(null);
     setInputMode("write");
     setFileNotice("");
-    setReviewId(null);
-    setFindings(demoFindings);
-    setStatus("Draft");
-    setReviewer("");
-    setComment("");
-    setReviewed(true);
-    setJudgeMode(true);
-    setJudgeStage(1);
-    setActiveCategory(null);
-    setSelectedRemixId(null);
     setReviewError("");
     document.getElementById("new-review")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function updateDecision(nextStatus) {
+  async function handleReview(event) {
+    event.preventDefault();
+    const results = reviewContent(content, guidelines);
+    setFindings(results);
+    setReviewed(true);
+    setJudgeMode(false);
+    setJudgeStage(0);
+    setActiveCategory(null);
+    setSelectedRemixId(null);
+    await persist({ findings: results });
+  }
+
+  async function updateDecision(nextStatus) {
     if (!reviewId && !judgeMode) return;
+    // Never approve text the reviewer is not looking at: saved copy must match the screen.
+    if (store.shared && activeReview && content !== activeReview.content) {
+      setReviewError("Run the review to save your latest edits before making a decision.");
+      return;
+    }
     try {
       if (reviewId) {
-        saveReview({
-          id: reviewId,
-          content,
-          contentType,
-          findings,
-          status: nextStatus,
-          reviewer,
-          comment,
-          guidelineSnapshot: guidelines,
-        });
+        const saved = await store.decide(currentDraft(), nextStatus, comment);
+        setStatus(saved.status);
+      } else {
+        setStatus(nextStatus);
       }
-      setStatus(nextStatus);
       if (judgeMode) setJudgeStage(4);
       setReviewError("");
     } catch (error) {
@@ -289,34 +311,18 @@ export default function Workflow() {
     }
   }
 
-  function acceptSuggestion(finding) {
+  async function acceptSuggestion(finding) {
     const updatedContent = applySuggestion(content, finding);
     if (updatedContent === content) return;
-    setContent(updatedContent);
     const updatedFindings = reviewContent(updatedContent, guidelines);
+    setContent(updatedContent);
     setFindings(updatedFindings);
     setSelectedRemixId(null);
     setStatus("Draft");
-    if (reviewId) {
-      try {
-        saveReview({
-          id: reviewId,
-          content: updatedContent,
-          contentType,
-          findings: updatedFindings,
-          status: "Draft",
-          reviewer,
-          comment,
-          guidelineSnapshot: guidelines,
-        });
-        setReviewError("");
-      } catch (error) {
-        setReviewError(`Could not save the updated draft: ${error.message}`);
-      }
-    }
+    if (reviewId) await persist({ content: updatedContent, findings: updatedFindings });
   }
 
-  function acceptRemix(remix) {
+  async function acceptRemix(remix) {
     if (!remix || remix.content === content) return;
     setContent(remix.content);
     setFindings(remix.remainingFindings);
@@ -325,25 +331,8 @@ export default function Workflow() {
     setStatus("Draft");
     setReviewed(true);
     if (judgeMode) setJudgeStage(3);
-    if (reviewId) {
-      try {
-        saveReview({
-          id: reviewId,
-          content: remix.content,
-          contentType,
-          findings: remix.remainingFindings,
-          status: "Draft",
-          reviewer,
-          comment,
-          guidelineSnapshot: guidelines,
-        });
-        setReviewError("");
-      } catch (error) {
-        setReviewError(`Could not save the remixed draft: ${error.message}`);
-      }
-    }
+    if (reviewId) await persist({ content: remix.content, findings: remix.remainingFindings });
   }
-  
   // Load a template into the review box, then bring the review section into view.
   function applyTemplate(template) {
     const isUntouchedTemplate = TEMPLATES.some((item) => item.starter === content);
@@ -411,6 +400,7 @@ export default function Workflow() {
     setContent("");
     setFindings([]);
     setReviewId(null);
+    setReviewRev(undefined);
     setStatus("Draft");
     setReviewer("");
     setComment("");
@@ -482,6 +472,8 @@ export default function Workflow() {
                       {judgeMode ? "Restart Judge Mode" : "Try Judge Mode"}
                     </button>
                   </div>
+                  <WorkspaceSwitcher />
+                  {store.shared && <TeamDrafts store={store} activeId={reviewId} onOpen={openReview} />}
 
                   <form onSubmit={handleReview} className="mt-5">
                     <div className="ink-review__toolbar">
@@ -838,6 +830,30 @@ export default function Workflow() {
 
                       <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
                         <h3 className="text-sm font-semibold text-[var(--text)]">Human review</h3>
+                          {store.shared && !judgeMode ? (
+                        <>
+                          {teamUpdateAvailable && (
+                            <div role="status" className="mt-5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-700">
+                              A teammate updated this review.
+                              <button type="button" onClick={() => openReview(activeReview)} className="rounded-lg border border-amber-500/40 px-3 py-1.5 font-semibold">
+                                Load latest
+                              </button>
+                            </div>
+                          )}
+                          <TeamReviewPanel
+                            review={activeReview}
+                            store={store}
+                            note={comment}
+                            onNoteChange={setComment}
+                            onDecision={updateDecision}
+                            busy={saving}
+                          />
+                        </>
+                      ) : (
+                        <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
+                          {/* ...tor ager Human review er puro content ekdom jemon chhilo temon... */}
+                        </div>
+                      )}
                         <div className="mt-3 grid gap-3 sm:grid-cols-2">
                           <label className="text-xs font-medium text-[var(--text-soft)]">
                             Reviewer

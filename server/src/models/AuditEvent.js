@@ -13,5 +13,6 @@ const auditEventSchema = new mongoose.Schema(
 );
 
 auditEventSchema.index({ organizationId: 1, createdAt: -1 });
+auditEventSchema.index({ organizationId: 1, resourceType: 1, resourceId: 1, createdAt: -1 });
 
 module.exports = mongoose.model('AuditEvent', auditEventSchema);

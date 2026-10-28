@@ -16,7 +16,16 @@ export default function DashboardLoader() {
   const [percent, setPercent] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate("/workflow", { replace: true }), TIME);
+    const timer = setTimeout(() => {
+      const token =
+        localStorage.getItem("inkloom-token") || localStorage.getItem("brandloom-token");
+      const savedTarget = sessionStorage.getItem("inkloom-after-login");
+      sessionStorage.removeItem("inkloom-after-login");
+
+      // Login hoye thakle jei page e jete chaichilo sekhane jabe, nahole dashboard (/workflow)
+      const target = token && savedTarget ? savedTarget : "/workflow";
+      navigate(target, { replace: true });
+    }, TIME);
     const step = 40;
     const counter = setInterval(() => {
       setPercent((p) => Math.min(p + (100 * step) / TIME, 100));

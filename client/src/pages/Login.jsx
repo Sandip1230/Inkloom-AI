@@ -190,10 +190,6 @@ export default function Login() {
               <button type="button" onClick={handleGitHubLogin}><GitHubIcon /> GitHub</button>
             </div>
 
-            <button type="button" className="login-skip" onClick={() => navigate("/loading")}>
-              Continue without signing in
-            </button>
-
             <p className="login-signup">
               New to Inkloom? <Link to="/signup">Create an account <span aria-hidden="true">→</span></Link>
             </p>

@@ -2,13 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import { listReviews } from "../lib/reviewStore.js";
+import { useReviewStore } from "../lib/useReviewStore.js";
 
 export default function Community() {
-  const [reviews, setReviews] = useState([]);
-
-  useEffect(() => {
-    setReviews(listReviews());
-  }, []);
+  const { reviews } = useReviewStore();
 
   const stats = useMemo(() => {
     const categories = {};
@@ -19,6 +16,8 @@ export default function Community() {
     }
     return Object.entries(categories).sort((a, b) => b[1] - a[1]);
   }, [reviews]);
+
+  
 
   const approved = reviews.filter((review) => review.status === "Approved").length;
 

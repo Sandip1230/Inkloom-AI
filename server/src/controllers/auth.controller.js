@@ -191,6 +191,29 @@ async function deleteAccount(request, response, next) {
         { $or: [{ createdBy: user._id }, { 'versions.editedBy': user._id }] },
         { $set: { createdBy: null, 'versions.$[].editedBy': null } },
       ),
+            SharedReview.updateMany(
+        { createdBy: user._id },
+        { $set: { createdBy: null, createdByName: 'Former member' } },
+      ),
+      SharedReview.updateMany(
+        {
+          $or: [
+            { 'comments.authorId': user._id },
+            { 'decisions.actorId': user._id },
+            { 'assignees.userId': user._id },
+          ],
+        },
+        {
+          $set: {
+            'comments.$[c].authorId': null,
+            'comments.$[c].authorName': 'Former member',
+            'decisions.$[d].actorId': null,
+            'decisions.$[d].actorName': 'Former member',
+          },
+          $pull: { assignees: { userId: user._id } },
+        },
+        { arrayFilters: [{ 'c.authorId': user._id }, { 'd.actorId': user._id }] },
+      ),
     ]);
     await User.deleteOne({ _id: user._id });
 
