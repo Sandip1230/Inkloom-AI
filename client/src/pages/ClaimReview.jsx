@@ -7,6 +7,7 @@ import DocumentsPanel from "../components/claimreview/DocumentsPanel.jsx";
 import ProcessGuide from "../components/claimreview/ProcessGuide.jsx";
 import SignInGuide from "../components/claimreview/SignInGuide.jsx";
 import SampleScenario from "../components/claimreview/SampleScenario.jsx";
+import TutorialWindow, { hasCompletedTutorial, markTutorialCompleted } from "../components/claimreview/TutorialWindow.jsx";
 import { Badge, ErrorNote, Icon, cardClass, inputClass, primaryBtn } from "../components/claimreview/shared.jsx";
 import { PageHero } from "../components/ThemeIcons.jsx";
 import "../styles/ThemePages.css";
@@ -52,6 +53,8 @@ export default function ClaimReview() {
   const [error, setError] = useState("");
   const [authIssue, setAuthIssue] = useState(() => (hasToken() ? "" : "missing"));
   const [attempt, setAttempt] = useState(0);
+  // Opens by itself the first time someone enters Claim Review; never again after "Finish".
+  const [tutorialOpen, setTutorialOpen] = useState(() => !hasCompletedTutorial());
 
   useEffect(() => {
     let active = true;
@@ -78,6 +81,11 @@ export default function ClaimReview() {
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [attempt]);
+
+  function finishTutorial() {
+    markTutorialCompleted();
+    setTutorialOpen(false);
+  }
 
   function chooseWorkspace(id) {
     setWorkspaceId(id);
@@ -107,6 +115,7 @@ export default function ClaimReview() {
 
   return (
     <AppShell>
+      {tutorialOpen && <TutorialWindow onFinish={finishTutorial} />}
       <div className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8">
         <PageHero
           icon="shield"
@@ -120,16 +129,21 @@ export default function ClaimReview() {
             </p>
           ) : null}
         >
-            {!authIssue && workspaces.length > 0 && (
-              <label className="text-xs font-medium text-[var(--text-soft)]">
-                Workspace
-                <select value={workspaceId} onChange={(event) => chooseWorkspace(event.target.value)} className={`${inputClass} min-w-52`}>
-                  {workspaces.map((item) => (
-                    <option key={item._id} value={item._id}>{item.name} ({item.role})</option>
-                  ))}
-                </select>
-              </label>
-            )}
+            <div className="flex flex-wrap items-end gap-3">
+              <button type="button" onClick={() => setTutorialOpen(true)} className="tp-btn-ghost tp-btn-sm self-end">
+                <Icon name="help" size={14} /> Tutorial
+              </button>
+              {!authIssue && workspaces.length > 0 && (
+                <label className="text-xs font-medium text-[var(--text-soft)]">
+                  Workspace
+                  <select value={workspaceId} onChange={(event) => chooseWorkspace(event.target.value)} className={`${inputClass} min-w-52`}>
+                    {workspaces.map((item) => (
+                      <option key={item._id} value={item._id}>{item.name} ({item.role})</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
         </PageHero>
 
         {authIssue ? (

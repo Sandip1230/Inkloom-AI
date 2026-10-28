@@ -39,3 +39,129 @@
 }
 /* hero now comes from ThemePages.css (.tp-hero); keep the old hook harmless */
 .cr-hero { background-color: transparent; }
+
+/* ---------- one-time tutorial window ---------- */
+.cr-tut {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--bg) 35%, rgba(8, 10, 14, 0.55));
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  backdrop-filter: blur(12px) saturate(1.1);
+  animation: cr-fade 0.25s ease both;
+}
+@keyframes cr-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cr-pop {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes cr-slide {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.cr-tut__panel {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin: auto;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent-solid) 35%, var(--border));
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.55), 0 0 0 6px color-mix(in srgb, var(--accent-solid) 8%, transparent);
+  animation: cr-pop 0.35s var(--ease-out, ease) both;
+}
+.cr-tut__bar { height: 4px; background: var(--surface-2); }
+.cr-tut__bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  transition: width 0.35s ease;
+}
+.cr-tut__body { padding: 26px 28px 8px; animation: cr-slide 0.3s ease both; }
+.cr-tut__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cr-tut__icon {
+  display: inline-flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: #fff;
+  box-shadow: 0 10px 24px -8px var(--tp-glow, rgba(0, 0, 0, 0.3));
+}
+.cr-tut__count { color: var(--text-soft); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.cr-tut__title { margin: 18px 0 0; color: var(--text); font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+.cr-tut__text { margin: 8px 0 0; color: var(--text-soft); font-size: 14px; line-height: 1.65; }
+.cr-tut__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent-solid) 30%, var(--border));
+  border-radius: 12px;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.55;
+  background: color-mix(in srgb, var(--accent-solid) 7%, transparent);
+}
+.cr-tut__tip svg { margin-top: 2px; color: var(--accent-solid); }
+.cr-tut__chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+.cr-tut__chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface-2);
+}
+.cr-tut__chips svg { color: var(--accent-solid); }
+.cr-tut__meaning { margin-top: 16px; }
+.cr-tut__roles { display: grid; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+.cr-tut__roles li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.cr-tut__roles strong { display: inline-flex; align-items: center; gap: 6px; color: var(--text); font-size: 12px; }
+.cr-tut__roles strong svg { color: var(--accent-solid); }
+.cr-tut__roles span { color: var(--text-soft); font-size: 11.5px; line-height: 1.5; }
+
+.cr-tut__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 28px 22px;
+}
+.cr-tut__dots { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.cr-tut__dots li { width: 8px; height: 8px; border-radius: 999px; background: var(--border); transition: width 0.25s ease, background 0.25s ease; }
+.cr-tut__dots li.is-done { background: color-mix(in srgb, var(--accent-solid) 55%, var(--border)); }
+.cr-tut__dots li.is-active { width: 22px; background: var(--accent-solid); }
+.cr-tut__actions { display: flex; gap: 10px; margin-left: auto; }
+
+@media (max-width: 480px) {
+  .cr-tut__body { padding: 22px 20px 6px; }
+  .cr-tut__foot { padding: 16px 20px 20px; }
+  .cr-tut__title { font-size: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-tut, .cr-tut__panel, .cr-tut__body { animation: none; }
+  .cr-tut__bar span, .cr-tut__dots li { transition: none; }
+}
