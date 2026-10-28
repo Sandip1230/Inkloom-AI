@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar.jsx';
 import ProfilePhotoPicker from './ProfilePhotoPicker.jsx';
 import AccountDeletionAction from './AccountDeletionAction.jsx';
 import { useAvatarStyle } from '../lib/profileStore.js';
+import { getNotifications, markAllRead } from '../lib/notificationStore.js';
 
 // Decodes the JWT payload (server/src/routes/auth.routes.js signs
 // { id, name, email }) without needing a library or a /me API call.
@@ -26,7 +27,15 @@ export default function Topbar({ showProfile = true }) {
   const [user, setUser] = useState(() => readUserFromToken());
   const [photoOpen, setPhotoOpen] = useState(false);
   const [avatarStyle, setAvatarStyle] = useAvatarStyle(user?.email || user?.name);
-  const notifications = []; // no notification system wired up yet — always empty for now
+  const [notifications, setNotifications] = useState(() => getNotifications());
+  const unreadCount = notifications.filter((note) => !note.read).length;
+
+  const refreshNotifications = useCallback(() => setNotifications(getNotifications()), []);
+
+  useEffect(() => {
+    window.addEventListener('inkloom-notifications-changed', refreshNotifications);
+    return () => window.removeEventListener('inkloom-notifications-changed', refreshNotifications);
+  }, [refreshNotifications]);
   const menuRef = useRef(null);
   const notifRef = useRef(null);
 
@@ -83,14 +92,17 @@ export default function Topbar({ showProfile = true }) {
           <button
             type="button"
             aria-label="Notifications"
-            onClick={() => setNotifOpen((prev) => !prev)}
+            onClick={() => {
+              if (!notifOpen) markAllRead();
+              setNotifOpen((prev) => !prev);
+            }}
             className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-soft)] transition-colors hover:border-[var(--accent-solid)] hover:text-[var(--text)]"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 9a6 6 0 0 1 12 0c0 3.4.8 5.2 1.6 6.2H4.4C5.2 14.2 6 12.4 6 9Z" />
               <path d="M10 19a2 2 0 0 0 4 0" />
             </svg>
-            {notifications.length > 0 && (
+            {unreadCount > 0 && (
               <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface)] bg-rose-500" />
             )}
           </button>
@@ -104,7 +116,10 @@ export default function Topbar({ showProfile = true }) {
                 <ul className="max-h-72 overflow-y-auto">
                   {notifications.map((note) => (
                     <li key={note.id} className="rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--border)]">
-                      {note.message}
+                      <p>{note.message}</p>
+                      <p className="mt-0.5 text-xs text-[var(--text-soft)]">
+                        {new Date(note.createdAt).toLocaleString()}
+                      </p>
                     </li>
                   ))}
                 </ul>

@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AuthSplitLayout from "../components/auth/AuthSplitLayout.jsx";
 import BrandLogo from "../components/BrandLogo.jsx";
+import { addNotification } from "../lib/notificationStore.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -28,6 +29,7 @@ export default function SignUp() {
       if (!response.ok) throw new Error(data.error || "Could not create account. Try again.");
 
       localStorage.setItem("inkloom-token", data.token);
+      addNotification("🎉 Congratulations! You signed up successfully.");
       navigate("/loading");
     } catch (submitError) {
       setError(submitError.message);

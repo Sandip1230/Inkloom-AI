@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import BrandLogo from "../components/BrandLogo.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
+import { addNotification } from "../lib/notificationStore.js";
 import "../styles/Login.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
@@ -34,6 +35,7 @@ export default function Login() {
       if (!response.ok) throw new Error(data.error || "Could not sign in. Try again.");
 
       localStorage.setItem("inkloom-token", data.token);
+      addNotification("🎉 Congratulations! You logged in successfully.");
       navigate("/loading");
     } catch (submitError) {
       setError(submitError.message);
