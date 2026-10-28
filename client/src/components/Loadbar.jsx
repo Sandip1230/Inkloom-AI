@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "../context/ThemeContext.jsx";
+import BrandLogo from "./BrandLogo.jsx";
 
 export default function LoadBar({ duration = 2000 }) {
   const { theme } = useTheme();
@@ -18,22 +19,20 @@ export default function LoadBar({ duration = 2000 }) {
       <style>{`
         /* ---------- LIGHT THEME ---------- */
         .lb-wrap.is-light {
-          --lb-bg: radial-gradient(circle at 50% 40%, #ffffff 0%, #ececf1 75%);
-          --lb-ring-a: #6941bd;
-          --lb-ring-b: #a575e6;
-          --lb-logo: #1c1b22;
-          --lb-title: #6941bd;
+          --lb-bg: radial-gradient(circle at 50% 40%, #ffffff 0%, #e3f2f1 75%);
+          --lb-ring-a: #0e9aa7;
+          --lb-ring-b: #2f6fe4;
+          --lb-title: #0e9aa7;
           --lb-track: rgba(20, 20, 40, 0.10);
-          --lb-fill: linear-gradient(90deg, #6941bd, #a575e6);
-          --lb-glow: rgba(105, 65, 189, 0.45);
-          --lb-percent: #4a4768;
+          --lb-fill: linear-gradient(90deg, #0e9aa7, #2f6fe4);
+          --lb-glow: rgba(20, 184, 166, 0.45);
+          --lb-percent: #3f6064;
         }
         /* ---------- DARK THEME (black + orange) ---------- */
         .lb-wrap.is-dark {
           --lb-bg: radial-gradient(circle at 50% 40%, #1a0e05 0%, #000000 70%);
           --lb-ring-a: #ff9a52;
           --lb-ring-b: #e86e32;
-          --lb-logo: #ffffff;
           --lb-title: #ff9a52;
           --lb-track: rgba(255, 255, 255, 0.12);
           --lb-fill: linear-gradient(90deg, #e86e32, #ff9a52);
@@ -68,8 +67,7 @@ export default function LoadBar({ duration = 2000 }) {
           animation: lb-spin 1.6s linear infinite reverse;
         }
         .lb-logo {
-          font-size: 34px; font-weight: 800; color: var(--lb-logo);
-          font-family: system-ui, sans-serif;
+          width: 72px; height: 72px; object-fit: contain;
           animation: lb-pulse 1.4s ease-in-out infinite;
         }
         .lb-title {
@@ -102,7 +100,7 @@ export default function LoadBar({ duration = 2000 }) {
       <div className="lb-logo-box">
         <div className="lb-ring" />
         <div className="lb-ring2" />
-        <div className="lb-logo">IL</div>
+        <BrandLogo className="lb-logo" />
       </div>
 
       <div className="lb-title">Inkloom AI</div>

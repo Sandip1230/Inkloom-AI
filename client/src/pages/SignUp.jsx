@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AuthSplitLayout from "../components/auth/AuthSplitLayout.jsx";
+import BrandLogo from "../components/BrandLogo.jsx";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -44,9 +45,7 @@ export default function SignUp() {
     >
       <div className="w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col items-center text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-2xl font-bold text-white shadow-lg">
-            I
-          </span>
+          <BrandLogo className="h-14 w-14 object-contain" />
           <h2 className="mt-4 text-xl font-bold text-[var(--text)]">Inkloom AI</h2>
           <p className="mt-3 text-lg font-bold text-[var(--text)]">Create Account</p>
           <p className="mt-1 text-sm text-[var(--text-soft)]">Sign up to get started.</p>

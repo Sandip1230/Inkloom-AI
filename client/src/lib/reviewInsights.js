@@ -167,3 +167,86 @@ export function formatReviewDate(timestamp) {
     minute: "2-digit",
   }).format(date)}`;
 }
+/* ---------- detail view (popup) ---------- */
+
+export function wordCount(text) {
+  const words = String(text || "").trim().match(/\S+/g);
+  return words ? words.length : 0;
+}
+
+function plural(count, word) {
+  return `${count} ${word}${count === 1 ? "" : "s"}`;
+}
+
+// Everything the review detail popup shows, derived from one saved review.
+// Pure (no React / browser APIs) so it can be unit tested.
+export function describeReview(review) {
+  const findings = Array.isArray(review?.findings) ? review.findings : [];
+  const revisions = Array.isArray(review?.revisionHistory) ? review.revisionHistory : [];
+  const content = String(review?.content || "");
+  const status = review?.status || "Draft";
+  const type = review?.contentType || "Content review";
+
+  const byCategory = [];
+  findings.forEach((finding) => {
+    const name = finding?.category || "Other";
+    const existing = byCategory.find((item) => item.name === name);
+    if (existing) existing.count += 1;
+    else byCategory.push({ name, count: 1 });
+  });
+  byCategory.sort((a, b) => b.count - a.count);
+
+  const suggestions = findings.filter((finding) => finding?.suggestion).length;
+
+  // Newest first: the current text, then every earlier saved version.
+  const versions = [
+    { key: "current", label: "Current version", updatedAt: review?.updatedAt, content, findings: findings.length, current: true },
+    ...revisions.map((revision, index) => ({
+      key: `revision-${index}`,
+      label: `Earlier version ${revisions.length - index}`,
+      updatedAt: revision?.updatedAt,
+      content: String(revision?.content || ""),
+      findings: Array.isArray(revision?.findings) ? revision.findings.length : 0,
+      current: false,
+    })),
+  ].map((version, index, list) => {
+    const older = list[index + 1];
+    const words = wordCount(version.content);
+    let change = null;
+    if (older) {
+      const delta = words - wordCount(older.content);
+      change = delta === 0 ? "Same length as the version before" : `${delta > 0 ? "+" : "−"}${plural(Math.abs(delta), "word")} vs the version before`;
+    } else if (list.length > 1) {
+      change = "First saved version";
+    }
+    return { ...version, words, change };
+  });
+
+  const lead = `You reviewed a ${type} of ${plural(wordCount(content), "word")}.`;
+  const checks = findings.length
+    ? `The checks raised ${plural(findings.length, "finding")}${byCategory.length ? ` (${byCategory.slice(0, 3).map((item) => `${item.name} ×${item.count}`).join(", ")})` : ""}.`
+    : "The checks found no issues, so this one looked on-brand.";
+  const decision = status === "Approved"
+    ? `${review?.reviewer ? `${review.reviewer} approved` : "A reviewer approved"} it.`
+    : status === "Changes requested"
+      ? `${review?.reviewer ? `${review.reviewer} requested` : "A reviewer requested"} changes.`
+      : status === "Awaiting approval"
+        ? "It is waiting for a reviewer's decision."
+        : "It is still saved as a draft.";
+  const edits = revisions.length ? ` You edited it ${plural(revisions.length, "time")} after the first save.` : "";
+
+  return {
+    type,
+    status,
+    rating: ratingFor(review),
+    words: wordCount(content),
+    characters: content.length,
+    findings,
+    findingCount: findings.length,
+    suggestions,
+    byCategory,
+    versions,
+    summary: `${lead} ${checks} ${decision}${edits}`,
+    guidelines: String(review?.guidelineSnapshot?.preferredTerms || "").trim(),
+  };
+}

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import { adminRequest } from "../api/adminApi.js";
+import { PageHero, TpIcon } from "../components/ThemeIcons.jsx";
+import "../styles/ThemePages.css";
 
 const SOURCE_KINDS = [
   ["brand-guide", "Brand guide"],
@@ -25,17 +27,17 @@ const TABS = [
 ];
 const RETENTION_PRESETS = [90, 180, 365, 730];
 
-const inputClass = "mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-[var(--accent-solid)] focus:outline-none";
-const cardClass = "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6";
-const primaryBtn = "rounded-lg bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)] px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50";
-const ghostBtn = "rounded-lg border border-[var(--border)] px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:border-[var(--accent-solid)] disabled:opacity-50";
+const inputClass = "tp-input mt-1.5";
+const cardClass = "tp-card p-5 sm:p-6";
+const primaryBtn = "tp-btn";
+const ghostBtn = "tp-btn-ghost";
 
 const TONES = {
-  danger: "border-rose-500/25 bg-rose-500/10 text-rose-600",
-  warn: "border-amber-500/25 bg-amber-500/10 text-amber-600",
-  ok: "border-emerald-500/25 bg-emerald-500/10 text-emerald-700",
-  muted: "border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-soft)]",
-  accent: "border-[var(--accent-solid)]/30 bg-[var(--accent-solid)]/10 text-[var(--accent-solid)]",
+  danger: "tp-tone-danger",
+  warn: "tp-tone-warn",
+  ok: "tp-tone-ok",
+  muted: "tp-tone-muted",
+  accent: "tp-tone-accent",
 };
 
 function displayDate(value) {
@@ -88,23 +90,26 @@ function downloadCsv(filename, rows) {
 
 function AdminError({ message }) {
   if (!message) return null;
-  return <p role="alert" className="rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-sm text-rose-600">{message}</p>;
+  return <p role="alert" className="rounded-lg border tp-tone-danger">{message}</p>;
 }
 
 function Badge({ tone = "muted", children }) {
   return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold capitalize ${TONES[tone]}`}>
+    <span className={`tp-pill capitalize ${TONES[tone]}`}>
       {children}
     </span>
   );
 }
 
-function StatCard({ label, value, hint }) {
+function StatCard({ label, value, hint, icon, tone }) {
   return (
-    <article className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-      <p className="text-xs text-[var(--text-soft)]">{label}</p>
-      <p className="mt-2 text-2xl font-semibold capitalize text-[var(--text)]">{value}</p>
-      {hint && <p className="mt-1 text-[11px] text-[var(--text-soft)]">{hint}</p>}
+    <article className={`tp-stat ${tone === "alt" ? "tp-stat--alt" : ""}`}>
+      <span className="tp-stat__icon">{icon}</span>
+      <div className="tp-stat__text">
+        <strong className="tp-stat__value">{value}</strong>
+        <span className="tp-stat__label">{label}</span>
+        {hint && <span className="tp-stat__hint">{hint}</span>}
+      </div>
     </article>
   );
 }
@@ -119,9 +124,9 @@ function Bars({ items }) {
             <span className="capitalize text-[var(--text)]">{item.label}</span>
             <span className="text-[var(--text-soft)]">{item.value}</span>
           </div>
-          <div className="mt-1 h-2 overflow-hidden rounded-full bg-[var(--surface-2)]">
+          <div className="tp-track mt-1 h-2">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)] transition-all duration-500"
+              className="tp-fill"
               style={{ width: `${(item.value / max) * 100}%` }}
             />
           </div>
@@ -502,16 +507,12 @@ export default function CompanyAdmin() {
     <AppShell>
       <div className="stagger mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         {/* ---------------- Header ---------------- */}
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-solid)]">Company administration</p>
-            <h1 className="mt-2 text-2xl font-semibold text-[var(--text)]">
-              {workspace ? workspace.name : "Workspace governance"}
-            </h1>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--text-soft)]">
-              Manage who can participate, which sources are approved, and how long administrative activity is retained.
-            </p>
-          </div>
+        <PageHero
+          icon="building"
+          eyebrow="Company administration"
+          title={workspace ? workspace.name : "Workspace governance"}
+          text="Manage who can participate, which sources are approved, and how long administrative activity is retained."
+        >
           <div className="flex flex-wrap items-end gap-3">
             {workspaces.length > 1 && (
               <label className="text-xs font-medium text-[var(--text-soft)]">
@@ -527,7 +528,7 @@ export default function CompanyAdmin() {
               </button>
             )}
           </div>
-        </div>
+        </PageHero>
 
         {showNewWorkspace && workspace && (
           <form onSubmit={createWorkspace} className={`${cardClass} mt-5 flex flex-wrap items-end gap-3`}>
@@ -541,7 +542,7 @@ export default function CompanyAdmin() {
 
         <div className="mt-5 space-y-3">
           <AdminError message={error} />
-          {notice && <p role="status" className="rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700">{notice}</p>}
+          {notice && <p role="status" className="rounded-lg border tp-tone-ok">{notice}</p>}
         </div>
 
         {loading ? (
@@ -552,7 +553,7 @@ export default function CompanyAdmin() {
               <>
                 <h2 className="text-lg font-semibold text-[var(--text)]">Sign in to continue</h2>
                 <p className="mt-2 text-sm text-[var(--text-soft)]">Workspace settings are available to signed-in members.</p>
-                <Link to="/login" className="mt-4 inline-block rounded-lg bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)] px-4 py-2.5 text-sm font-medium text-white">Go to sign in</Link>
+                <Link to="/login" className="tp-btn mt-4 inline-flex">Go to sign in</Link>
               </>
             ) : (
               <>
@@ -571,22 +572,17 @@ export default function CompanyAdmin() {
         ) : (
           <>
             {/* ---------------- Tabs ---------------- */}
-            <nav className="mt-6 flex gap-1 overflow-x-auto border-b border-[var(--border)]" aria-label="Admin sections">
+            <nav className="tp-tabs mt-6" aria-label="Admin sections">
               {TABS.map(([key, label]) => (
                 <button
                   key={key}
                   type="button"
                   onClick={() => setTab(key)}
-                  className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition ${
-                    tab === key
-                      ? "border-[var(--accent-solid)] text-[var(--accent-solid)]"
-                      : "border-transparent text-[var(--text-soft)] hover:text-[var(--text)]"
-                  }`}
+                  aria-current={tab === key ? "page" : undefined}
+                  className={`tp-tab ${tab === key ? "is-active" : ""}`}
                 >
                   {label}
-                  {tabCounts[key] !== undefined && (
-                    <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[11px] text-[var(--text-soft)]">{tabCounts[key]}</span>
-                  )}
+                  {tabCounts[key] !== undefined && <span className="tp-tab__count">{tabCounts[key]}</span>}
                 </button>
               ))}
             </nav>
@@ -595,19 +591,19 @@ export default function CompanyAdmin() {
             {tab === "overview" && (
               <div className="mt-6 space-y-5">
                 <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <StatCard label="Workspace members" value={members.length} hint={`${overview.roleCounts.find((r) => r.label === "admin")?.value || 0} admin(s)`} />
-                  <StatCard label="Approved sources" value={sources.length} hint={overview.overdueCount ? `${overview.overdueCount} overdue for review` : "None overdue"} />
-                  <StatCard label="Recent events" value={activity.length} />
-                  <StatCard label="Your access" value={workspace.role} />
+                  <StatCard icon={<TpIcon name="users" size={22} />} label="Workspace members" value={members.length} hint={`${overview.roleCounts.find((r) => r.label === "admin")?.value || 0} admin(s)`} />
+                  <StatCard tone="alt" icon={<TpIcon name="file" size={22} />} label="Approved sources" value={sources.length} hint={overview.overdueCount ? `${overview.overdueCount} overdue for review` : "None overdue"} />
+                  <StatCard icon={<TpIcon name="activity" size={22} />} label="Recent events" value={activity.length} />
+                  <StatCard tone="alt" icon={<TpIcon name="key" size={22} />} label="Your access" value={workspace.role} />
                 </section>
 
                 <div className="grid gap-5 lg:grid-cols-3">
                   <section className={cardClass}>
                     <SectionHead title="Governance health" text="Sources that are not overdue for review." />
                     <p className="mt-4 text-4xl font-semibold text-[var(--text)]">{overview.health}%</p>
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-2)]">
+                    <div className="tp-track mt-3 h-2">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${overview.health >= 80 ? "bg-emerald-500" : overview.health >= 50 ? "bg-amber-500" : "bg-rose-500"}`}
+                        className={`tp-fill ${overview.health >= 80 ? "tp-fill--ok" : overview.health >= 50 ? "tp-fill--warn" : "tp-fill--danger"}`}
                         style={{ width: `${overview.health}%` }}
                       />
                     </div>
@@ -631,7 +627,7 @@ export default function CompanyAdmin() {
                   <section className={cardClass}>
                     <SectionHead title="Needs attention" text="Sources overdue or due for review within 30 days." />
                     {overview.needsAttention.length === 0 ? (
-                      <p className="mt-4 rounded-lg border border-dashed border-[var(--border)] p-4 text-sm text-[var(--text-soft)]">Everything is up to date. 🎉</p>
+                      <p className="mt-4 tp-empty p-4 text-sm text-[var(--text-soft)]">Everything is up to date. 🎉</p>
                     ) : (
                       <ul className="mt-4 space-y-2">
                         {overview.needsAttention.slice(0, 6).map(({ source, status }) => (
@@ -713,7 +709,7 @@ export default function CompanyAdmin() {
 
                 <div className="mt-4 divide-y divide-[var(--border)]">
                   {filteredMembers.length === 0 && (
-                    <p className="rounded-lg border border-dashed border-[var(--border)] p-4 text-sm text-[var(--text-soft)]">No members match your filters.</p>
+                    <p className="tp-empty p-4 text-sm text-[var(--text-soft)]">No members match your filters.</p>
                   )}
                   {filteredMembers.map((member) => (
                     <div key={member.id} className="flex flex-wrap items-center gap-3 py-3">
@@ -736,7 +732,7 @@ export default function CompanyAdmin() {
                             {MEMBER_ROLES.filter(([role]) => role !== "admin" || isOwner || member.role === "admin").map(([role, label]) => <option key={role} value={role}>{label}</option>)}
                           </select>
                           {canManage && (member.role !== "admin" || isOwner) && (
-                            <button type="button" onClick={() => removeMember(member)} className="text-xs font-medium text-rose-600 hover:underline">Remove</button>
+                            <button type="button" onClick={() => removeMember(member)} className="text-xs font-medium tp-text-danger hover:underline">Remove</button>
                           )}
                         </>
                       )}
@@ -832,9 +828,9 @@ export default function CompanyAdmin() {
                 </div>
 
                 {sources.length === 0 ? (
-                  <p className="mt-4 rounded-lg border border-dashed border-[var(--border)] p-4 text-sm text-[var(--text-soft)]">No approved sources have been added.</p>
+                  <p className="mt-4 tp-empty p-4 text-sm text-[var(--text-soft)]">No approved sources have been added.</p>
                 ) : filteredSources.length === 0 ? (
-                  <p className="mt-4 rounded-lg border border-dashed border-[var(--border)] p-4 text-sm text-[var(--text-soft)]">No sources match your filters.</p>
+                  <p className="mt-4 tp-empty p-4 text-sm text-[var(--text-soft)]">No sources match your filters.</p>
                 ) : (
                   <div className="mt-4 space-y-3">
                     {filteredSources.map((source) => {
@@ -852,7 +848,7 @@ export default function CompanyAdmin() {
                             </div>
                             <div className="flex items-center gap-3 text-xs">
                               <button type="button" onClick={() => viewSource(source._id)} className="font-medium text-[var(--accent-solid)] hover:underline">View details & versions</button>
-                              {canManage && <button type="button" onClick={() => deleteSource(source)} className="font-medium text-rose-600 hover:underline">Delete</button>}
+                              {canManage && <button type="button" onClick={() => deleteSource(source)} className="font-medium tp-text-danger hover:underline">Delete</button>}
                             </div>
                           </div>
                         </article>

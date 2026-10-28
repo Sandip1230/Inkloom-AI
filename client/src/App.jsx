@@ -10,6 +10,11 @@ import BrandKits from "./pages/BrandKits.jsx";
 import Community from "./pages/Community.jsx";
 import CompanyAdmin from "./pages/CompanyAdmin.jsx";
 import DriftTimeMachine from "./pages/DriftTimeMachine.jsx";
+
+import ClaimReview from "./pages/ClaimReview.jsx";
+
+import QualityEvaluation from "./pages/QualityEvaluation.jsx";
+
 import LoadBar from "./components/Loadbar.jsx";
 import DashboardLoader from "./components/DashboardLoader.jsx";
 import { BrandProvider } from "./context/BrandContext.jsx";
@@ -138,10 +143,26 @@ export default function App() {
           }
         />
         <Route
+          path="/quality"
+          element={
+            <RequireAuth>
+              <QualityEvaluation />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/company-admin"
           element={
             <RequireAuth>
               <CompanyAdmin />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/claim-review"
+          element={
+            <RequireAuth>
+              <ClaimReview />
             </RequireAuth>
           }
         />

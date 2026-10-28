@@ -4,6 +4,7 @@ import ThemeToggle from "./ThemeToggle.jsx";
 import ProfileAvatar from "./ProfileAvatar.jsx";
 import ProfilePhotoPicker from "./ProfilePhotoPicker.jsx";
 import AccountDeletionAction from "./AccountDeletionAction.jsx";
+import BrandLogo from "./BrandLogo.jsx";
 import { useAvatarStyle } from "../lib/profileStore.js";
 
 const NAV_ITEMS = [
@@ -12,6 +13,11 @@ const NAV_ITEMS = [
   { label: "Guidelines", icon: "sparkle", to: "/brand-kits" },
   { label: "Insights", icon: "layout", to: "/community" },
   { label: "Brand Drift Time Machine", icon: "layout", to: "/drift" },
+
+  { label: "Claim Review", icon: "shield", to: "/claim-review" },
+
+  { label: "Quality Evaluation", icon: "layout", to: "/quality" },
+
   { label: "Company Admin", icon: "users", to: "/company-admin" },
 ];
 
@@ -62,6 +68,13 @@ function NavIcon({ name }) {
           <path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6" />
           <circle cx="17" cy="8" r="2.5" />
           <path d="M22 20c0-2.6-2-4.8-5-5.6" />
+        </svg>
+      );
+    case "shield":
+      return (
+        <svg {...common}>
+          <path d="M12 3 5 6v5c0 4.4 2.9 8.3 7 10 4.1-1.7 7-5.6 7-10V6l-7-3Z" />
+          <path d="m9 12 2 2 4-4" />
         </svg>
       );
     default:
@@ -127,16 +140,14 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
   return (
     <aside
       className={
-        "fixed inset-y-0 left-0 z-40 flex h-full w-72 max-w-[85vw] shrink-0 flex-col overflow-y-auto rounded-r-2xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-4 py-4 text-[var(--sidebar-text)] shadow-2xl transition-transform duration-300 ease-in-out md:rounded-none md:border-y-0 md:border-l-0 " +
+        "app-sidebar fixed inset-y-0 left-0 z-40 flex h-full w-72 max-w-[85vw] shrink-0 flex-col overflow-y-auto rounded-r-2xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-4 py-4 text-[var(--sidebar-text)] shadow-2xl transition-transform duration-300 ease-in-out md:rounded-none md:border-y-0 md:border-l-0 " +
         (open ? "translate-x-0" : "-translate-x-[110%]") +
         " md:sticky md:top-0 md:z-auto md:h-screen md:w-60 md:max-w-none md:translate-x-0 md:shadow-sm"
       }
     >
-      <div className="flex items-center gap-2 px-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-from)] to-[var(--accent-to)] text-sm font-bold text-white">
-          I
-        </span>
-        <span className="text-lg font-semibold text-white">Inkloom AI</span>
+    <div className="flex items-center gap-2 px-2">
+      <BrandLogo className="h-7 w-7 shrink-0 object-contain" />
+      <span className="text-lg font-semibold text-white">Inkloom AI</span>
 
         {/* Mobile-only close button for the drawer */}
         <button

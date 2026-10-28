@@ -17,6 +17,7 @@ import TeamReviewPanel from "../components/review/TeamReviewPanel.jsx";
 import VoiceActorPreview from "../components/review/VoiceActorPreview.jsx";
 import ChaosTestPanel from "../components/review/ChaosTestPanel.jsx";
 import ScreenshotReview from "../components/review/ScreenshotReview.jsx";
+import FindingFeedback, { MissedIssueReport } from "../components/review/FindingFeedback.jsx";
 
 const CONTENT_TYPES = [
   "Web page",
@@ -49,7 +50,7 @@ const TEMPLATES = [
     name: "LinkedIn",
     tag: "Professional post",
     type: "Social post",
-    gradient: "linear-gradient(135deg, #ff9a52, #f0568a)",
+    gradient: "var(--tpl-linkedin)",
     starter:
       "We’re excited to share [announcement] with our community.\n\nHere’s what it means for our customers:\n• [Key benefit one]\n• [Key benefit two]\n• [Key benefit three]\n\nWe’d love to hear your thoughts. Tell us in the comments.\n\n#[YourBrand] #[Topic]",
   },
@@ -58,7 +59,7 @@ const TEMPLATES = [
     name: "Instagram",
     tag: "Caption + hashtags",
     type: "Social post",
-    gradient: "linear-gradient(135deg, #ffb347, #ff6f91)",
+    gradient: "var(--tpl-instagram)",
     starter:
       "✨ [Hook that stops the scroll]\n\n[One or two short lines about the product, moment, or story.]\n\n👉 Tap the link in our bio to [action].\n\n#[YourBrand] #[Topic] #[Community]",
   },
@@ -67,7 +68,7 @@ const TEMPLATES = [
     name: "Facebook",
     tag: "Community update",
     type: "Social post",
-    gradient: "linear-gradient(135deg, #ff8a4c, #e8467c)",
+    gradient: "var(--tpl-facebook)",
     starter:
       "Hi everyone! 👋\n\n[Friendly update or announcement for the community.]\n\nWhat do you think? Share your thoughts below, and tag a friend who would enjoy this.\n\n[Short description of the link you are sharing]",
   },
@@ -76,7 +77,7 @@ const TEMPLATES = [
     name: "Blogs",
     tag: "Long-form article",
     type: "Web page",
-    gradient: "linear-gradient(135deg, #ff7a6b, #c94fb0)",
+    gradient: "var(--tpl-blog)",
     starter:
       "Title: [Working title]\n\nIntro\n[Open with the problem or question your reader cares about.]\n\nKey point 1\n[Explain it with an example.]\n\nKey point 2\n[Explain it with an example.]\n\nKey point 3\n[Explain it with an example.]\n\nConclusion\n[Summarize the takeaway and invite the next step.]",
   },
@@ -85,7 +86,7 @@ const TEMPLATES = [
     name: "Emails",
     tag: "Campaign email",
     type: "Email",
-    gradient: "linear-gradient(135deg, #ff9a52, #ec4f8a)",
+    gradient: "var(--tpl-email)",
     starter:
       "Subject: [Clear, specific subject line]\n\nHi [First name],\n\n[One sentence explaining why you are writing.]\n\n[Two or three sentences with the key details and the value for the reader.]\n\n[Describe the action], and we’ll take care of the rest.\n\nWarm regards,\n[Your name]\n[Brand name]",
   },
@@ -94,7 +95,7 @@ const TEMPLATES = [
     name: "Others",
     tag: "Ads, notices & more",
     type: "Other",
-    gradient: "linear-gradient(135deg, #f7a35c, #d95b9a)",
+    gradient: "var(--tpl-others)",
     starter:
       "[Headline]\n\n[Two or three sentences describing the offer, update, or announcement.]\n\n[Single, clear call to action]\n\n[Contact details or link text]",
   },
@@ -107,12 +108,12 @@ const PERIODS = [
   { id: "all", label: "All Time", days: null },
 ];
 
-// Colours + order for the doughnut (orange → pink family to match the theme).
+// Colours + order for the doughnut (theme tokens: blue/green in light, orange/pink in dark).
 const STATUS_META = [
-  { key: "Approved", color: "#ff8a4c" },
-  { key: "Awaiting approval", color: "#ee4f8f" },
-  { key: "Changes requested", color: "#f7b3c6" },
-  { key: "Draft", color: "#b58cf0" },
+  { key: "Approved", color: "var(--st-approved)" },
+  { key: "Awaiting approval", color: "var(--st-awaiting)" },
+  { key: "Changes requested", color: "var(--st-changes)" },
+  { key: "Draft", color: "var(--st-draft)" },
 ];
 
 function statusStyle(status) {
@@ -184,10 +185,10 @@ export default function Workflow() {
     () => reviewed ? createBrandTwinDebate(findings) : null,
     [findings, reviewed],
   );
-  const savedReviews = store.reviews;
-  const activeReview = store.reviews.find((item) => item.id === reviewId) || null;
-  const teamUpdateAvailable = store.shared && !saving && activeReview
-    && reviewRev !== undefined && activeReview.contentRev !== reviewRev;
+  const savedReviews = useMemo(
+    () => listReviews(),
+    [reviewed, status, findings],
+  );
   
   const outstandingReviews = savedReviews.filter(
     (review) => review.status === "Draft" || review.status === "Awaiting approval",
@@ -331,8 +332,25 @@ export default function Workflow() {
     setStatus("Draft");
     setReviewed(true);
     if (judgeMode) setJudgeStage(3);
-    if (reviewId) await persist({ content: remix.content, findings: remix.remainingFindings });
+    if (reviewId) {
+      try {
+        saveReview({
+          id: reviewId,
+          content: remix.content,
+          contentType,
+          findings: remix.remainingFindings,
+          status: "Draft",
+          reviewer,
+          comment,
+          guidelineSnapshot: guidelines,
+        });
+        setReviewError("");
+      } catch (error) {
+        setReviewError(`Could not save the remixed draft: ${error.message}`);
+      }
+    }
   }
+  
   // Load a template into the review box, then bring the review section into view.
   function applyTemplate(template) {
     const isUntouchedTemplate = TEMPLATES.some((item) => item.starter === content);
@@ -418,13 +436,13 @@ export default function Workflow() {
 
   return (
     <AppShell showTopbarProfile={false}>
-      <div className="inkloom-dashboard-scroll h-full overflow-y-auto">
+      <div className="inkloom-dashboard-scroll min-h-full">
         <div onMouseMove={handleSpotlight} className="ink-dash mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:px-9">
-          {/* ───────── Header banner ───────── */}
+        <section className="dashboard-overview" aria-label="Workspace overview">
           <DashboardHero />
 
-          {/* ───────── Feature templates (sits just before the content review) ───────── */}
-          <section className="stagger mt-8" aria-labelledby="templates-title">
+          {/* ───────── Feature templates ───────── */}
+          <section className="dashboard-overview__templates stagger" aria-labelledby="templates-title">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="ink-eyebrow">Quick start</p>
@@ -433,7 +451,7 @@ export default function Workflow() {
               <p className="text-xs text-[var(--text-soft)]">Pick one to load a starter draft into the review box.</p>
             </div>
 
-            <div className="ink-template-grid mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <div className="ink-template-grid mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
               {TEMPLATES.map((template) => (
                 <button
                   key={template.id}
@@ -457,8 +475,8 @@ export default function Workflow() {
             </div>
           </section>
 
-          {/* ───────── Main column (content review) and side column ───────── */}
-          <div className="ink-main-grid stagger mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1.75fr)_minmax(290px,0.8fr)]">
+        {/* ───────── Review workspace and supporting cards ───────── */}
+        <div className="ink-main-grid stagger grid items-start gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,1fr)]">
             <div className="min-w-0 space-y-5">
               {/* ===== Start a content review ===== */}
               <section id="new-review" className="ink-review scroll-mt-24" aria-labelledby="review-title">
@@ -519,7 +537,7 @@ export default function Workflow() {
                             setJudgeStage(0);
                           }}
                           required
-                          rows={9}
+                          rows={6}
                           maxLength={MAX_CHARS}
                           placeholder="Paste your campaign copy, product description, email, or social post…"
                           className="ink-editor__textarea"
@@ -574,8 +592,13 @@ export default function Workflow() {
 
                     {fileNotice && <p role="status" className="ink-notice">{fileNotice}</p>}
 
-                    <VoiceActorPreview text={content} />
-                    <ChaosTestPanel content={content} preferredTerms={guidelines.preferredTerms || ""} />
+                    <details className="ink-extra-tools">
+                      <summary>Optional voice and stress-test tools</summary>
+                      <div className="ink-extra-tools__content">
+                        <VoiceActorPreview text={content} />
+                        <ChaosTestPanel content={content} preferredTerms={guidelines.preferredTerms || ""} />
+                      </div>
+                    </details>
 
                     <input
                       ref={fileInputRef}
@@ -617,15 +640,15 @@ export default function Workflow() {
                       </div>
                     </div>
                   </form>
-                  
+
                   {reviewed && (
                     <div aria-live="polite" className="ink-results fade-in mt-6">
                       {reviewError && <p role="alert" className="scale-in mb-4 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs text-rose-600">{reviewError}</p>}
                       {judgeMode && (
-                        <section aria-labelledby="judge-mode-title" className="mb-5 rounded-xl border border-violet-500/25 bg-violet-500/5 p-4">
+                        <section aria-labelledby="judge-mode-title" className="mb-5 rounded-xl border border-[var(--ink-line)] bg-[var(--ink-card-2)] p-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
-                              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-700">Guided product demo · sample not saved</p>
+                              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ink-orange)]">Guided product demo · sample not saved</p>
                               <h3 id="judge-mode-title" className="mt-1 text-sm font-semibold text-[var(--text)]">Judge Mode</h3>
                             </div>
                             <button
@@ -646,8 +669,8 @@ export default function Workflow() {
                                 aria-current={judgeStage === index + 1 ? "step" : undefined}
                                 className={`rounded-lg border px-2.5 py-2 text-[11px] ${
                                   judgeStage >= index + 1
-                                    ? "border-violet-500/30 bg-violet-500/10 text-violet-800"
-                                    : "border-[var(--border)] text-[var(--text-soft)]"
+                                    ? "border-[var(--ink-orange)] bg-[var(--ink-orange)]/10 text-[var(--ink-title)]"
+                                    : "border-[var(--ink-line)] text-[var(--ink-muted)]"
                                 }`}
                               >
                                 <span className="font-bold">{index + 1}.</span> {step}
@@ -668,7 +691,7 @@ export default function Workflow() {
                                   setSelectedRemixId("on-brand");
                                   setJudgeStage(2);
                                 }}
-                                className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800"
+                                className="rounded-lg bg-[var(--ink-orange)] px-3 py-2 text-xs font-semibold text-white hover:brightness-105"
                               >
                                 Next: preview the on-brand remix
                               </button>
@@ -678,7 +701,7 @@ export default function Workflow() {
                                 type="button"
                                 disabled={!selectedRemix}
                                 onClick={() => acceptRemix(selectedRemix)}
-                                className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800 disabled:opacity-50"
+                                className="rounded-lg bg-[var(--ink-orange)] px-3 py-2 text-xs font-semibold text-white hover:brightness-105 disabled:opacity-50"
                               >
                                 Apply remix and continue
                               </button>
@@ -687,7 +710,7 @@ export default function Workflow() {
                               <button
                                 type="button"
                                 onClick={startJudgeDemo}
-                                className="rounded-lg border border-violet-500/30 px-3 py-2 text-xs font-semibold text-violet-800 hover:bg-violet-500/5"
+                                className="rounded-lg border border-[var(--ink-orange)]/30 px-3 py-2 text-xs font-semibold text-[var(--ink-orange)] hover:bg-[var(--ink-orange)]/5"
                               >
                                 Restart walkthrough
                               </button>
@@ -818,6 +841,7 @@ export default function Workflow() {
                                     </button>
                                   )}
                                 </div>
+                                <FindingFeedback finding={finding} content={content} reviewId={reviewId} reviewerName={reviewer} />
                               </li>
                             ))}
                           </ul>
@@ -827,7 +851,7 @@ export default function Workflow() {
                           No configured checks were triggered. This is not a guarantee that the content is accurate or compliant.
                         </div>
                       )}
-
+                      <MissedIssueReport content={content} reviewId={reviewId} reviewerName={reviewer} />
                       <div className="mt-5 rounded-xl border border-[var(--border)] p-4">
                         <h3 className="text-sm font-semibold text-[var(--text)]">Human review</h3>
                           {store.shared && !judgeMode ? (
@@ -880,7 +904,7 @@ export default function Workflow() {
             </div>
 
             {/* ===== Side column ===== */}
-            <aside className="min-w-0 space-y-5">
+            <aside className="dashboard-side-grid min-w-0">
               <section className="dashboard-panel ink-card px-4 py-4 sm:px-5" aria-labelledby="stats-title">
                 <div className="flex items-start justify-between gap-3">
                   <h2 id="stats-title" className="ink-card__title ink-card__title--lg">Your Review Stats</h2>
@@ -919,7 +943,7 @@ export default function Workflow() {
                 <textarea
                   value={guidelines.preferredTerms || ""}
                   onChange={(event) => setGuidelines((current) => ({ ...current, preferredTerms: event.target.value }))}
-                  rows={5}
+                  rows={3}
                   placeholder={"users → customers\ncheap → accessible"}
                   className="ink-rules"
                 />
@@ -930,7 +954,7 @@ export default function Workflow() {
                 <h2 className="ink-card__title">What gets checked</h2>
                 <ul className="mt-3 space-y-2.5 text-xs text-[var(--text-soft)]">
                   {["Unsupported absolute or comparative claims", "Approved terminology substitutions", "Descriptive link text and long sentences", "Repeated all-caps language and tone"].map((item) => (
-                    <li key={item} className="flex gap-2"><span className="text-[#f0568a]">✓</span>{item}</li>
+                    <li key={item} className="flex gap-2"><span className="text-[var(--check)]">✓</span>{item}</li>
                   ))}
                 </ul>
                 <p className="mt-4 border-t border-[var(--border)] pt-3 text-[11px] leading-4 text-[var(--text-soft)]">
@@ -939,6 +963,7 @@ export default function Workflow() {
               </section>
             </aside>
           </div>
+          </section>
         </div>
       </div>
     </AppShell>
@@ -1032,9 +1057,9 @@ function StatusDoughnut({ segments, total }) {
                 cy="60"
                 r={radius}
                 fill="none"
-                stroke={arc.color}
                 strokeWidth={hovered === arc.key ? 17 : 14}
                 style={{
+                  stroke: arc.color,
                   strokeDasharray: ready ? `${arc.length} ${circumference - arc.length}` : `0 ${circumference}`,
                   strokeDashoffset: -arc.offset,
                 }}
@@ -1077,12 +1102,12 @@ function DocStackArt() {
     <svg className="ink-next__art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="docA" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ffb06b" />
-          <stop offset="1" stopColor="#f0568a" />
+          <stop offset="0" style={{ stopColor: "var(--art-a1)" }} />
+          <stop offset="1" style={{ stopColor: "var(--art-a2)" }} />
         </linearGradient>
         <linearGradient id="docB" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ff9a52" />
-          <stop offset="1" stopColor="#c94fb0" />
+          <stop offset="0" style={{ stopColor: "var(--art-b1)" }} />
+          <stop offset="1" style={{ stopColor: "var(--art-b2)" }} />
         </linearGradient>
       </defs>
       <g transform="rotate(10 60 60)">
@@ -1092,11 +1117,11 @@ function DocStackArt() {
         <rect x="34" y="26" width="52" height="68" rx="9" fill="url(#docA)" opacity="0.7" />
       </g>
       <g transform="rotate(-12 60 60)">
-        <rect x="24" y="36" width="54" height="70" rx="9" fill="#2a1f2d" stroke="url(#docA)" strokeWidth="2" />
-        <rect x="33" y="50" width="30" height="4" rx="2" fill="#ffb06b" />
-        <rect x="33" y="60" width="36" height="4" rx="2" fill="#f4a8c2" opacity="0.8" />
-        <rect x="33" y="70" width="24" height="4" rx="2" fill="#f4a8c2" opacity="0.55" />
-        <rect x="33" y="80" width="32" height="4" rx="2" fill="#f4a8c2" opacity="0.4" />
+        <rect x="24" y="36" width="54" height="70" rx="9" style={{ fill: "var(--art-doc)" }} stroke="url(#docA)" strokeWidth="2" />
+        <rect x="33" y="50" width="30" height="4" rx="2" style={{ fill: "var(--art-line-warm)" }} />
+        <rect x="33" y="60" width="36" height="4" rx="2" style={{ fill: "var(--art-line)" }} opacity="0.8" />
+        <rect x="33" y="70" width="24" height="4" rx="2" style={{ fill: "var(--art-line)" }} opacity="0.55" />
+        <rect x="33" y="80" width="32" height="4" rx="2" style={{ fill: "var(--art-line)" }} opacity="0.4" />
       </g>
     </svg>
   );

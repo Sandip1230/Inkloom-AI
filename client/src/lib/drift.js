@@ -75,6 +75,7 @@ export function reviewVersions(review) {
       content: revision.content,
       updatedAt: revision.updatedAt || 0,
       label: "Saved revision",
+      findings: Array.isArray(revision.findings) ? revision.findings.length : 0,
     }));
   if (typeof review.content === "string") {
     versions.push({
@@ -82,7 +83,105 @@ export function reviewVersions(review) {
       content: review.content,
       updatedAt: review.updatedAt || 0,
       label: review.status || "Current draft",
+      findings: Array.isArray(review.findings) ? review.findings.length : 0,
     });
   }
   return versions.sort((a, b) => a.updatedAt - b.updatedAt);
+}
+
+/* ---------- time machine helpers ---------- */
+
+// Word diffs are O(n*m); beyond this size we skip the diff instead of freezing the page.
+const MAX_DIFF_WORDS = 1500;
+
+function words(text) {
+  return String(text || "").match(/\S+/g) || [];
+}
+
+// Word-level diff between two texts (longest common subsequence).
+// Returns null when either text is too long to diff cheaply.
+export function wordDiff(before, after) {
+  const a = words(before);
+  const b = words(after);
+  if (a.length > MAX_DIFF_WORDS || b.length > MAX_DIFF_WORDS) return null;
+
+  const cols = b.length + 1;
+  const table = new Uint16Array((a.length + 1) * cols);
+  for (let i = a.length - 1; i >= 0; i -= 1) {
+    for (let j = b.length - 1; j >= 0; j -= 1) {
+      table[i * cols + j] = a[i] === b[j]
+        ? table[(i + 1) * cols + j + 1] + 1
+        : Math.max(table[(i + 1) * cols + j], table[i * cols + j + 1]);
+    }
+  }
+
+  const raw = [];
+  let i = 0;
+  let j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      raw.push({ type: "same", text: a[i] });
+      i += 1;
+      j += 1;
+    } else if (table[(i + 1) * cols + j] >= table[i * cols + j + 1]) {
+      raw.push({ type: "del", text: a[i] });
+      i += 1;
+    } else {
+      raw.push({ type: "add", text: b[j] });
+      j += 1;
+    }
+  }
+  while (i < a.length) raw.push({ type: "del", text: a[i++] });
+  while (j < b.length) raw.push({ type: "add", text: b[j++] });
+
+  // Merge neighbouring words of the same kind into one span.
+  const parts = [];
+  raw.forEach((item) => {
+    const last = parts[parts.length - 1];
+    if (last && last.type === item.type) last.text += ` ${item.text}`;
+    else parts.push({ ...item });
+  });
+
+  const added = raw.filter((item) => item.type === "add").length;
+  const removed = raw.filter((item) => item.type === "del").length;
+  return { parts, added, removed, unchanged: raw.length - added - removed };
+}
+
+// How much two texts differ, 0 (identical) to 100 (nothing in common).
+export function driftPercent(before, after, diff = wordDiff(before, after)) {
+  if (diff) {
+    const total = diff.added + diff.removed + 2 * diff.unchanged;
+    return total ? Math.round(((diff.added + diff.removed) / total) * 100) : 0;
+  }
+  return 100 - compareDrafts(before, after).overlap;
+}
+
+// Reviews that have saved wording, oldest first - the "rail" of the time machine.
+export function buildTimeline(reviews) {
+  const list = Array.isArray(reviews) ? reviews : [];
+  return list
+    .filter((review) => review && typeof review.content === "string" && review.content.trim())
+    .map((review) => ({
+      id: review.id,
+      contentType: review.contentType || "Content review",
+      status: review.status || "Draft",
+      updatedAt: review.updatedAt || 0,
+      versionCount: reviewVersions(review).length,
+      review,
+    }))
+    .sort((a, b) => a.updatedAt - b.updatedAt);
+}
+
+// Versions of one review with word count and the change from the version before it.
+export function annotateVersions(versions) {
+  return versions.map((version, index) => {
+    const previous = versions[index - 1];
+    const diff = previous ? wordDiff(previous.content, version.content) : null;
+    return {
+      ...version,
+      words: words(version.content).length,
+      diff,
+      drift: previous ? driftPercent(previous.content, version.content, diff) : null,
+    };
+  });
 }

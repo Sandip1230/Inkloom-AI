@@ -11,7 +11,9 @@ Inkloom helps a team check draft copy against its preferred terminology and a sm
 - [What Inkloom does](#what-inkloom-does)
 - [Quick start](#quick-start)
 - [Use the review workspace](#use-the-review-workspace)
+- [Claim Review](#claim-review)
 - [Current capabilities and limitations](#current-capabilities-and-limitations)
+- [Quality evaluation and feedback](#quality-evaluation-and-feedback)
 - [How the application is structured](#how-the-application-is-structured)
 - [Run tests and create a production build](#run-tests-and-create-a-production-build)
 - [Optional server configuration](#optional-server-configuration)
@@ -19,21 +21,24 @@ Inkloom helps a team check draft copy against its preferred terminology and a sm
 - [Project layout](#project-layout)
 - [Documentation](#documentation)
 
+
 ## What Inkloom does
 
-Organisations create content through many people and tools. Without a clear review process, drafts can drift from approved language, make claims without evidence, or overlook basic readability and accessibility practices. Inkloom is intended to make those issues easier to spot and discuss before publication.
+Organisations create content through many people and tools. Without a clear review process, drafts can drift from approved language, contain potentially unsupported claims, or overlook basic readability and accessibility practices. Inkloom helps teams identify these issues and review content before publication.
 
-The current prototype demonstrates a simple review loop:
+The current prototype demonstrates a simple review workflow:
 
-1. Maintain preferred-term substitutions.
+1. Maintain preferred-term substitutions to ensure consistent brand language.
 2. Paste a draft and choose its content type.
-3. Review explainable findings and optional wording suggestions.
-4. Ask for approval, request changes, or record a human approval.
-5. Return to saved reviews and see lightweight, browser-local insights.
-6. Preview speech delivery, stress-test possible misreadings, compare draft revisions with approved examples, or inspect a screenshot. These previews never set a review status.
+3. Review explainable findings, potential claim-related concerns, and optional wording suggestions.
+4. Use **Claim Review** to examine claims in draft content and assess potential issues using the available review functionality.
+5. Compare rule-grounded findings, explore alternative wording, and revisit draft revisions against approved examples.
+6. Preview speech delivery, stress-test possible misinterpretations, or inspect screenshots for visible content and potential readability or contrast concerns.
+7. Record human decisions, request changes, and revisit saved reviews through browser-local history and insights.
+
+Claim Review complements Inkloom's existing governance checks by helping reviewers examine claims before publication. Automated findings are advisory and should not be treated as definitive proof of factual accuracy or as a substitute for supporting evidence and human judgment.
 
 **The goal is to help reviewers make informed decisions—not to replace their judgment.**
-
 ## Quick start
 
 ### Requirements
@@ -97,6 +102,11 @@ The client is the main Inkloom governance experience. Starting the server is use
 10. Use **Voice-Actor Preview** to compare browser-synthesized delivery styles. Run **Chaos-Test My Copy** for AI-generated risk examples, or open the upload tab for **Screenshot-to-Review**. These previews do not change the human review status.
 11. Open **Brand Drift Time Machine** in the sidebar to compare saved drafts with approved examples and inspect draft revisions.
 
+12. Open **Claim Review** to review claims in your draft using the available claim-review functionality. Examine the identified claims and review results to determine whether further clarification, revision, or supporting evidence may be needed. Claim Review supports the review process but does not automatically establish the factual accuracy of every claim.
+
+13. Use **Report incorrect finding** under any finding, or **Report a missed issue** below the findings, to record reviewer feedback. Open **Quality Evaluation** in the sidebar to see precision and recall against labeled sample drafts and to triage the reports. These reports never change a review decision.
+
+
 Changes to terminology and review decisions are stored in the browser’s `localStorage`. They are not shared with other users or devices.
 
 ## Current capabilities and limitations
@@ -106,6 +116,7 @@ Changes to terminology and review decisions are stored in the browser’s `local
 | Content input | Pasted text, supported text files, and screenshot images, with a selected content type |
 | Terminology | User-defined preferred-term substitutions |
 | Writing checks | Unsupported absolute/comparative wording, configured terminology, generic link labels, long sentences, and repeated all-caps wording |
+| Claim Review | Dedicated workflow for reviewing claims and identifying potential issues; findings support human assessment and do not automatically verify factual accuracy |
 | Findings | Excerpt, explanation, check/source label, and suggested next step |
 | Suggestions and remixes | Optional deterministic wording replacements and previews, rechecked against local rules before applying |
 | Brand Twin Debate | Rule-grounded summary of configured findings and review limitations; no generated opinions or approval score |
@@ -114,6 +125,7 @@ Changes to terminology and review decisions are stored in the browser’s `local
 | Voice-Actor Preview | Browser speech synthesis with warm expert, bold challenger, and calm guide delivery styles; preview only |
 | Chaos-Test My Copy | Optional server-side AI examples of possible misunderstanding, out-of-context readings, and unsupported promises |
 | Brand Drift Time Machine | Browser-local phrase overlap, selected promise/tone signals, and saved revision timeline against an approved example |
+| Quality evaluation and feedback | Labeled sample drafts with expected findings, precision and recall scoring, regression tests, and browser-local reviewer reports of incorrect findings or missed issues; never an approval |
 | Screenshot-to-Review | Optional server-side AI extraction of visible copy and advisory contrast/readability observations from PNG, JPEG, or WebP screenshots |
 | History and insights | Summaries derived from browser-local review records |
 | Account deletion | Profile action removes personal account and membership; deletion is blocked while the account owns a workspace |
@@ -127,6 +139,20 @@ The following are **not implemented in the current governance workflow**:
 - Guaranteed detection of every brand, legal, factual, or accessibility issue
 
 The claims check flags selected absolute or comparative wording. It does not determine whether a claim is true; its explanation indicates that approved evidence was not supplied to the checker.
+
+## Quality evaluation and feedback
+
+Inkloom measures how well its own automated checks work instead of assuming they are right.
+
+- **Labeled sample drafts.** `client/src/lib/evaluation/goldenSet.js` holds sample drafts with the findings a human reviewer would expect, including tricky cases such as the word “best” in “best practices” and legitimate acronyms.
+- **Scoring.** `evaluate.js` runs the checks on every sample and counts correct findings, false positives (flagged but not an issue) and missed issues, giving precision, recall and a per-check breakdown.
+- **Regression tests.** `npm test --prefix client` fails if a check disagrees with a labeled sample, if precision or recall falls below the recorded baseline, or if a documented gap is fixed without updating the labels.
+- **Reviewer feedback.** Reviewers can use **Report incorrect finding** or **Report a missed issue** on the review screen. Each report keeps only a short window of text around the finding, never the whole draft, and duplicates are ignored.
+- **Quality Evaluation page.** The sidebar page shows the scores, the known gaps and the saved reports. A person can copy a report as a labeled-sample draft and mark it added or dismissed; nothing is added to the sample set automatically.
+
+At the time of writing the 14 labeled samples give about 85% precision and 73% recall. Five samples are documented known gaps, such as percentage claims (`100%`), synonyms like “unbeatable”, and acronyms being read as shouting.
+
+Evaluation never approves, rejects or changes the status of a draft. Limits: the sample set is small and tests only the rule-based checks, scores do not certify accuracy for every organisation, and reports are stored in the browser until shared review storage exists.
 
 ## How the application is structured
 
@@ -168,6 +194,8 @@ npm run preview --prefix client
 
 The client’s tests cover representative governance-rule behavior. They do not certify the analyzer’s completeness or correctness for every organisation or content type.
 
+The client tests also include the quality-evaluation regression suite, which scores the checks against the labeled sample drafts and guards the precision and recall baseline.
+
 ## Optional server configuration
 
 The standard browser-based review workflow does not need server configuration. To enable chaos testing or screenshot review, deploy the Express server and configure an AI provider. Screenshot review needs a vision-capable model: set `AI_VISION_MODEL`, or choose a vision-capable `AI_MODEL`. Copy [`server/.env.example`](./server/.env.example) to `server/.env` for local setup. Never commit `.env` files or real credentials.
@@ -206,7 +234,7 @@ Provider and database configuration enables the optional server features. The ma
 │   └── src/
 │       ├── components/     Shared UI components
 │       ├── context/        Client-side contexts
-│       ├── lib/            Governance rules, browser storage, and tests
+│       ├── lib/            Governance rules, browser storage, tests, and quality evaluation (lib/evaluation)
 │       └── pages/          Landing page and application views
 ├── server/                 Express API and legacy AI/authentication flows
 │   └── src/

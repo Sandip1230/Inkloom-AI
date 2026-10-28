@@ -6,6 +6,7 @@ import {
 import { Sparkles } from "lucide-react";
 import type { MouseEvent, PointerEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "../../context/ThemeContext.jsx";
 import "../../styles/liquid-metal-button.css";
 
 interface LiquidMetalButtonProps {
@@ -27,11 +28,28 @@ interface ButtonDimensions {
   innerHeight: number;
 }
 
+// Shader colours per theme: light = deep blue-green, dark = original maroon / orange-pink.
+const SHADER_THEMES = {
+  light: {
+    u_colorBack: [0.01, 0.09, 0.13, 1],
+    u_colorTint: [0.1, 0.78, 0.72, 0.9],
+    u_shiftRed: 0.05,
+    u_shiftBlue: 0.35,
+  },
+  dark: {
+    u_colorBack: [0.09, 0.02, 0.05, 1],
+    u_colorTint: [1, 0.4, 0.45, 0.9],
+    u_shiftRed: 0.3,
+    u_shiftBlue: 0.2,
+  },
+} as const;
+
 export function LiquidMetalButton({
   label = "Get Started",
   onClick,
   viewMode = "text",
 }: LiquidMetalButtonProps) {
+  const { theme } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [ripples, setRipples] = useState<Ripple[]>([]);
@@ -62,14 +80,14 @@ export function LiquidMetalButton({
         paperShaderContainer,
         liquidMetalFragmentShader,
         {
-          u_colorBack: [0.008, 0.014, 0.035, 1],
-          u_colorTint: [0.025, 0.22, 0.92, 0.78],
+          u_colorBack: [...SHADER_THEMES[theme === "dark" ? "dark" : "light"].u_colorBack],
+          u_colorTint: [...SHADER_THEMES[theme === "dark" ? "dark" : "light"].u_colorTint],
           u_repetition: 4,
-          u_softness: 0.38,
-          u_shiftRed: 0.12,
-          u_shiftBlue: 0.72,
+          u_softness: 0.6,
+          u_shiftRed: SHADER_THEMES[theme === "dark" ? "dark" : "light"].u_shiftRed,
+          u_shiftBlue: SHADER_THEMES[theme === "dark" ? "dark" : "light"].u_shiftBlue,
           u_distortion: 0.18,
-          u_contour: 0.16,
+          u_contour: 0.1,
           u_angle: 45,
           u_scale: 8,
           u_shape: 1,
@@ -91,7 +109,7 @@ export function LiquidMetalButton({
       timeouts.current.forEach((timeout) => window.clearTimeout(timeout));
       timeouts.current.clear();
     };
-  }, [dimensions]);
+  }, [dimensions, theme]);
 
   function schedule(callback: () => void, delay: number) {
     const timeout = window.setTimeout(() => {

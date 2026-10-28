@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext.jsx";
 import {
   CATEGORIES,
   GRANULARITIES,
@@ -7,6 +9,7 @@ import {
   buildTrend,
   categoryOf,
   countByCategory,
+  describeReview,
   filterByRange,
   formatReviewDate,
   niceScale,
@@ -45,8 +48,143 @@ const Icons = {
   facebook: (p) => (<Svg {...p} strokeWidth={2.4}><path d="M14.5 21v-8h2.7l.5-3.2h-3.2V7.9c0-1 .5-1.7 1.8-1.7h1.5V3.4c-.5-.1-1.5-.2-2.5-.2-2.6 0-4.3 1.6-4.3 4.4v2.2H8v3.2h2.8v8H14.5Z" /></Svg>),
   blog: (p) => (<Svg {...p}><rect x="3.5" y="3.5" width="17" height="17" rx="4" /><path d="M8 9h8M8 12.5h8M8 16h4.5" /></Svg>),
   report: (p) => (<Svg {...p}><rect x="4" y="3" width="16" height="18" rx="3" /><path d="M8 8h8M8 12h8M8 16h5" /></Svg>),
+  close: (p) => (<Svg {...p}><path d="M18 6 6 18M6 6l12 12" /></Svg>),
+  user: (p) => (<Svg {...p}><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></Svg>),
   others: (p) => (<Svg {...p} fill="currentColor" strokeWidth={0}><circle cx="8" cy="8" r="2.6" /><circle cx="16" cy="8" r="2.6" /><circle cx="8" cy="16" r="2.6" /><circle cx="16" cy="16" r="2.6" /></Svg>),
 };
+
+/* ---------- review detail popup ---------- */
+
+function fullDate(timestamp) {
+  if (!timestamp) return "Date unavailable";
+  return new Date(timestamp).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
+
+// Opens when a review is tapped. Shows what the person wrote, what the checks
+// found, the decision, and every earlier version they saved.
+function ReviewDetailModal({ review, onClose }) {
+  const closeRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const detail = useMemo(() => describeReview(review), [review]);
+  const category = categoryOf(review.contentType);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    const onKey = (event) => {
+      if (event.key === "Escape") onCloseRef.current();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+      if (previouslyFocused && typeof previouslyFocused.focus === "function") previouslyFocused.focus();
+    };
+  }, []);
+
+  return createPortal(
+    <div className="rh rh-modal" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div className="rh-modal__panel" role="dialog" aria-modal="true" aria-labelledby="rh-modal-title">
+        <header className="rh-modal__head">
+          <span className={`rh-tile rh-tile--${category}`}>{Icons[category]({ size: 22 })}</span>
+          <div className="rh-modal__title">
+            <h2 id="rh-modal-title">{detail.type}</h2>
+            <p>
+              <time dateTime={new Date(review.updatedAt || 0).toISOString()}>{fullDate(review.updatedAt)}</time>
+            </p>
+          </div>
+          <span className={`rh-status ${statusClass(detail.status)}`}>{detail.status}</span>
+          <button ref={closeRef} type="button" className="rh-modal__close" onClick={onClose} aria-label="Close review details">
+            {Icons.close({ size: 18 })}
+          </button>
+        </header>
+
+        <div className="rh-modal__body">
+          <p className="rh-modal__summary">{detail.summary}</p>
+
+          <div className="rh-modal__stats">
+            <div><strong>{detail.rating.toFixed(1)}</strong><span>Rating</span></div>
+            <div><strong>{detail.findingCount}</strong><span>{detail.findingCount === 1 ? "Finding" : "Findings"}</span></div>
+            <div><strong>{detail.suggestions}</strong><span>{detail.suggestions === 1 ? "Suggestion" : "Suggestions"}</span></div>
+            <div><strong>{detail.words}</strong><span>{detail.words === 1 ? "Word" : "Words"}</span></div>
+            <div><strong>{detail.versions.length}</strong><span>{detail.versions.length === 1 ? "Version" : "Versions"}</span></div>
+          </div>
+
+          <section className="rh-modal__section">
+            <h3>What you wrote</h3>
+            <pre className="rh-modal__text">{review.content || "No content was saved with this review."}</pre>
+          </section>
+
+          <section className="rh-modal__section">
+            <h3>What the checks found</h3>
+            {detail.findingCount === 0 ? (
+              <p className="rh-modal__muted">No issues were found. This review looked on-brand.</p>
+            ) : (
+              <>
+                <ul className="rh-modal__chips">
+                  {detail.byCategory.map((item) => (
+                    <li key={item.name}>{item.name} <b>{item.count}</b></li>
+                  ))}
+                </ul>
+                <ol className="rh-modal__findings">
+                  {detail.findings.map((finding, index) => (
+                    <li key={finding.id || `${finding.category}-${index}`}>
+                      <div className="rh-modal__finding-top">
+                        <strong>{finding.category || "Finding"}</strong>
+                        {finding.severity && <span>{finding.severity}</span>}
+                      </div>
+                      {finding.excerpt && <blockquote>“{finding.excerpt}”</blockquote>}
+                      {finding.explanation && <p>{finding.explanation}</p>}
+                      {finding.suggestion && <p className="rh-modal__suggestion">{finding.suggestion}</p>}
+                    </li>
+                  ))}
+                </ol>
+              </>
+            )}
+          </section>
+
+          <section className="rh-modal__section">
+            <h3>Decision &amp; reviewer</h3>
+            <dl className="rh-modal__facts">
+              <div><dt>Status</dt><dd>{detail.status}</dd></div>
+              <div><dt>Reviewer</dt><dd>{review.reviewer || "Not recorded"}</dd></div>
+              <div className="rh-modal__fact--wide"><dt>Comment</dt><dd>{review.comment || "No comment was added."}</dd></div>
+              {detail.guidelines && <div className="rh-modal__fact--wide"><dt>Preferred terms used</dt><dd>{detail.guidelines}</dd></div>}
+            </dl>
+          </section>
+
+          <section className="rh-modal__section">
+            <h3>Version history</h3>
+            <ol className="rh-modal__versions">
+              {detail.versions.map((version) => (
+                <li key={version.key} className={version.current ? "is-current" : ""}>
+                  <span className="rh-modal__dot" aria-hidden="true" />
+                  <div className="rh-modal__version-top">
+                    <strong>{version.label}</strong>
+                    <span>{fullDate(version.updatedAt)}</span>
+                  </div>
+                  <p className="rh-modal__muted">
+                    {version.words} {version.words === 1 ? "word" : "words"} · {version.findings} {version.findings === 1 ? "finding" : "findings"}
+                    {version.change ? ` · ${version.change}` : ""}
+                  </p>
+                  {!version.current && <pre className="rh-modal__text rh-modal__text--small">{version.content || "Empty version"}</pre>}
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
+
+        <footer className="rh-modal__foot">
+          <button type="button" className="rh-new rh-modal__done" onClick={onClose}>Close</button>
+        </footer>
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 /* ---------- small pieces ---------- */
 
@@ -124,15 +262,17 @@ function Rating({ value }) {
 }
 
 // orange -> pink across the bars, like the design
-function barColor(index, count) {
+function barColor(index, count, theme) {
   const t = count > 1 ? index / (count - 1) : 0;
-  const from = [255, 168, 76];
-  const to = [255, 62, 128];
+  // dark = orange → pink, light = green → blue
+  const from = theme === "dark" ? [255, 168, 76] : [20, 184, 166];
+  const to = theme === "dark" ? [255, 62, 128] : [47, 111, 228];
   const mix = from.map((channel, i) => Math.round(channel + (to[i] - channel) * t));
   return `rgb(${mix.join(",")})`;
 }
 
 function TrendChart({ reviews }) {
+  const { theme } = useTheme();
   const [granularity, setGranularity] = useState("daily");
   const mode = GRANULARITIES.find((item) => item.id === granularity) || GRANULARITIES[0];
   const buckets = useMemo(() => buildTrend(reviews, granularity), [reviews, granularity]);
@@ -176,7 +316,7 @@ function TrendChart({ reviews }) {
               return (
                 <div key={bucket.key} className={`rh-col ${index === peakIndex ? "is-peak" : ""}`} tabIndex={0} title={`${bucket.full}: ${label}`}>
                   {bucket.count > 0 ? (
-                    <span className="rh-bar" style={{ height: `${Math.max(4, (bucket.count / top) * 100)}%`, background: barColor(index, buckets.length) }}>
+                    <span className="rh-bar" style={{ height: `${Math.max(4, (bucket.count / top) * 100)}%`, background: barColor(index, buckets.length, theme) }}>
                       <span className="rh-bar__tip">{label}</span>
                     </span>
                   ) : (
@@ -197,7 +337,7 @@ function TrendChart({ reviews }) {
   );
 }
 
-function RecentReviews({ reviews, filterLabel, onClearFilter }) {
+function RecentReviews({ reviews, filterLabel, onClearFilter, onOpen }) {
   const [expanded, setExpanded] = useState(false);
   const shown = expanded ? reviews : reviews.slice(0, 5);
 
@@ -233,7 +373,7 @@ function RecentReviews({ reviews, filterLabel, onClearFilter }) {
           {shown.map((review) => {
             const category = categoryOf(review.contentType);
             return (
-              <li key={review.id} className="rh-timeline__item">
+              <li key={review.id} className="rh-timeline__item rh-clickable" {...openProps(review, onOpen)}>
                 <span className="rh-timeline__dot" aria-hidden="true" />
                 <span className={`rh-tile rh-tile--${category}`}>{Icons[category]({ size: 22 })}</span>
                 <div className="rh-timeline__body">
@@ -284,6 +424,24 @@ function Categories({ counts, active, onSelect }) {
 }
 
 
+// Keyboard + mouse activation shared by every clickable review row.
+function openProps(review, onOpen) {
+  return {
+    role: "button",
+    tabIndex: 0,
+    "aria-haspopup": "dialog",
+    "aria-label": `Open details for ${review.contentType || "content review"}`,
+    onClick: () => onOpen(review),
+    onKeyDown: (event) => {
+      if (event.target !== event.currentTarget) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onOpen(review);
+      }
+    },
+  };
+}
+
 function statusClass(status) {
   if (status === "Approved") return "is-approved";
   if (status === "Awaiting approval") return "is-awaiting";
@@ -293,14 +451,14 @@ function statusClass(status) {
 
 // The full record for every review in the period: decision, reviewer, comment
 // and earlier versions. (Everything the old Review History page showed.)
-function ReviewLog({ reviews, filterLabel }) {
+function ReviewLog({ reviews, filterLabel, onOpen }) {
   return (
     <section className="rh-card rh-log" aria-labelledby="rh-log-title">
       <div className="rh-head-text">
         <span className="rh-head-icon rh-head-icon--ring">{Icons.doc({ size: 22 })}</span>
         <div>
           <h2 id="rh-log-title">All Reviews</h2>
-          <p>{reviews.length} {reviews.length === 1 ? "review" : "reviews"}{filterLabel ? ` · ${filterLabel}` : ""} · saved drafts, findings and human decisions</p>
+          <p>{reviews.length} {reviews.length === 1 ? "review" : "reviews"}{filterLabel ? ` · ${filterLabel}` : ""} · tap a review to see exactly what you did</p>
         </div>
       </div>
 
@@ -312,7 +470,7 @@ function ReviewLog({ reviews, filterLabel }) {
             const category = categoryOf(review.contentType);
             const findings = review.findings?.length || 0;
             return (
-              <article key={review.id} className="rh-entry">
+              <article key={review.id} className="rh-entry rh-clickable" {...openProps(review, onOpen)}>
                 <span className={`rh-tile rh-tile--${category} rh-tile--sm`}>{Icons[category]({ size: 18 })}</span>
                 <div className="rh-entry__main">
                   <div className="rh-entry__top">
@@ -330,7 +488,7 @@ function ReviewLog({ reviews, filterLabel }) {
                     </p>
                   )}
                   {review.revisionHistory?.length > 0 && (
-                    <details className="rh-entry__versions">
+                    <details className="rh-entry__versions" onClick={(event) => event.stopPropagation()}>
                       <summary>{review.revisionHistory.length} previous {review.revisionHistory.length === 1 ? "version" : "versions"}</summary>
                       <ol>
                         {review.revisionHistory.map((revision, index) => (
@@ -358,6 +516,7 @@ function ReviewLog({ reviews, filterLabel }) {
 export default function ReviewHistoryDashboard({ reviews }) {
   const [rangeId, setRangeId] = useState("7");
   const [categoryId, setCategoryId] = useState(null);
+  const [openId, setOpenId] = useState(null);
 
   // Newest first - edited reviews keep their old position in storage.
   const sorted = useMemo(() => [...reviews].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)), [reviews]);
@@ -368,6 +527,8 @@ export default function ReviewHistoryDashboard({ reviews }) {
     [inRange, categoryId],
   );
   const stats = useMemo(() => summarize(inRange), [inRange]);
+  // Look the open review up by id so the popup always shows the latest saved data.
+  const openReview = openId ? sorted.find((review) => review.id === openId) || null : null;
   const filterLabel = categoryId ? CATEGORIES.find((category) => category.id === categoryId)?.label : null;
 
   return (
@@ -401,10 +562,12 @@ export default function ReviewHistoryDashboard({ reviews }) {
           <TrendChart reviews={sorted} />
           <Categories counts={counts} active={categoryId} onSelect={setCategoryId} />
         </div>
-        <RecentReviews key={`${rangeId}-${categoryId}`} reviews={visible} filterLabel={filterLabel} onClearFilter={() => setCategoryId(null)} />
+        <RecentReviews key={`${rangeId}-${categoryId}`} reviews={visible} filterLabel={filterLabel} onClearFilter={() => setCategoryId(null)} onOpen={(review) => setOpenId(review.id)} />
       </div>
 
-      <ReviewLog reviews={visible} filterLabel={filterLabel} />
+      <ReviewLog reviews={visible} filterLabel={filterLabel} onOpen={(review) => setOpenId(review.id)} />
+
+      {openReview && <ReviewDetailModal review={openReview} onClose={() => setOpenId(null)} />}
     </div>
   );
 }

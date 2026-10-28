@@ -1,0 +1,231 @@
+/* Brand Drift Time Machine - review history timeline, drift curve and word diff.
+   Uses the shared theme tokens so it follows light and dark mode. */
+
+.dtm-eyebrow { margin: 0 0 2px; color: var(--accent-solid); font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* status colours (come from the theme layer) */
+.dtm-dot { display: inline-block; width: 10px; height: 10px; flex: none; border-radius: 999px; }
+.dtm-dot--approved { background: var(--st-approved, #14b8a6); }
+.dtm-dot--awaiting { background: var(--st-awaiting, #2f6fe4); }
+.dtm-dot--changes { background: var(--st-changes, #a5c8fb); }
+.dtm-dot--draft { background: var(--st-draft, #7c8cf0); }
+
+.dtm-status {
+  align-self: flex-start;
+  padding: 3px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--surface-2);
+}
+.dtm-status--approved { border-color: var(--st-approved, #14b8a6); }
+.dtm-status--awaiting { border-color: var(--st-awaiting, #2f6fe4); }
+.dtm-status--changes { border-color: var(--st-changes, #a5c8fb); }
+.dtm-status--draft { border-color: var(--st-draft, #7c8cf0); }
+
+.dtm-empty-icon {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  color: var(--accent-solid);
+  background: color-mix(in srgb, var(--accent-solid) 12%, transparent);
+}
+
+/* ---------- time rail ---------- */
+.dtm-rail-card { padding: 18px 20px 12px; }
+.dtm-rail-card__head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.dtm-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; padding: 0; list-style: none; color: var(--text-soft); font-size: 11px; font-weight: 600; }
+.dtm-legend li { display: inline-flex; align-items: center; gap: 6px; }
+
+.dtm-rail {
+  display: flex;
+  margin: 16px -4px 0;
+  padding: 4px 4px 14px;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x proximity;
+}
+.dtm-rail__item { position: relative; flex: 0 0 auto; width: 168px; scroll-snap-align: center; }
+/* the line the pins sit on */
+.dtm-rail__item::before {
+  content: "";
+  position: absolute;
+  top: 34px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--border), color-mix(in srgb, var(--accent-solid) 45%, var(--border)));
+}
+.dtm-rail__item:first-child::before { left: 50%; }
+.dtm-rail__item:last-child::before { right: 50%; }
+
+.dtm-node {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border: 0;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
+}
+.dtm-node__date { color: var(--text-soft); font-size: 11px; font-weight: 700; }
+.dtm-node__pin {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--surface);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  box-shadow: 0 0 0 1px var(--border);
+  transition: transform 0.2s var(--ease-spring, ease), box-shadow 0.2s ease;
+}
+.dtm-node__card {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.dtm-node__card strong { overflow: hidden; color: var(--text); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.dtm-node__card span { color: var(--text-soft); font-size: 11px; }
+.dtm-node__ver { font-weight: 600; }
+.dtm-node:hover .dtm-node__card { border-color: color-mix(in srgb, var(--accent-solid) 50%, var(--border)); transform: translateY(-2px); }
+.dtm-node:focus-visible { outline: 2px solid var(--accent-solid); outline-offset: 2px; border-radius: 14px; }
+.dtm-node.is-active .dtm-node__pin { transform: scale(1.35); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 30%, transparent); }
+.dtm-node.is-active .dtm-node__card {
+  border-color: var(--accent-solid);
+  background: color-mix(in srgb, var(--accent-solid) 9%, var(--surface));
+  box-shadow: 0 10px 24px -14px var(--tp-glow, rgba(0, 0, 0, 0.3));
+}
+
+/* ---------- time travel ---------- */
+.dtm-travel, .dtm-compare { padding: 20px; }
+.dtm-travel__head, .dtm-compare__head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.dtm-compare__head label { min-width: 15rem; }
+
+.dtm-curve {
+  display: flex;
+  height: 150px;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 0 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+}
+.dtm-curve__col {
+  display: flex;
+  min-width: 44px;
+  max-width: 96px;
+  height: 100%;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 0 4px;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+}
+.dtm-curve__bar {
+  width: 100%;
+  min-height: 6px;
+  border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, var(--accent-from), var(--accent-to));
+  opacity: 0.45;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dtm-curve__value { color: var(--text-soft); font-size: 10px; font-weight: 700; }
+.dtm-curve__label { color: var(--text-soft); font-size: 11px; font-weight: 700; }
+.dtm-curve__col:hover .dtm-curve__bar { opacity: 0.75; }
+.dtm-curve__col.is-active .dtm-curve__bar { opacity: 1; box-shadow: 0 8px 20px -6px var(--tp-glow, rgba(0, 0, 0, 0.3)); }
+.dtm-curve__col.is-active .dtm-curve__label, .dtm-curve__col.is-active .dtm-curve__value { color: var(--accent-solid); }
+.dtm-curve__col.is-future .dtm-curve__bar { background: var(--border); opacity: 0.8; }
+.dtm-curve__col:focus-visible { outline: 2px solid var(--accent-solid); outline-offset: 1px; border-radius: 8px; }
+
+.dtm-slider { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.dtm-slider input[type="range"] { flex: 1; min-width: 0; height: 6px; cursor: pointer; accent-color: var(--accent-solid); }
+
+.dtm-snapshot { margin-top: 18px; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-2); }
+.dtm-snapshot__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.dtm-snapshot__title { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--text); font-size: 13px; font-weight: 800; }
+.dtm-pill-now {
+  padding: 1px 8px;
+  border-radius: 999px;
+  color: var(--accent-solid);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--accent-solid) 14%, transparent);
+}
+.dtm-toggle { margin: 0; }
+
+.dtm-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 14px 0; }
+.dtm-facts > div { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.dtm-facts dt { color: var(--text-soft); font-size: 10.5px; font-weight: 700; }
+.dtm-facts dd { margin: 2px 0 0; color: var(--text); font-size: 15px; font-weight: 800; }
+
+.dtm-text {
+  max-height: 320px;
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--surface);
+}
+.dtm-text ins, .dtm-key ins {
+  padding: 0 3px;
+  border-radius: 4px;
+  color: var(--tp-ok);
+  text-decoration: none;
+  background: var(--tp-ok-soft);
+}
+.dtm-text del, .dtm-key del {
+  padding: 0 3px;
+  border-radius: 4px;
+  color: var(--tp-danger);
+  text-decoration: line-through;
+  background: var(--tp-danger-soft);
+}
+.dtm-key { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 0; color: var(--text-soft); font-size: 11px; }
+.dtm-add { color: var(--tp-ok); }
+.dtm-del { color: var(--tp-danger); }
+
+@media (max-width: 640px) {
+  .dtm-rail__item { width: 148px; }
+  .dtm-slider .tp-btn-ghost { padding: 5px 8px; }
+  .dtm-travel, .dtm-compare { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dtm-node__pin, .dtm-node__card, .dtm-curve__bar { transition: none; }
+  .dtm-node:hover .dtm-node__card { transform: none; }
+}
