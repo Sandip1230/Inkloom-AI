@@ -1725,9 +1725,9 @@ html.dark .hero__aurora { opacity: 0.95; }
 .ink-dd__btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   height: 38px;
-  padding: 0 13px;
+  padding: 2px 15px;
   border: 1px solid rgba(54, 91, 222, 0.55);
   border-radius: 11px;
   color: var(--ink-title);
@@ -1753,7 +1753,7 @@ html.dark .hero__aurora { opacity: 0.95; }
 .ink-dd__chev { display: inline-flex; color: var(--ink-pink); transition: transform 0.15s ease; }
 .ink-dd__chev.is-open { transform: rotate(180deg); }
 
-.ink-dd--small .ink-dd__btn { height: 34px; padding: 0 11px; font-size: 12.5px; }
+.ink-dd--small .ink-dd__btn { height: 35px; padding: 0 18px; font-size: 13px; }
 
 .ink-dd__menu {
   position: absolute;
@@ -1789,6 +1789,23 @@ html:not(.dark) .ink-dd__menu { box-shadow: 0 10px 30px rgba(63, 95, 117, 0.14);
   cursor: pointer;
   background: transparent;
 }
+/* 1. Allow the dropdown container to grow and fill space */
+.ink-dd.ink-dd--wide {
+  flex-grow: 1;
+}
+
+/* 2. Force the button to 100% width and space out the text/icon */
+.ink-dd__btn {
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* 3. Ensure the label text aligns left while the button is wide */
+.ink-dd__label {
+  flex-grow: 1;
+  text-align: left;
+}
+
 .ink-dd__opt:hover,
 .ink-dd__opt:focus-visible {
   outline: none;
