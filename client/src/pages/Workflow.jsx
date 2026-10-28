@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
 import BranchingReviewSummary from "../components/BranchingReviewSummary.jsx";
 import DashboardHero from "../components/DashboardHero.jsx";
+import InkSelect from "../components/InkSelect.jsx";
 import {
   applySuggestion,
   createBrandSafeRemixes,
@@ -541,16 +542,14 @@ export default function Workflow() {
                         ))}
                       </div>
 
-                      <label className="ink-select">
-                        <span className="sr-only">Content type</span>
-                        <Icon name="globe" size={17} />
-                        <select value={contentType} onChange={(event) => setContentType(event.target.value)}>
-                          {CONTENT_TYPES.map((type) => (
-                            <option key={type} value={type}>{type}</option>
-                          ))}
-                        </select>
-                        <Icon name="chevron" size={15} />
-                      </label>
+                      <InkSelect
+                        wide
+                        ariaLabel="Content type"
+                        icon={<Icon name="globe" size={17} />}
+                        value={contentType}
+                        onChange={setContentType}
+                        options={CONTENT_TYPES.map((type) => ({ value: type, label: type }))}
+                      />
                     </div>
 
                     {inputMode === "write" && (
@@ -941,15 +940,13 @@ export default function Workflow() {
               <section className="dashboard-panel ink-card px-4 py-4 sm:px-5" aria-labelledby="stats-title">
                 <div className="flex items-start justify-between gap-3">
                   <h2 id="stats-title" className="ink-card__title ink-card__title--lg">Your Review Stats</h2>
-                  <label className="ink-select ink-select--small">
-                    <span className="sr-only">Time range</span>
-                    <select value={period} onChange={(event) => setPeriod(event.target.value)}>
-                      {PERIODS.map((item) => (
-                        <option key={item.id} value={item.id}>{item.label}</option>
-                      ))}
-                    </select>
-                    <Icon name="chevron" size={14} />
-                  </label>
+                  <InkSelect
+                    small
+                    ariaLabel="Time range"
+                    value={period}
+                    onChange={setPeriod}
+                    options={PERIODS.map((item) => ({ value: item.id, label: item.label }))}
+                  />
                 </div>
                 <StatusDoughnut segments={statusSegments} total={periodReviews.length} />
               </section>
