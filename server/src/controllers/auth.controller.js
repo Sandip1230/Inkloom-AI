@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const AuditEvent = require('../models/AuditEvent');
 const GovernanceSource = require('../models/GovernanceSource');
+const SharedReview = require('../models/SharedReview');
 const Organization = require('../models/Organization');
 const WorkspaceMembership = require('../models/WorkspaceMembership');
 const { sendEmail } = require('../utils/sendEmail');
