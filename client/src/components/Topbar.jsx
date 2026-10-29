@@ -34,7 +34,12 @@ export default function Topbar({ showProfile = true }) {
 
   useEffect(() => {
     window.addEventListener('inkloom-notifications-changed', refreshNotifications);
-    return () => window.removeEventListener('inkloom-notifications-changed', refreshNotifications);
+    // Re-check every minute so notifications older than 24 hours disappear while the page is open.
+    const expiryTimer = setInterval(refreshNotifications, 60 * 1000);
+    return () => {
+      window.removeEventListener('inkloom-notifications-changed', refreshNotifications);
+      clearInterval(expiryTimer);
+    };
   }, [refreshNotifications]);
   const menuRef = useRef(null);
   const notifRef = useRef(null);
