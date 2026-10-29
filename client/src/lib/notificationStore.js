@@ -36,3 +36,8 @@ export function markAllRead() {
 export function clearNotifications() {
   write([]);
 }
+
+
+export function removeNotification(id) {
+  write(read().filter((note) => note.id !== id));
+}

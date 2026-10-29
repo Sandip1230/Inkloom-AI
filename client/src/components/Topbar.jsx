@@ -4,7 +4,7 @@ import ProfileAvatar from './ProfileAvatar.jsx';
 import ProfilePhotoPicker from './ProfilePhotoPicker.jsx';
 import AccountDeletionAction from './AccountDeletionAction.jsx';
 import { useAvatarStyle } from '../lib/profileStore.js';
-import { getNotifications, markAllRead } from '../lib/notificationStore.js';
+import { getNotifications, markAllRead, removeNotification } from '../lib/notificationStore.js';
 
 // Decodes the JWT payload (server/src/routes/auth.routes.js signs
 // { id, name, email }) without needing a library or a /me API call.
@@ -138,9 +138,26 @@ export default function Topbar({ showProfile = true }) {
                   {notifications.map((note) => (
                     <li key={note.id} className="rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--border)]">
                       <p>{note.message}</p>
-                      <p className="mt-0.5 text-xs text-[var(--text-soft)]">
-                        {new Date(note.createdAt).toLocaleString()}
-                      </p>
+                      <div className="mt-0.5 flex items-end justify-between gap-2">
+                        <p className="text-xs text-[var(--text-soft)]">
+                          {new Date(note.createdAt).toLocaleString()}
+                        </p>
+                        <button
+                          type="button"
+                          aria-label="Delete notification"
+                          title="Delete notification"
+                          onClick={() => removeNotification(note.id)}
+                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[var(--text-soft)] transition-colors hover:bg-rose-500/15 hover:text-rose-500"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M3 6h18" />
+                            <path d="M8 6V4h8v2" />
+                            <path d="M19 6l-1 14H6L5 6" />
+                            <path d="M10 11v6" />
+                            <path d="M14 11v6" />
+                          </svg>
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
