@@ -11,7 +11,9 @@ Inkloom helps a team check draft copy against its preferred terminology and a sm
 - [What Inkloom does](#what-inkloom-does)
 - [Quick start](#quick-start)
 - [Use the review workspace](#use-the-review-workspace)
+- [Navigation](#navigation)
 - [Claim Review](#claim-review)
+- [Company Admin workspace and access](#company-admin-workspace-and-access)
 - [Current capabilities and limitations](#current-capabilities-and-limitations)
 - [Quality evaluation and feedback](#quality-evaluation-and-feedback)
 - [How the application is structured](#how-the-application-is-structured)
@@ -20,7 +22,6 @@ Inkloom helps a team check draft copy against its preferred terminology and a sm
 - [Privacy and responsible use](#privacy-and-responsible-use)
 - [Project layout](#project-layout)
 - [Documentation](#documentation)
-
 
 ## What Inkloom does
 
@@ -35,10 +36,12 @@ The current prototype demonstrates a simple review workflow:
 5. Compare rule-grounded findings, explore alternative wording, and revisit draft revisions against approved examples.
 6. Preview speech delivery, stress-test possible misinterpretations, or inspect screenshots for visible content and potential readability or contrast concerns.
 7. Record human decisions, request changes, and revisit saved reviews through browser-local history and insights.
+8. Use the **Company Admin** workspace (Admin accounts only) to manage company-level settings.
 
 Claim Review complements Inkloom's existing governance checks by helping reviewers examine claims before publication. Automated findings are advisory and should not be treated as definitive proof of factual accuracy or as a substitute for supporting evidence and human judgment.
 
 **The goal is to help reviewers make informed decisions—not to replace their judgment.**
+
 ## Quick start
 
 ### Requirements
@@ -71,7 +74,7 @@ npm run dev:client
 npm run dev:server
 ```
 
-The client is the main Inkloom governance experience. Starting the server is useful for exploring the repository’s separate, legacy API flows; the current review analyzer does not depend on it.
+The client is the main Inkloom governance experience. Starting the server is useful for exploring the repository’s separate, legacy API flows and for account sign-up, sign-in, and the Company Admin workspace; the current review analyzer does not depend on it.
 
 ### Windows / VS Code
 
@@ -101,13 +104,54 @@ The client is the main Inkloom governance experience. Starting the server is use
 9. Visit **Review history** or **Insights** to review items saved in this browser.
 10. Use **Voice-Actor Preview** to compare browser-synthesized delivery styles. Run **Chaos-Test My Copy** for AI-generated risk examples, or open the upload tab for **Screenshot-to-Review**. These previews do not change the human review status.
 11. Open **Brand Drift Time Machine** in the sidebar to compare saved drafts with approved examples and inspect draft revisions.
-
 12. Open **Claim Review** to review claims in your draft using the available claim-review functionality. Examine the identified claims and review results to determine whether further clarification, revision, or supporting evidence may be needed. Claim Review supports the review process but does not automatically establish the factual accuracy of every claim.
-
 13. Use **Report incorrect finding** under any finding, or **Report a missed issue** below the findings, to record reviewer feedback. Open **Quality Evaluation** in the sidebar to see precision and recall against labeled sample drafts and to triage the reports. These reports never change a review decision.
-
+14. Open **Company Admin** in the sidebar if you are signed in with an Admin account. See [Company Admin workspace and access](#company-admin-workspace-and-access).
 
 Changes to terminology and review decisions are stored in the browser’s `localStorage`. They are not shared with other users or devices.
+
+## Navigation
+
+Users can move freely between sections (for example from the dashboard to **Claim Review** and then to **Company Admin**). To avoid having to retrace every step:
+
+- A **Back** control is shown at the **top-left corner** of every section page.
+- Hovering over it shows the tooltip **“Back to the Homepage”**.
+- Clicking it takes the user **directly to the homepage**, regardless of how many sections they visited beforehand. It does not step back through the visited sections one by one.
+- The control is keyboard accessible, and the same label is exposed to screen readers (`aria-label="Back to the Homepage"`).
+
+## Claim Review
+
+Claim Review is a dedicated workflow for examining claims in a draft before publication.
+
+- It identifies selected absolute or comparative wording and other potential claim-related concerns.
+- Each result explains why it was flagged and indicates that approved evidence was not supplied to the checker.
+- Results are advisory. They do not verify facts, promotional claims, or legal compliance.
+- A person decides whether a claim needs clarification, revision, or supporting evidence.
+
+## Company Admin workspace and access
+
+The **Company Admin** section is restricted to people who registered as Admins.
+
+### Who can access it
+
+- Only users who **registered an account as a Company Admin**, and are **currently signed in** with that account, can open the Admin workspace and its tools (including creating a company workspace).
+- Normal users, and visitors who are not signed in, cannot use the Admin workspace.
+- Access is decided by the role stored on the account at registration and checked after sign-in. To use the Admin workspace, sign in with an Admin account.
+
+### What a normal user sees
+
+Normal users do **not** see the “Create company workspace” option. Instead, the Company Admin section shows this message:
+
+> **If you are an Admin, you can access the Admin workspace.**
+> The Admin workspace is only accessible to Company Admins. To access it, sign in as an Admin.
+
+### Loading behaviour
+
+- The Company Admin section renders its layout and content **immediately** when opened, with no multi-minute wait.
+- The access check and any workspace data load in the background; while data loads, the page shows its structure and a lightweight loading state instead of a blank screen.
+- If the access check or data request fails, the section shows a clear error with a retry action rather than staying empty.
+
+> **Developer note:** Always enforce the Admin role on the server for every Admin endpoint (verify the signed-in user’s token and role). Hiding the option in the client improves the experience but is not a security control on its own.
 
 ## Current capabilities and limitations
 
@@ -128,13 +172,15 @@ Changes to terminology and review decisions are stored in the browser’s `local
 | Quality evaluation and feedback | Labeled sample drafts with expected findings, precision and recall scoring, regression tests, and browser-local reviewer reports of incorrect findings or missed issues; never an approval |
 | Screenshot-to-Review | Optional server-side AI extraction of visible copy and advisory contrast/readability observations from PNG, JPEG, or WebP screenshots |
 | History and insights | Summaries derived from browser-local review records |
+| Navigation | Top-left **Back to the Homepage** control on section pages that returns directly to the homepage |
+| Company Admin | Instantly rendered section; workspace tools available only to signed-in users who registered as Admins; other users see an Admin-only notice and no “Create company workspace” option |
 | Account deletion | Profile action removes personal account and membership; deletion is blocked while the account owns a workspace |
 
 The following are **not implemented in the current governance workflow**:
 
 - Verification of facts or promotional claims against approved source documents
 - Full accessibility measurement, OCR guarantees, or comprehensive image/document/video review
-- Shared team workspaces, collaboration across devices, or role-based permissions
+- Shared team review workspaces, collaboration across devices, or fine-grained role-based permissions beyond the Admin / normal-user distinction
 - Centralized analytics, publication integrations, or automatic publishing
 - Guaranteed detection of every brand, legal, factual, or accessibility issue
 
@@ -160,9 +206,11 @@ Evaluation never approves, rejects or changes the status of a draft. Limits: the
 
 The React/Vite client runs deterministic checks in [`client/src/lib/governance.js`](./client/src/lib/governance.js) and stores review records and terminology rules in browser storage via [`client/src/lib/reviewStore.js`](./client/src/lib/reviewStore.js). The voice preview uses browser speech synthesis. The optional chaos-test and screenshot tools call the server; their inputs are not stored by the application.
 
+The client also handles section navigation (including the top-left **Back to the Homepage** control) and shows or hides Admin-only areas based on the signed-in account’s role.
+
 ### Express API
 
-The Express server in `server/` also provides optional AI review tools and account deletion. Chaos-test requests use the configured AI provider; screenshot reviews need a provider/model that accepts vision input. Account deletion requires a valid sign-in token and MongoDB.
+The Express server in `server/` provides sign-up and sign-in, role-based Admin access, optional AI review tools, and account deletion. Chaos-test requests use the configured AI provider; screenshot reviews need a provider/model that accepts vision input. Account deletion and Admin workspace actions require a valid sign-in token and MongoDB.
 
 For more detail, see [docs/architecture.md](./docs/architecture.md) and [docs/prompt-design.md](./docs/prompt-design.md).
 
@@ -198,7 +246,7 @@ The client tests also include the quality-evaluation regression suite, which sco
 
 ## Optional server configuration
 
-The standard browser-based review workflow does not need server configuration. To enable chaos testing or screenshot review, deploy the Express server and configure an AI provider. Screenshot review needs a vision-capable model: set `AI_VISION_MODEL`, or choose a vision-capable `AI_MODEL`. Copy [`server/.env.example`](./server/.env.example) to `server/.env` for local setup. Never commit `.env` files or real credentials.
+The standard browser-based review workflow does not need server configuration. To enable chaos testing or screenshot review, deploy the Express server and configure an AI provider. Screenshot review needs a vision-capable model: set `AI_VISION_MODEL`, or choose a vision-capable `AI_MODEL`. To enable accounts and the Company Admin workspace, also configure `JWT_SECRET` and `MONGO_URI`. Copy [`server/.env.example`](./server/.env.example) to `server/.env` for local setup. Never commit `.env` files or real credentials.
 
 | Variable | Used for |
 | --- | --- |
@@ -209,7 +257,7 @@ The standard browser-based review workflow does not need server configuration. T
 | `AI_MODEL` | Provider model name; use a vision-capable model for screenshot review |
 | `AI_VISION_MODEL` | Optional vision model for screenshots; defaults to `AI_MODEL` |
 | `JWT_SECRET` | Signing authentication tokens |
-| `MONGO_URI` | MongoDB connection for account deletion, workspaces, and legacy brand-session persistence |
+| `MONGO_URI` | MongoDB connection for accounts, account deletion, workspaces, and legacy brand-session persistence |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Optional Google OAuth |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_CALLBACK_URL` | Optional GitHub OAuth |
 | `BREVO_API_KEY`, `EMAIL_FROM` | Optional password-reset email delivery |
@@ -220,6 +268,7 @@ Provider and database configuration enables the optional server features. The ma
 
 - Review drafts and terminology rules remain in the current browser profile’s `localStorage`; anyone with access to that browser profile may be able to access them.
 - When requested, chaos-test text and screenshot images are sent through the Inkloom server to the configured AI provider. Do not use confidential or regulated content unless that provider is approved for it.
+- The Company Admin workspace is available only to signed-in Admin accounts. Normal users cannot view or create company workspaces.
 - Account deletion removes the signed-in user, their workspace membership links, and local review history and projects in the current browser. Shared workspace records and audit history are preserved; audit attribution is anonymized. Accounts that own workspaces cannot currently be deleted.
 - Clearing browser storage removes local review records and guidelines. There is no team backup or synchronization.
 - Do not paste confidential, personal, regulated, or production-sensitive content into this prototype unless your organisation has approved that use and device.
@@ -232,16 +281,16 @@ Provider and database configuration enables the optional server features. The ma
 .
 ├── client/                 React, Vite, styles, and governance workspace
 │   └── src/
-│       ├── components/     Shared UI components
-│       ├── context/        Client-side contexts
+│       ├── components/     Shared UI components (including the Back to the Homepage control)
+│       ├── context/        Client-side contexts (including auth and role)
 │       ├── lib/            Governance rules, browser storage, tests, and quality evaluation (lib/evaluation)
-│       └── pages/          Landing page and application views
+│       └── pages/          Landing page and application views (including Company Admin)
 ├── server/                 Express API and legacy AI/authentication flows
 │   └── src/
 │       ├── ai/             Legacy prompts, schemas, and stage runner
 │       ├── controllers/    API request handlers
 │       ├── models/         MongoDB models
-│       └── routes/         API routes
+│       └── routes/         API routes (Admin routes require a valid Admin token)
 └── docs/                   Architecture, prompt design, and submission materials
 ```
 
