@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { adminRequest } from "../api/adminApi.js";
+import { fetchAdmin, peekAdmin, prefetchAdmin } from "../api/adminApi.js";
 import { getReviewMeta } from "../api/reviewsApi.js";
+import { getAccountTypeFromToken } from "../lib/account.js";
 
 const ACTIVE_KEY = "inkloom-active-workspace";
 
@@ -25,7 +26,8 @@ function hasToken() {
 export function WorkspaceProvider({ children }) {
   const { pathname } = useLocation();
   const signedIn = hasToken();
-  const [workspaces, setWorkspaces] = useState([]);
+  // Start from the cached list (if any) so pages never wait on a blank state.
+  const [workspaces, setWorkspaces] = useState(() => (hasToken() ? peekAdmin("/workspaces") || [] : []));
   const [workspaceId, setWorkspaceIdState] = useState("");
   const [meta, setMeta] = useState(null);
   const [ready, setReady] = useState(false);
@@ -41,7 +43,7 @@ export function WorkspaceProvider({ children }) {
       return undefined;
     }
     let active = true;
-    adminRequest("/workspaces")
+    fetchAdmin("/workspaces")
       .then((data) => {
         if (!active) return;
         setWorkspaces(data);
@@ -52,6 +54,11 @@ export function WorkspaceProvider({ children }) {
         else next = data[0]?._id || "";
         setWorkspaceIdState(next);
         setError("");
+        // Warm the Company Admin page for admins so it opens instantly.
+        const adminTarget = next || data[0]?._id;
+        if (adminTarget && getAccountTypeFromToken() === "admin") {
+          prefetchAdmin(`/workspaces/${adminTarget}`);
+        }
       })
       .catch((loadError) => {
         if (active) setError(loadError.message);

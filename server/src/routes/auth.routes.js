@@ -5,13 +5,20 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const authController = require('../controllers/auth.controller');
 const requireAuth = require('../middleware/requireAuth');
+const { resolveAccountType } = require('../utils/accountType');
 
 const router = express.Router();
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
-function issueTokenAndRedirect(request, response) {
+async function issueTokenAndRedirect(request, response, next) {
+  let accountType;
+  try {
+    accountType = await resolveAccountType(request.user);
+  } catch (error) {
+    return next(error);
+  }
   const token = jwt.sign(
-    { id: request.user._id, name: request.user.name, email: request.user.email },
+    { id: request.user._id, name: request.user.name, email: request.user.email, accountType },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
@@ -44,6 +51,7 @@ router.post('/login', authLimiter, authController.login);
 router.post('/forgot-password', authLimiter, authController.forgotPassword);
 router.post('/verify-reset-code', authLimiter, authController.verifyResetCode);
 router.post('/reset-password', authLimiter, authController.resetPassword);
+router.get('/me', requireAuth, authController.me);
 router.delete('/account', requireAuth, authController.deleteAccount);
 
 // --- Google ---

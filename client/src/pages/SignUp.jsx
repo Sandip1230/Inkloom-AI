@@ -8,6 +8,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const [accountType, setAccountType] = useState("user");
+  const [adminCode, setAdminCode] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +25,7 @@ export default function SignUp() {
       const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, accountType, ...(accountType === "admin" ? { adminCode } : {}) }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create account. Try again.");
@@ -60,6 +62,55 @@ export default function SignUp() {
         )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <fieldset>
+            <legend className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)]">
+              Register as
+            </legend>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                ["user", "User", "Review and create content"],
+                ["admin", "Company Admin", "Manage the company workspace"],
+              ].map(([value, label, hint]) => (
+                <label
+                  key={value}
+                  className={`cursor-pointer rounded-xl border px-3 py-2.5 text-left transition ${
+                    accountType === value
+                      ? "border-[var(--accent-solid)] bg-[var(--surface-2)]"
+                      : "border-[var(--border)] hover:border-[var(--accent-solid)]"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="accountType"
+                    value={value}
+                    checked={accountType === value}
+                    onChange={() => setAccountType(value)}
+                    className="sr-only"
+                  />
+                  <span className="block text-sm font-semibold text-[var(--text)]">{label}</span>
+                  <span className="block text-[11px] leading-4 text-[var(--text-soft)]">{hint}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          {accountType === "admin" && (
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)]">
+                Admin invite code
+              </label>
+              <input
+                type="password"
+                required
+                autoComplete="off"
+                value={adminCode}
+                onChange={(event) => setAdminCode(event.target.value)}
+                placeholder="Code provided by your company"
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-soft)] focus:border-[var(--accent-solid)]"
+              />
+            </div>
+          )}
+
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)]">
               Name

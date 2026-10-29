@@ -6,6 +6,8 @@ import ProfilePhotoPicker from "./ProfilePhotoPicker.jsx";
 import AccountDeletionAction from "./AccountDeletionAction.jsx";
 import BrandLogo from "./BrandLogo.jsx";
 import { useAvatarStyle } from "../lib/profileStore.js";
+import { prefetchAdmin } from "../api/adminApi.js";
+import { getAccountTypeFromToken } from "../lib/account.js";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: "grid", to: "/workflow" },
@@ -96,6 +98,12 @@ function readUserFromToken() {
   }
 }
 
+// Start loading the Company Admin data as soon as the user points at the link (admins only).
+function warmCompanyAdmin() {
+  if (getAccountTypeFromToken() !== "admin") return;
+  prefetchAdmin("/workspaces");
+}
+
 export default function Sidebar({ open = false, onClose = () => {} }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -182,6 +190,8 @@ export default function Sidebar({ open = false, onClose = () => {} }) {
               key={item.label}
               to={item.to}
               onClick={onClose}
+              onMouseEnter={item.to === "/company-admin" ? warmCompanyAdmin : undefined}
+              onFocus={item.to === "/company-admin" ? warmCompanyAdmin : undefined}
               className={
                 "relative flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors " +
                 (isActive

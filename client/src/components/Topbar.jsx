@@ -64,7 +64,28 @@ export default function Topbar({ showProfile = true }) {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-[var(--border)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md sm:px-7">
+    <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-[var(--border)] bg-[var(--surface)]/95 py-3 pl-16 pr-4 backdrop-blur-md md:pl-7 sm:pr-7">
+      {/* Back to the homepage — always goes straight to "/" no matter how many sections were visited */}
+      <div className="group relative shrink-0">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          aria-label="Back to the Homepage"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-soft)] transition-colors hover:border-[var(--accent-solid)] hover:text-[var(--text)] focus-visible:border-[var(--accent-solid)] focus-visible:outline-none"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5" />
+            <path d="m12 19-7-7 7-7" />
+          </svg>
+        </button>
+        <span
+          role="tooltip"
+          className="pointer-events-none absolute left-0 top-full z-30 mt-2 whitespace-nowrap rounded-md border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+        >
+          Back to the Homepage
+        </span>
+      </div>
+
       <div className="relative max-w-xl flex-1">
         <svg
           width="16"

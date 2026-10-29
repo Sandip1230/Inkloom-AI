@@ -10,25 +10,43 @@ const PersonalReview = require('../models/PersonalReview');
 const Organization = require('../models/Organization');
 const WorkspaceMembership = require('../models/WorkspaceMembership');
 const { sendEmail } = require('../utils/sendEmail');
+const { resolveAccountType } = require('../utils/accountType');
+
+// Company Admin registration is protected by ADMIN_SIGNUP_CODE (set it in server/.env).
+// If it is not set, admin sign-up is open outside production and closed in production.
+function checkAdminInvite(code) {
+  const expected = process.env.ADMIN_SIGNUP_CODE;
+  if (!expected) {
+    return process.env.NODE_ENV === 'production'
+      ? 'Company Admin registration is disabled. Ask the site owner to configure an admin invite code.'
+      : null;
+  }
+  const a = Buffer.from(String(code || ''));
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+    return 'That Company Admin invite code is not valid.';
+  }
+  return null;
+}
 
 const RESET_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const SALT_ROUNDS = 10;
 
-function issueAuthToken(user) {
+function issueAuthToken(user, accountType = user.accountType || 'user') {
   return jwt.sign(
-    { id: user._id, name: user.name, email: user.email },
+    { id: user._id, name: user.name, email: user.email, accountType },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' },
   );
 }
 
-function publicUser(user) {
-  return { id: user._id, name: user.name, email: user.email, avatar: user.avatar || null };
+function publicUser(user, accountType = user.accountType || 'user') {
+  return { id: user._id, name: user.name, email: user.email, avatar: user.avatar || null, accountType };
 }
 
 async function signup(request, response, next) {
   try {
-    const { name, email, password } = request.body || {};
+    const { name, email, password, accountType: requestedType, adminCode } = request.body || {};
     if (!name || !email || !password) {
       return response.status(400).json({ error: 'Name, email and password are all required.' });
     }
@@ -43,7 +61,12 @@ async function signup(request, response, next) {
     }
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await User.create({ name: name.trim(), email: normalizedEmail, passwordHash });
+    const accountType = requestedType === 'admin' ? 'admin' : 'user';
+    if (accountType === 'admin') {
+      const inviteError = checkAdminInvite(adminCode);
+      if (inviteError) return response.status(403).json({ error: inviteError });
+    }
+    const user = await User.create({ name: name.trim(), email: normalizedEmail, passwordHash, accountType });
 
     return response.status(201).json({ token: issueAuthToken(user), user: publicUser(user) });
   } catch (error) {
@@ -70,7 +93,20 @@ async function login(request, response, next) {
       return response.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    return response.json({ token: issueAuthToken(user), user: publicUser(user) });
+    const accountType = await resolveAccountType(user);
+    return response.json({ token: issueAuthToken(user, accountType), user: publicUser(user, accountType) });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// Lets the client confirm the authoritative account type (e.g. for tokens issued before account types existed).
+async function me(request, response, next) {
+  try {
+    const user = await User.findById(request.userId);
+    if (!user) return response.status(404).json({ error: 'This account no longer exists.' });
+    const accountType = await resolveAccountType(user);
+    return response.json({ user: publicUser(user, accountType) });
   } catch (error) {
     return next(error);
   }
@@ -194,7 +230,7 @@ async function deleteAccount(request, response, next) {
         { $or: [{ createdBy: user._id }, { 'versions.editedBy': user._id }] },
         { $set: { createdBy: null, 'versions.$[].editedBy': null } },
       ),
-            SharedReview.updateMany(
+      SharedReview.updateMany(
         { createdBy: user._id },
         { $set: { createdBy: null, createdByName: 'Former member' } },
       ),
@@ -226,4 +262,4 @@ async function deleteAccount(request, response, next) {
   }
 }
 
-module.exports = { signup, login, forgotPassword, verifyResetCode, resetPassword, deleteAccount };
+module.exports = { signup, login, me, forgotPassword, verifyResetCode, resetPassword, deleteAccount };

@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema(
     googleId: { type: String, index: true, sparse: true, unique: true },
     githubId: { type: String, index: true, sparse: true, unique: true },
     passwordHash: { type: String },
+    // 'admin' = registered as a Company Admin, 'user' = normal user.
+    // Left undefined on legacy accounts; resolved lazily in utils/accountType.js.
+    accountType: { type: String, enum: ['user', 'admin'] },
     resetCodeHash: { type: String },
     resetCodeExpires: { type: Date },
   },

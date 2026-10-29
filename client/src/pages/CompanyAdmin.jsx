@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell.jsx";
-import { adminRequest } from "../api/adminApi.js";
+import { adminRequest, fetchAdmin, peekAdmin } from "../api/adminApi.js";
+import { fetchAccountType, getAccountTypeFromToken } from "../lib/account.js";
 import { PageHero, TpIcon } from "../components/ThemeIcons.jsx";
 import "../styles/ThemePages.css";
 
@@ -148,10 +149,75 @@ function SectionHead({ title, text, right }) {
   );
 }
 
+function savedWorkspaceId(list) {
+  const saved = localStorage.getItem("inkloom-active-workspace");
+  if (saved && saved !== "personal" && list.some((item) => item._id === saved)) return saved;
+  return list[0]?._id || "";
+}
+
+// What every non-admin account sees instead of the workspace tools.
+function AdminOnlyNotice() {
+  return (
+    <AppShell>
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <section className={`${cardClass} max-w-2xl`} role="status">
+          <span className="tp-pill tp-tone-warn">Restricted</span>
+          <h2 className="mt-3 text-lg font-semibold text-[var(--text)]">Admin workspace</h2>
+          <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+            If you are an Admin then only you can access the Admin workspace
+            (only accessible for Company Admins, and to access this, log in yourself as an Admin).
+          </p>
+          <p className="mt-2 text-xs leading-5 text-[var(--text-soft)]">
+            Regular users cannot open or create company workspaces. Admin accounts are created by choosing
+            “Company Admin” when you sign up.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link to="/" className="tp-btn inline-flex">Back to the Homepage</Link>
+            <Link to="/signup" className="tp-btn-ghost inline-flex">Register as an Admin</Link>
+          </div>
+        </section>
+      </div>
+    </AppShell>
+  );
+}
+
+// Gate: only Company Admin accounts ever reach the workspace tools (the server enforces this too).
 export default function CompanyAdmin() {
-  const [workspaces, setWorkspaces] = useState([]);
-  const [workspaceId, setWorkspaceId] = useState("");
-  const [workspace, setWorkspace] = useState(null);
+  const fromToken = getAccountTypeFromToken();
+  const [accountType, setAccountType] = useState(fromToken);
+
+  useEffect(() => {
+    if (fromToken) return undefined;
+    // Token issued before account types existed: ask the server once.
+    let active = true;
+    fetchAccountType()
+      .then((type) => { if (active) setAccountType(type); })
+      .catch(() => { if (active) setAccountType("user"); });
+    return () => { active = false; };
+  }, [fromToken]);
+
+  if (accountType === "user") return <AdminOnlyNotice />;
+  if (accountType === null) {
+    return (
+      <AppShell>
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+          <div className={`${cardClass} text-sm text-[var(--text-soft)]`} role="status">Checking your access…</div>
+        </div>
+      </AppShell>
+    );
+  }
+  return <CompanyAdminWorkspace onDenied={() => setAccountType("user")} />;
+}
+
+function CompanyAdminWorkspace({ onDenied }) {
+  // Seed from the cache so the page paints with real content on the first frame.
+  const cachedList = peekAdmin("/workspaces");
+  const [workspaces, setWorkspaces] = useState(() => cachedList || []);
+  const [workspaceId, setWorkspaceId] = useState(() => (cachedList ? savedWorkspaceId(cachedList) : ""));
+  const [workspace, setWorkspace] = useState(() => {
+    const id = cachedList ? savedWorkspaceId(cachedList) : "";
+    return id ? peekAdmin(`/workspaces/${id}`) || null : null;
+  });
   const [workspaceName, setWorkspaceName] = useState("");
   const [newWorkspaceName, setNewWorkspaceName] = useState("");
   const [showNewWorkspace, setShowNewWorkspace] = useState(false);
@@ -162,7 +228,7 @@ export default function CompanyAdmin() {
   const [editingSourceId, setEditingSourceId] = useState("");
   const [selectedSource, setSelectedSource] = useState(null);
   const [retentionDays, setRetentionDays] = useState(365);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !workspace);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -177,15 +243,20 @@ export default function CompanyAdmin() {
   const [sourceSort, setSourceSort] = useState("title");
   const [activitySearch, setActivitySearch] = useState("");
 
+  const handleLoadError = useCallback((loadError) => {
+    if (loadError.code === "ADMIN_ONLY") onDenied();
+    else setError(loadError.message);
+  }, [onDenied]);
+
   const refreshWorkspace = useCallback(async (id) => {
-    const data = await adminRequest(`/workspaces/${id}`);
+    const data = await fetchAdmin(`/workspaces/${id}`);
     setWorkspace(data);
     setWorkspaceName(data.name);
     setRetentionDays(data.auditRetentionDays);
   }, []);
 
   const refreshWorkspaces = useCallback(async () => {
-    const data = await adminRequest("/workspaces");
+    const data = await fetchAdmin("/workspaces");
     setWorkspaces(data);
     setWorkspaceId((currentId) => {
       if (data.some((item) => item._id === currentId)) return currentId;
@@ -196,21 +267,22 @@ export default function CompanyAdmin() {
 
   useEffect(() => {
     let active = true;
-    adminRequest("/workspaces")
+    fetchAdmin("/workspaces")
       .then((data) => {
         if (!active) return;
         setWorkspaces(data);
-        setWorkspaceId(data[0]?._id || "");
+        // Keep the selection the page already started with when it is still valid.
+        setWorkspaceId((current) => (data.some((item) => item._id === current) ? current : savedWorkspaceId(data)));
         setError("");
+        if (data.length === 0) setLoading(false);
       })
       .catch((loadError) => {
-        if (active) setError(loadError.message);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
+        if (!active) return;
+        handleLoadError(loadError);
+        setLoading(false);
       });
     return () => { active = false; };
-  }, []);
+  }, [handleLoadError]);
 
   useEffect(() => {
     if (!workspaceId) {
@@ -218,11 +290,22 @@ export default function CompanyAdmin() {
       return;
     }
     let active = true;
-    setLoading(true);
     setSelectedSource(null);
     setEditingSourceId("");
     setShowSourceForm(false);
-    adminRequest(`/workspaces/${workspaceId}`)
+
+    // Show what we already know right away, then refresh quietly in the background.
+    const cached = peekAdmin(`/workspaces/${workspaceId}`);
+    if (cached) {
+      setWorkspace(cached);
+      setWorkspaceName(cached.name);
+      setRetentionDays(cached.auditRetentionDays);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
+    fetchAdmin(`/workspaces/${workspaceId}`)
       .then((data) => {
         if (!active) return;
         setWorkspace(data);
@@ -231,15 +314,15 @@ export default function CompanyAdmin() {
         setError("");
       })
       .catch((loadError) => {
-        if (active) setError(loadError.message);
+        if (active) handleLoadError(loadError);
       })
       .finally(() => {
         if (active) setLoading(false);
       });
     return () => { active = false; };
-  }, [workspaceId]);
+  }, [workspaceId, handleLoadError]);
 
-  // Success message 4 second por nijei chole jabe
+  // Success message disappears by itself after 4 seconds
   useEffect(() => {
     if (!notice) return undefined;
     const timer = setTimeout(() => setNotice(""), 4000);
@@ -254,7 +337,8 @@ export default function CompanyAdmin() {
       await action();
       setNotice(successMessage);
     } catch (actionError) {
-      setError(actionError.message);
+      if (actionError.code === "ADMIN_ONLY") onDenied();
+      else setError(actionError.message);
     } finally {
       setSaving(false);
     }
@@ -271,7 +355,6 @@ export default function CompanyAdmin() {
       if (!nextWorkspaces.some((item) => item._id === created._id)) {
         setWorkspaces((current) => [created, ...current]);
       }
-      setLoading(true);
       setWorkspaceId(created._id);
       setNewWorkspaceName("");
       setShowNewWorkspace(false);

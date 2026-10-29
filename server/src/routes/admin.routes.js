@@ -6,6 +6,7 @@ const Organization = require('../models/Organization');
 const User = require('../models/User');
 const WorkspaceMembership = require('../models/WorkspaceMembership');
 const requireAuth = require('../middleware/requireAuth');
+const requireCompanyAdmin = require('../middleware/requireCompanyAdmin');
 const {
   canAssignMemberRole,
   canManageMemberRole,
@@ -19,6 +20,10 @@ const SOURCE_KINDS = ['brand-guide', 'approved-facts', 'claim-evidence', 'termin
 const CONFIDENTIALITY_LEVELS = ['internal', 'confidential', 'public'];
 
 router.use(requireAuth);
+
+// Listing your workspaces stays open to every signed-in user (reviewers/creators need it to switch workspaces).
+// Creating a workspace and everything under /workspaces/:workspaceId is for Company Admin accounts only.
+router.use('/workspaces/:workspaceId', requireCompanyAdmin);
 
 function validId(value) {
   return mongoose.Types.ObjectId.isValid(value);
@@ -93,7 +98,7 @@ router.get('/workspaces', handleRoute(async (request, response) => {
     })));
 }));
 
-router.post('/workspaces', handleRoute(async (request, response) => {
+router.post('/workspaces', requireCompanyAdmin, handleRoute(async (request, response) => {
   const name = typeof request.body?.name === 'string' ? request.body.name.trim() : '';
   if (!name || name.length > 120) {
     return response.status(400).json({ error: 'Workspace name must contain 1 to 120 characters.' });
