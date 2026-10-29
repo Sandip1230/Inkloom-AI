@@ -29,7 +29,7 @@ export default function BrandKitExport({ brandKit }) {
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--accent-solid)]">{brandName}</p>
       )}
       <div className="rounded-xl border border-[var(--accent-solid)]/30 bg-[var(--surface-2)] px-5 py-4">
-        <p className="text-sm text-[var(--text)]">{summary}</p>
+        <p className="selectable text-sm text-[var(--text)]">{summary}</p>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-1 border-b border-[var(--border)]">
@@ -60,7 +60,7 @@ export default function BrandKitExport({ brandKit }) {
             {openGaps.length > 0 && (
               <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3">
                 <span className="text-xs font-medium uppercase tracking-wide text-[var(--text-soft)]">Still Open</span>
-                <ul className="mt-2 space-y-1">
+                <ul className="selectable mt-2 space-y-1">
                   {openGaps.map((gap, index) => (
                     <li key={`${gap}-${index}`} className="text-sm text-[var(--text)]">
                       • {gap}
@@ -84,7 +84,7 @@ export default function BrandKitExport({ brandKit }) {
                     <div className="h-14 w-full" style={{ backgroundColor: isValidHex(color.hex) ? color.hex : "#94a3b8" }} />
                     <div className="p-2">
                       <p className="text-xs font-semibold text-[var(--text)]">{color.name || color.role}</p>
-                      <p className="text-[10px] text-[var(--text-soft)]">
+                      <p className="selectable text-[10px] text-[var(--text-soft)]">
                         {isValidHex(color.hex) ? color.hex.toUpperCase() : "—"}
                       </p>
                     </div>
@@ -96,7 +96,7 @@ export default function BrandKitExport({ brandKit }) {
             {visual.mark && (
               <div className="flex items-center gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
                 <GeneratedMark mark={visual.mark} palette={palette} />
-                <p className="text-xs text-[var(--text-soft)]">
+                <p className="selectable text-xs text-[var(--text-soft)]">
                   {visual.typography?.pairingRationale || visual.mark?.rationale}
                 </p>
               </div>
@@ -149,7 +149,7 @@ function KeyValueGrid({ data }) {
       {entries.map(([key, value]) => (
         <div key={key} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3">
           <span className="text-xs font-medium uppercase tracking-wide text-[var(--accent-solid)]">{key}</span>
-          <p className="mt-1 text-sm text-[var(--text)]">{formatValue(value)}</p>
+          <p className="selectable mt-1 text-sm text-[var(--text)]">{formatValue(value)}</p>
         </div>
       ))}
     </div>

@@ -33,3 +33,7 @@ export function runChaosTest(content, preferredTerms) {
 export function reviewScreenshot(imageDataUrl, preferredTerms) {
   return postReviewTool("screenshot", { imageDataUrl, preferredTerms });
 }
+
+export function rewriteForFindings(content, findings, preferredTerms) {
+  return postReviewTool("auto-fix", { content, findings, preferredTerms });
+}

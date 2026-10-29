@@ -17,6 +17,9 @@ import TeamDrafts from "../components/review/TeamDrafts.jsx";
 import TeamReviewPanel from "../components/review/TeamReviewPanel.jsx";
 import VoiceActorPreview from "../components/review/VoiceActorPreview.jsx";
 import ChaosTestPanel from "../components/review/ChaosTestPanel.jsx";
+import AutoFixPanel from "../components/review/AutoFixPanel.jsx";
+import RiskScorePanel from "../components/review/RiskScorePanel.jsx";
+import ApprovalPredictorPanel from "../components/review/ApprovalPredictorPanel.jsx";
 import ScreenshotReview from "../components/review/ScreenshotReview.jsx";
 import FindingFeedback, { MissedIssueReport } from "../components/review/FindingFeedback.jsx";
 
@@ -824,7 +827,7 @@ export default function Workflow() {
                                     Apply remix
                                   </button>
                                 </div>
-                                <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-[var(--surface-2)] p-3 font-sans text-xs leading-5 text-[var(--text)]">{selectedRemix.content}</pre>
+                                <pre className="selectable mt-3 max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-[var(--surface-2)] p-3 font-sans text-xs leading-5 text-[var(--text)]">{selectedRemix.content}</pre>
                                 <p className="mt-2 text-[10px] leading-4 text-[var(--text-soft)]">
                                   Re-check results: {selectedRemix.remainingFindings.length
                                     ? `${selectedRemix.remainingFindings.length} finding${selectedRemix.remainingFindings.length === 1 ? "" : "s"} remain (${[...new Set(selectedRemix.remainingFindings.map((finding) => finding.category))].join(", ")}).`
@@ -843,6 +846,21 @@ export default function Workflow() {
 
                       {findings.length > 0 ? (
                         <>
+                        <RiskScorePanel content={content} findings={findings} />
+                        <ApprovalPredictorPanel
+                          findings={findings}
+                          contentType={contentType}
+                          reviews={store.reviews}
+                          currentId={reviewId}
+                        />
+                          {findings.length > 0 && (
+                            <AutoFixPanel
+                              content={content}
+                              findings={findings}
+                              guidelines={guidelines}
+                              onApply={(fixed) => acceptRemix({ content: fixed.content, remainingFindings: fixed.findings })}
+                            />
+                          )}
                           <BranchingReviewSummary
                             findings={findings}
                             activeCategory={activeCategory}
