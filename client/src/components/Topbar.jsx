@@ -4,7 +4,7 @@ import ProfileAvatar from './ProfileAvatar.jsx';
 import ProfilePhotoPicker from './ProfilePhotoPicker.jsx';
 import AccountDeletionAction from './AccountDeletionAction.jsx';
 import { useAvatarStyle } from '../lib/profileStore.js';
-import { getNotifications, markAllRead, removeNotification } from '../lib/notificationStore.js';
+import { getNotifications, markAllRead, removeNotification, consumeOpenNotificationsRequest } from '../lib/notificationStore.js';
 
 // Decodes the JWT payload (server/src/routes/auth.routes.js signs
 // { id, name, email }) without needing a library or a /me API call.
@@ -41,6 +41,20 @@ export default function Topbar({ showProfile = true }) {
       clearInterval(expiryTimer);
     };
   }, [refreshNotifications]);
+
+    // When a popup notification is tapped, open this notification box.
+  useEffect(() => {
+    function openBox() {
+      consumeOpenNotificationsRequest();
+      markAllRead();
+      setNotifOpen(true);
+    }
+    // The popup was tapped on a page that had no top bar: the request was saved, open the box now.
+    if (consumeOpenNotificationsRequest()) openBox();
+    window.addEventListener('inkloom-open-notifications', openBox);
+    return () => window.removeEventListener('inkloom-open-notifications', openBox);
+  }, []);
+  
   const menuRef = useRef(null);
   const notifRef = useRef(null);
 

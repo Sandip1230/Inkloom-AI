@@ -21,6 +21,7 @@ import DashboardLoader from "./components/DashboardLoader.jsx";
 import { BrandProvider } from "./context/BrandContext.jsx";
 import { createProjectId } from "./lib/projectsStore.js";
 import { WorkspaceProvider } from "./context/WorkspaceContext.jsx";
+import NotificationToasts from "./components/NotificationToasts.jsx";
 
 // Token ache kina, ar expire hoyni kina check kore.
 // Expired ba kharap token hole seta delete kore false return kore.
@@ -107,6 +108,8 @@ export default function App() {
 
   return (
     <WorkspaceProvider>
+      {/* Must stay ABOVE <Routes> so it is already listening when a page adds a notification */}
+      <NotificationToasts />
       <Routes>
         {/* ---------- Public pages ---------- */}
         <Route path="/" element={<Landing />} />
